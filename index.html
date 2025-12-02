@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Mayorista - Final</title>
+    <title>Catálogo Mayorista - FINAL</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     
@@ -17,7 +17,7 @@
             padding-bottom: 80px; 
         }
 
-        /* HEADER AZUL FUERTE (ESTILO WALMART) */
+        /* HEADER AZUL FUERTE (TRUST) */
         .header-clean {
             background-color: #0071DC; 
             color: white; padding: 15px; position: sticky; top: 0; z-index: 1000;
@@ -41,7 +41,7 @@
             display: flex; flex-direction: column;
         }
 
-        /* ZONA DE FOTO (GRANDE) */
+        /* ZONA DE FOTO (ALTURA MEDIA) */
         .img-zona { height: 250px; background: #fff; border-bottom: 1px solid #eee; position: relative; padding: 10px; }
         .img-zona img { width: 100%; height: 100%; object-fit: contain; }
         .carousel, .carousel-inner, .carousel-item { height: 100%; }
@@ -59,7 +59,7 @@
         /* PRECIOS (VERDE GANANCIA - FOCO) */
         .precio-mayor-valor { 
             font-size: 1.8rem; 
-            color: #198754; 
+            color: #198754; /* VERDE GANANCIA */
             font-weight: 900; 
             line-height: 1;
         }
@@ -97,7 +97,7 @@
         import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
 
         // CONFIGURACIÓN VITAL
-        const MI_WHATSAPP = "59170000000"; 
+        const MI_WHATSAPP = "59161333335"; // <--- ¡TU NÚMERO FINAL!
         const DEFAULT_MOQ = "6 UNID"; 
         let todosLosProductos = [];
         
@@ -114,7 +114,9 @@
 
                 const databases = new Databases(client);
 
-                const res = await databases.listDocuments('692ee774002e9a3c8601', 'catalogo');
+                // TUS IDS DE BD Y COLECCIÓN
+                const res = await databases.listDocuments('692ee774002e9a3c8601', 'catalogo'); 
+                
                 todosLosProductos = res.documents;
                 spanCount.innerText = `${todosLosProductos.length} Productos`;
 
