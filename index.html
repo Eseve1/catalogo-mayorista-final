@@ -1,680 +1,274 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Catálogo Mayorista - MOQ manejado</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Catálogo Mayorista</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<style>
+:root{
+  --bg:#f6f8fb;
+  --text:#222;
+  --accent:#FFB800;      /* Amarillo tipo Amazon */
+  --accent-border:#FFD800;
+  --muted:#b2b2b2;
+  --card-border:#eee;
+}
+/* Reset básico */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif}
 
-    <!-- Fuentes y CSS -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+/* Encabezado oferta: ancho completo + movimiento lento, repite la frase múltiples veces */
+.header-oferta{
+  width:100%;
+  background:var(--accent);
+  color:var(--text);
+  border-bottom:2px solid var(--accent-border);
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  overflow:hidden;
+  position:sticky; top:0; z-index:50;
+}
+.header-track{
+  display:flex; gap:64px; white-space:nowrap;
+  animation:marquee 24s linear infinite;
+  padding:10px 0;
+  font-weight:900; font-size:1.02rem; letter-spacing:.3px;
+}
+.header-item{display:inline-flex;align-items:center;gap:10px;padding-left:24px}
+.header-item i{color:#c07a00}
+@keyframes marquee{
+  0%{transform:translateX(100%)}
+  100%{transform:translateX(-100%)}
+}
 
-    <style>
-        :root { --green-ws:#23bf3d; --accent:#2363ec; --bg:#f3f2ef; }
-        
-        /* OCULTAR CONTADOR */
-        #contador { display: none ! important; }
+/* Layout principal: barra lateral de categorías a la izquierda (PC), contenido a la derecha */
+.main{
+  max-width:1600px; margin:0 auto;
+  display:grid; grid-template-columns:260px 1fr; gap:18px;
+  padding:16px 24px;
+}
+@media (max-width:992px){
+  .main{grid-template-columns:1fr}
+}
 
-        body { background: var(--bg); font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding-bottom: 120px; }
+/* Sidebar categorías: fija a la izquierda en PC */
+.sidebar{
+  background:#fff; border:1px solid var(--card-border); border-radius:12px;
+  padding:14px; position:sticky; top:60px; height:max-content;
+}
+.sidebar h2{
+  margin:0 0 10px; font-size:1.02rem; font-weight:900; color:var(--text);
+}
+#menu-cat{display:flex; flex-direction:column; gap:8px}
+.btn-cat{
+  background:#fff; color:var(--accent);
+  border:1.6px solid var(--accent-border);
+  font-weight:700; border-radius:12px; padding:9px 12px; cursor:pointer; transition:.15s;
+  font-size:.98rem; text-align:left;
+}
+.btn-cat.active{
+  background:var(--accent); color:var(--text);
+  box-shadow:0 2px 8px rgba(255,216,0,.35)
+}
 
-        .header-clean{ background:var(--accent); background-image: linear-gradient(80deg,var(--accent) 50%,#0e214d 150%); color:#fff; padding:12px 16px; position:sticky; top:0; z-index:1000; box-shadow:0 4px 10px rgba(32,65,180,0.11); }
+/* Toolbar superior del contenido: buscador en línea */
+.toolbar{
+  background:#fff; border:1px solid var(--card-border); border-radius:12px;
+  padding:12px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:flex-start;
+}
+#searchBox{
+  flex:1 1 340px; min-width:280px; max-width:100%;
+  border:1.4px solid var(--accent-border);
+  border-radius:12px; padding:10px 14px; font-size:1rem;
+  box-shadow:0 2px 8px rgba(255,216,0,.12)
+}
 
-        .categorias-wrapper{ background:#fff; padding:8px 0; position:sticky; top:56px; z-index:900; overflow-x:auto; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.04); }
+/* Grid de productos: 5 columnas en desktop, respondiendo hacia abajo */
+.grid{display:grid; gap:18px; grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:1400px){.grid{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:992px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:576px){.grid{grid-template-columns:repeat(1,1fr)}}
 
-        .btn-cat{ background:#f8f9fa; color:#222; padding:7px 16px; border-radius:18px; margin:0 6px; font-weight:700; text-transform:capitalize; border:1px solid #ebeaeb; font-size:0.95rem; }
-        .btn-cat. active{ background:var(--accent); color:#fff; border-color:#1450b9; box-shadow:0 2px 6px #2363ec20; }
+/* Card de producto */
+.card{
+  background:#fff; border:1.3px solid var(--card-border); border-radius:14px;
+  box-shadow:0 6px 18px rgba(255,216,0,.12);
+  display:flex; flex-direction:column; min-width:0; overflow:hidden; position:relative;
+}
+.card:hover{box-shadow:0 10px 28px rgba(255,216,0,.22)}
 
-        /* ESTILOS SUBMENU */
-        .category-group {
-            position: relative;
-            display: inline-block;
-            margin: 0 6px;
-        }
+/* Imagen */
+.img-box{
+  background:linear-gradient(180deg,#faf7fc 60%,#fff 100%);
+  padding:16px; display:flex; align-items:center; justify-content:center; min-height:170px;
+}
+.img-box img{
+  max-width:100%; max-height:170px; object-fit:contain; border-radius:10px
+}
 
-        .category-dropdown {
-            background:#f8f9fa;
-            color:#222;
-            padding:7px 16px;
-            border-radius:18px;
-            font-weight:700;
-            text-transform:capitalize;
-            border:1px solid #ebeaeb;
-            font-size:0.95rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
+/* MOQ badge: siempre dentro del card, arriba a la derecha, no se corta */
+.moq{
+  position:absolute; top:10px; right:10px;
+  background:var(--accent); color:var(--text);
+  border:1px solid var(--accent-border);
+  border-radius:10px; padding:6px 12px; font-weight:800; font-size:.9rem; z-index:2;
+}
 
-        .category-dropdown:hover,
-        .category-dropdown.active {
-            background:var(--accent);
-            color:#fff;
-            border-color:#1450b9;
-            box-shadow:0 2px 6px #2363ec20;
-        }
+/* Información */
+.info{padding:12px 14px}
+.title{font-size:1.02rem; font-weight:800; color:var(--text); margin:0 0 2px}
+.ref{font-size:.93rem; color:#ff8a00; font-weight:700; margin:0 0 8px}
+.prices{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.old{color:var(--muted); text-decoration:line-through; font-size:.95rem}
+.price{color:var(--text); font-weight:900; font-size:1.16rem}
 
-        .subcategories {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            z-index: 1200;
-            min-width: 200px;
-            margin-top: 5px;
-        }
+/* CTA PRECIO MAYOR: amarillo Amazon, SIEMPRE visible, icono llama (oferta/liquidación) */
+.cta{
+  background:var(--accent); color:var(--text);
+  border:1px solid var(--accent-border);
+  border-radius:9px; padding:6px 12px; font-weight:900;
+  display:inline-flex; align-items:center; gap:6px; font-size:.95rem
+}
+.cta i{font-size:1.05rem; color:#d1322b} /* rojo oferta/liquidación */
 
-        . category-group:hover .subcategories {
-            display: block;
-        }
+/* Mobile: mantener todo en la misma línea sin cortes */
+@media (max-width:576px){
+  .prices{flex-wrap:nowrap; gap:8px}
+  .title{font-size:1.05rem}
+  .price{font-size:1.18rem}
+}
 
-        .subcategory-btn {
-            display: block;
-            width: 100%;
-            padding: 10px 15px;
-            border: none;
-            background: white;
-            text-align: left;
-            cursor: pointer;
-            font-weight: 600;
-            color: #333;
-            border-bottom: 1px solid #f0f0f0;
-        }
+/* WhatsApp flotante */
+.whatsapp{
+  position:fixed; right:16px; bottom:16px; z-index:1000;
+  background:linear-gradient(90deg,#25D366 80%,#128C7E 120%);
+  color:#fff; border-radius:24px; padding:12px 18px; font-weight:800; font-size:.98rem;
+  display:flex; align-items:center; gap:8px; text-decoration:none; box-shadow:0 6px 18px rgba(0,0,0,.12)
+}
 
-        .subcategory-btn:last-child {
-            border-bottom: none;
-            border-radius: 0 0 8px 8px;
-        }
-
-        .subcategory-btn:first-child {
-            border-radius: 8px 8px 0 0;
-        }
-
-        .subcategory-btn:hover {
-            background: #f8f9fa;
-            color: var(--accent);
-        }
-
-        .subcategory-btn.active {
-            background: var(--accent);
-            color: white;
-        }
-
-        . card-image-focus{ background:#fffdfb; border:1px solid #e9eaea; border-radius:12px; box-shadow:0 4px 20px rgba(37,48,97,0.06); transition:box-shadow . 18s, transform .14s, border-left .18s, background . 2s; display:flex; flex-direction:column; height:100%; position:relative; }
-        .card-image-focus:hover{ transform:translateY(-4px); box-shadow:0 10px 22px rgba(18,94,176,0.10); }
-
-        .card-image-focus. card-selected { border-left: 6px solid var(--green-ws); background: linear-gradient(90deg, rgba(35,191,61,0.04), rgba(255,255,255,0.0)); box-shadow: 0 10px 30px rgba(35,191,61,0.14); transform: translateY(-6px) scale(1.006); }
-
-        .oferta-cinta{ position:absolute; left:-36px; top:14px; z-index:20; background:linear-gradient(90deg,#ea4838 80%,#fca800 100%); color:#fff; padding:4px 34px; transform:rotate(-28deg); font-weight:800; font-size:. 95rem; border-radius:6px; box-shadow:0 6px 12px rgba(234,72,56,0.18); }
-        .badge-nuevo{ position:absolute; left:0; top:12px; z-index:15; background:linear-gradient(90deg,#ecbf28 55%,#ed9f16 100%); padding:5px 14px; font-weight:800; border-radius:0 8px 8px 0; color:#222; }
-
-        .moq-badge { position:absolute; top:8px; right:8px; z-index:25; background:#ff8300e6; color:#fff; padding:6px 10px; font-weight:800; font-size:0.82rem; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
-
-        .img-zona{ position:relative; z-index:1; height:220px; background:#fff; border-bottom:1px solid #eee; padding:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px; }
-        .img-zona img, .carousel-item img { width:auto; max-width:100%; height:100%; max-height:100%; object-fit:contain; object-position:center; display:block; border-radius:8px; opacity:0; transition:opacity .36s; }
-        .img-zona img[src], .carousel-item img[src] { opacity:1; }
-
-        .info-zona{ padding:12px; display:flex; flex-direction:column; gap:8px; flex-grow:1; }
-        .titulo-prod{ font-size:1.02rem; font-weight:700; color:#191e2f; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:1.2em; }
-        .codigo-text{ color:#676970; font-size:0.95rem; }
-
-        .precio-unidad-label{ font-size:0.78rem; color:#8f8f8f; margin-bottom:2px; }
-        .precio-unidad-valor{ color:#9da0a2; text-decoration:line-through; font-weight:600; font-size:0.88rem; }
-
-        .precio-mayor-valor{ font-size:1.05rem; color:#d94d3f; font-weight:800; line-height:1; }
-        .precio-mayor-label{ font-size:0.8rem; color:#c28813; font-weight:700; }
-
-        .action-block{ position:relative; z-index:2; margin-top:6px; display:flex; flex-direction:column; align-items:center; gap:8px; }
-
-        .inline-qty { display:inline-flex; align-items:center; gap:8px; }
-        .quote-qty-input { width:72px; padding:6px 8px; border-radius:8px; border:1px solid #d6d6d6; text-align:center; }
-
-        .color-select { padding:6px 8px; border-radius:8px; border:1px solid #d6d6d6; min-width:120px; }
-
-        .add-quote-btn { background:#fff; border:1px dashed #c6c6c6; color:#333; padding:6px 10px; border-radius:10px; font-weight:600; font-size:0.88rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
-        .add-quote-btn. selected { background:#e6f9ea; border:1px solid #1aa242; color:#0a6b1a; }
-
-        .floating-cta { position:fixed; right:18px; bottom:18px; z-index:1200; background:var(--green-ws); color:#fff; border-radius:999px; padding:12px 18px; font-weight:800; display:inline-flex; align-items:center; gap:10px; box-shadow:0 8px 28px rgba(35,191,61,0.18); cursor:pointer; border:none; }
-        .floating-cta . bs { background: #fff; color: #1d1d1d; padding:3px 8px; border-radius:8px; font-weight:700; }
-
-        .modal-body . selected-list { max-height:260px; overflow:auto; margin-bottom:12px; }
-        .selected-item { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 4px; border-bottom:1px solid #efefef; }
-        .selected-item . left { flex:1; min-width:0; }
-        .selected-item .right { text-align:right; width:200px; }
-
-        .qty-controls { display:inline-flex; gap:6px; align-items:center; }
-        .qty-controls button { padding:3px 8px; border-radius:6px; border:1px solid #d0d0d0; background:#fff; cursor:pointer; }
-        .remove-item { background:transparent; border:none; color:#cc3333; font-weight:700; cursor:pointer; }
-
-        @media (max-width:768px){ 
-            .img-zona{ height:260px; } 
-            .precio-mayor-valor{ font-size:1. 2rem; }
-            .subcategories {
-                position: fixed;
-                top: auto;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin-top: 0;
-                border-radius: 15px 15px 0 0;
-            }
-        }
-        @media (max-width:450px){ 
-            .img-zona{ height:200px; } 
-            .titulo-prod{ font-size:1rem; } 
-            .floating-cta { right:12px; bottom:12px; padding:10px 14px; }
-            .category-group { margin: 2px; }
-            .category-dropdown { padding: 5px 12px; font-size: 0.85rem; }
-        }
-    </style>
+/* En móvil: la barra lateral se vuelve un bloque arriba; categorías quedan debajo del header y encima del grid */
+@media (max-width:992px){
+  .sidebar{position:static}
+  #menu-cat{flex-direction:row; flex-wrap:wrap}
+}
+</style>
 </head>
 <body>
-<div class="header-clean d-flex align-items-center">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div class="fw-bold"><i class="bi bi-person-workspace"></i> Catálogo MAYORISTA</div>
-        <div class="badge bg-light text-secondary border" id="contador">0 Productos</div>
+
+<!-- Encabezado oferta con movimiento lento y la frase repetida varias veces -->
+<div class="header-oferta">
+  <div class="header-track">
+    <div class="header-item"><i class="bi bi-truck"></i> Envíos a todo Bolivia</div>
+    <div class="header-item"><i class="bi bi-truck"></i> Envíos a todo Bolivia</div>
+    <div class="header-item"><i class="bi bi-truck"></i> Envíos a todo Bolivia</div>
+    <div class="header-item"><i class="bi bi-truck"></i> Envíos a todo Bolivia</div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- Sidebar: Categorías al costado en PC -->
+  <aside class="sidebar">
+    <h2>Categorías</h2>
+    <div id="menu-cat"></div>
+  </aside>
+
+  <!-- Contenido principal -->
+  <section>
+    <div class="toolbar">
+      <input id="searchBox" class="form-control" placeholder="Buscar producto por nombre, código...">
     </div>
+
+    <div id="productos" class="grid"></div>
+  </section>
 </div>
 
-<div class="categorias-wrapper" id="menu-cat"></div>
-
-<div class="container-fluid py-2" style="text-align:right;">
-    <input id="searchBox" placeholder="Buscar producto..." class="form-control" style="max-width:320px; display:inline-block;">
-</div>
-
-<div class="container-fluid px-2 mt-3">
-    <div id="productos" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
-        <div class="col-12 text-center py-5"><div class="spinner-border text-secondary" role="status"></div></div>
-    </div>
-</div>
-
-<button id="floatingCta" class="floating-cta" type="button" data-bs-toggle="modal" data-bs-target="#cotizarModal" title="Cotizar ahora">
-    <span class="bs">Bs. </span>
-    Cotizar ahora
-    <span id="selectedCount" class="count" style="background:#fff;color:#111;padding:3px 7px;border-radius:8px;margin-left:6px;font-weight:700;">0</span>
-</button>
-
-<div class="modal fade" id="cotizarModal" tabindex="-1" aria-labelledby="cotizarModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cotizarModalLabel">Enviar cotización por WhatsApp</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <p>Productos seleccionados (ajusta cantidades o colores si quieres):</p>
-                <div class="selected-list" id="selectedList"></div>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div><strong>Total estimado:</strong></div>
-                    <div><strong id="selectedTotal">Bs.  0</strong></div>
-                </div>
-                <label for="cotizarText" class="form-label">Mensaje (opcional):</label>
-                <textarea id="cotizarText" class="form-control" placeholder="Escribe tu mensaje... "></textarea>
-                <div class="form-text mt-2">El mensaje final incluirá los códigos, color, cantidades y total estimado.</div>
-            </div>
-            <div class="modal-footer">
-                <button id="clearSelection" type="button" class="btn btn-outline-secondary">Limpiar selección</button>
-                <button id="sendWhatsApp" type="button" class="btn btn-success">Enviar por WhatsApp</button>
-            </div>
-        </div>
-    </div>
-</div>
+<a class="whatsapp" href="https://wa.me/59161333335?text=Hola,%20quiero%20cotizar%20por%20mayor%20los%20productos%20del%20cat%C3%A1logo." target="_blank" title="Cotizar por WhatsApp">
+  <i class="bi bi-whatsapp"></i> WhatsApp Cotización
+</a>
 
 <script type="module">
-    import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
+import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
+const ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
+const PROJECT  = '692ee6b70012153cd33c';
+const DATABASE_ID = '692ee774002e9a3c8601';
+const COLLECTION_ID = 'catalogo';
 
-    const MI_WHATSAPP = "59161333335";
-    const DEFAULT_MOQ = "6 UNID";
-    const DATABASE_ID = '692ee774002e9a3c8601';
-    const COLLECTION_ID = 'catalogo';
+let todos = [];
 
-    let todosLosProductos = [];
-    let selectedForQuote = new Map();
+async function iniciar(){
+  const client = new Client().setEndpoint(ENDPOINT).setProject(PROJECT);
+  const db = new Databases(client);
+  const menu = document.getElementById('menu-cat');
+  const grid = document.getElementById('productos');
 
-    function parsePriceToNumber(raw) {
-        if (raw === undefined || raw === null) return 0;
-        const s = String(raw).replace(/[^\d.,-]/g, '').replace(',', '.');
-        const n = parseFloat(s);
-        return Number.isFinite(n) ? n : 0;
-    }
+  try{
+    const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(200)]);
+    todos = res.documents || [];
 
-    function formatCurrency(n) {
-        return 'Bs. ' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-    }
+    // Categorías (sidebar izquierda)
+    const cats = Array.from(new Set(todos.map(p => p.categoria || 'General')));
+    menu.innerHTML = cats.map((c,i)=>`<button class="btn-cat ${i===0?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
 
-    function updateSelectionUI() {
-        const count = selectedForQuote.size;
-        document.getElementById('selectedCount').innerText = count;
+    render(todos);
+  }catch(e){
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#c00;padding:24px">Error cargando catálogo<br><small>${e.message}</small></div>`;
+    console.error(e);
+  }
+}
 
-        const list = document.getElementById('selectedList');
-        list.innerHTML = '';
-        let total = 0;
-        selectedForQuote.forEach((item, key) => {
-            const subtotal = item.precio * item.qty;
-            total += subtotal;
-            const el = document.createElement('div');
-            el.className = 'selected-item';
-            el.dataset.key = key;
-            el.innerHTML = `
-          <div class="left">
-            <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.descripcion}</div>
-            <div style="font-size:0.9rem;color:#666">
-              REF: ${item.codigo} • Color:
-              <input type="text" value="${item.color || ''}" data-key="${key}" class="form-control form-control-sm color-edit-input" style="display:inline-block; width:120px; margin-left:6px;" />
-            </div>
-          </div>
-          <div class="right">
-            <div style="font-weight:700">${formatCurrency(item.precio)}</div>
-            <div style="margin-top:6px;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
-              <div class="qty-controls">
-                <button class="qty-decr" data-key="${key}">-</button>
-                <span style="padding:0 8px;" id="qty-${key}">${item.qty}</span>
-                <button class="qty-incr" data-key="${key}">+</button>
-              </div>
-              <button class="remove-item" data-key="${key}" title="Quitar">✕</button>
-            </div>
-            <div style="font-size:0.9rem;color:#444;margin-top:6px;">Subtotal: <strong>${formatCurrency(subtotal)}</strong></div>
-          </div>
-        `;
-            list.appendChild(el);
-        });
+function render(lista){
+  const grid = document.getElementById('productos');
+  if(!lista || lista.length===0){
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#666;padding:24px">Sin productos</div>`;
+    return;
+  }
+  grid.innerHTML = lista.map(p=>{
+    const cod  = p.codigo || '';
+    const tit  = p.descripcion || '';
+    const pu   = p.precioUnidad ?? '';
+    const pm   = p.preciopormayor ?? '';
+    const img  = p.imagen || 'https://via.placeholder.com/600x400?text=SIN+FOTO';
+    const moqN = parseInt(String(p.moq||'').match(/\d+/)?.[0]||'6',10);
+    return `
+    <div class="card">
+      <div class="img-box">
+        <img src="${img}" alt="${tit||cod}" loading="lazy">
+      </div>
+      <div class="moq">Min. ${isNaN(moqN)?6:moqN} unid.</div>
+      <div class="info">
+        <h3 class="title">${tit}</h3>
+        <div class="ref">Ref: ${cod}</div>
+        <div class="prices">
+          ${pu?`<span class="old">Bs. ${pu}</span>`:''}
+          ${pm?`<span class="price">Bs. ${pm}</span>`:''}
+          <span class="cta"><i class="bi bi-fire"></i> PRECIO MAYOR</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-        document.getElementById('selectedTotal').innerText = formatCurrency(total);
+window.filtrar = function(cat, btn){
+  document.querySelectorAll('.btn-cat').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+  if(cat==='Todo') render(todos);
+  else render(todos.filter(p => (p.categoria||'General')===cat));
+};
 
-        list.querySelectorAll('.qty-incr').forEach(b => b.addEventListener('click', (e) => {
-            const k = e.currentTarget.dataset.key;
-            const it = selectedForQuote.get(k);
-            if (! it) return;
-            it.qty += 1;
-            selectedForQuote.set(k, it);
-            document.querySelectorAll('.add-quote-btn').forEach(btn => {
-                const code = btn.dataset.codigo;
-                const color = decodeURIComponent(btn.dataset.color || '');
-                const keyBtn = `${code}|${color}`;
-                if (keyBtn === k) {
-                    const input = btn.closest('.info-zona').querySelector('.quote-qty-input');
-                    if (input) input.value = it.qty;
-                }
-            });
-            updateSelectionUI();
-        }));
-
-        list.querySelectorAll('.qty-decr').forEach(b => b.addEventListener('click', (e) => {
-            const k = e.currentTarget.dataset.key;
-            const it = selectedForQuote.get(k);
-            if (!it) return;
-            if (it.qty > 1) {
-                it.qty -= 1;
-                selectedForQuote. set(k, it);
-                document.querySelectorAll('.add-quote-btn').forEach(btn => {
-                    const code = btn.dataset.codigo;
-                    const color = decodeURIComponent(btn.dataset.color || '');
-                    const keyBtn = `${code}|${color}`;
-                    if (keyBtn === k) {
-                        const input = btn.closest('.info-zona').querySelector('.quote-qty-input');
-                        if (input) input.value = it. qty;
-                    }
-                });
-            } else {
-                selectedForQuote.delete(k);
-                document.querySelectorAll('.add-quote-btn').forEach(btn => {
-                    const code = btn.dataset.codigo;
-                    const color = decodeURIComponent(btn.dataset.color || '');
-                    const keyBtn = `${code}|${color}`;
-                    if (keyBtn === k) {
-                        btn.classList.remove('selected');
-                        const card = btn.closest('.card-image-focus');
-                        if (card) card.classList.remove('card-selected');
-                    }
-                });
-            }
-            updateSelectionUI();
-        }));
-
-        list.querySelectorAll('.remove-item').forEach(b => b.addEventListener('click', (e) => {
-            const k = e.currentTarget.dataset.key;
-            selectedForQuote.delete(k);
-            document.querySelectorAll('.add-quote-btn').forEach(btn => {
-                const code = btn.dataset.codigo;
-                const color = decodeURIComponent(btn.dataset.color || '');
-                const keyBtn = `${code}|${color}`;
-                if (keyBtn === k) {
-                    btn. classList.remove('selected');
-                    const input = btn.closest('.info-zona').querySelector('.quote-qty-input');
-                    if (input) input.value = 1;
-                    const card = btn.closest('.card-image-focus');
-                    if (card) card.classList. remove('card-selected');
-                }
-            });
-            updateSelectionUI();
-        }));
-
-        list.querySelectorAll('.color-edit-input').forEach(inp => {
-            inp.addEventListener('input', (e) => {
-                const k = e.currentTarget.dataset.key;
-                const it = selectedForQuote.get(k);
-                if (!it) return;
-                it.color = e.currentTarget.value. trim();
-                selectedForQuote.set(k, it);
-            });
-        });
-
-        const ta = document.getElementById('cotizarText');
-        if (! ta.value || ta.value.trim(). startsWith('Hola, quiero cotizar')) {
-            const lines = [];
-            selectedForQuote.forEach((it) => {
-                lines.push(`${it.codigo} (${it.color || 'N/A'}) x${it.qty} @ ${formatCurrency(it.precio)} = ${formatCurrency(it. precio * it.qty)}`);
-            });
-            const base = lines.length
-                ? `Hola, quiero cotizar los siguientes productos:\n${lines.join('\n')}\nTotal estimado: ${formatCurrency(total)}\n\nDetalles adicionales:`
-                : 'Hola, quiero cotizar.  Indica productos o copia/pega referencias aquí.';
-            if (! ta.value) ta.value = base;
-        }
-    }
-
-    function buildCategoryMenu(productos) {
-        const categorias = new Set();
-        const relojesCategorias = new Set();
-        
-        productos.forEach(p => {
-            const cat = p.categoria || 'General';
-            categorias.add(cat);
-            if (cat. toLowerCase().includes('reloj')) {
-                relojesCategorias.add(cat);
-            }
-        });
-
-        let htmlMenu = `<button class="btn-cat active" onclick="window.filtrar('Todo', this)">Todo</button>`;
-        
-        categorias.forEach(cat => {
-            if (! cat.toLowerCase().includes('reloj')) {
-                htmlMenu += `<button class="btn-cat" onclick="window.filtrar('${cat}', this)">${cat}</button>`;
-            }
-        });
-
-        if (relojesCategorias. size > 0) {
-            htmlMenu += `
-                <div class="category-group">
-                    <button class="category-dropdown">
-                        Relojes 
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <div class="subcategories">
-            `;
-            
-            relojesCategorias. forEach(cat => {
-                const displayName = cat.replace(/reloj/i, '').trim() || 'Todos';
-                htmlMenu += `<button class="subcategory-btn" onclick="window.filtrar('${cat}', this)">${displayName}</button>`;
-            });
-            
-            htmlMenu += `
-                    </div>
-                </div>
-            `;
-        }
-
-        return htmlMenu;
-    }
-
-    async function iniciar(){
-        const divProd = document.getElementById('productos');
-        const menuCat = document.getElementById('menu-cat');
-
-        try{
-            const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
-            const databases = new Databases(client);
-            const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
-
-            todosLosProductos = res. documents || [];
-            menuCat.innerHTML = buildCategoryMenu(todosLosProductos);
-            renderizar(todosLosProductos);
-
-        }catch(err){
-            divProd.innerHTML = `<div class="text-danger text-center p-4">No se pudo conectar con el catálogo. <br><small>${err.message}</small><br><button onclick="location.reload()" class="btn btn-outline-primary mt-2">Reintentar</button></div>`;
-            console.error("Error iniciar:", err);
-        }
-    }
-
-    function toggleSelectFromButton(btn) {
-        const codigo = btn.dataset.codigo;
-        const desc = decodeURIComponent(btn.dataset.desc || '');
-        const colorSelect = btn.closest('.info-zona').querySelector('.color-select');
-        const colorFromInput = colorSelect ?  (colorSelect.value || colorSelect.value.trim()) : decodeURIComponent(btn.dataset.color || '');
-        const color = colorFromInput || '';
-        const rawPriceBo = btn.dataset.pricebo || btn.dataset.price || '0';
-        const precio = parsePriceToNumber(rawPriceBo);
-        const qtyInput = btn.closest('.info-zona').querySelector('.quote-qty-input');
-        const qty = Math.max(1, parseInt(qtyInput ?  qtyInput.value : 1) || 1);
-
-        if (! codigo) return;
-        const key = `${codigo}|${color}`;
-        const cardEl = btn.closest('.card-image-focus');
-
-        if (selectedForQuote.has(key)) {
-            selectedForQuote. delete(key);
-            btn.classList.remove('selected');
-            if (cardEl) cardEl.classList.remove('card-selected');
-            if (qtyInput) qtyInput.value = 1;
-        } else {
-            selectedForQuote.set(key, { codigo, descripcion: desc, color: color, precio, qty });
-            btn.classList.add('selected');
-            if (cardEl) cardEl.classList.add('card-selected');
-        }
-        updateSelectionUI();
-    }
-
-    function renderizar(lista){
-        const divProd = document.getElementById('productos');
-        if(! lista || lista.length === 0){
-            divProd.innerHTML = '<div class="col-12 text-center text-muted py-5">No hay productos. </div>';
-            return;
-        }
-        let html = '';
-        lista.forEach((p, index) => {
-            const codigo = p.codigo || 'S/C';
-            const desc = p. descripcion || '';
-            const precioU = p.precioUnidad || '0';
-            const precioM = p.preciopormayor || '0';
-            const precioBOraw = p.precioBO || p.precioBol || p.precioBolivianos || p.preciopormayor || precioM || precioU;
-            const precioBO = precioBOraw;
-
-            let colorsArr = [];
-            if (Array.isArray(p.colores) && p.colores.length) colorsArr = p.colores;
-            else if (Array.isArray(p.colors) && p.colors.length) colorsArr = p.colors;
-            else if (p.color) colorsArr = [p.color];
-            else if (p.color1) colorsArr = [p. color1];
-            else if (p.colores_text) colorsArr = String(p.colores_text). split(',').map(s => s.trim()). filter(Boolean);
-
-            const rawMoq = p.moq;
-            let moqBadgeHtml = '';
-            if (rawMoq === undefined || rawMoq === null || String(rawMoq).trim() === '') {
-                moqBadgeHtml = `<div class="moq-badge">MIN.  ${DEFAULT_MOQ}</div>`;
-            } else {
-                const digits = String(rawMoq). match(/\d+/);
-                const n = digits ? parseInt(digits[0], 10) : NaN;
-                if (Number.isFinite(n) && n > 0) {
-                    moqBadgeHtml = `<div class="moq-badge">MIN. ${n} UNID</div>`;
-                } else {
-                    moqBadgeHtml = '';
-                }
-            }
-
-            const badgeNuevo = p.nuevo ? `<div class="badge-nuevo">¡Nuevo!</div>` : '';
-            const ofertaCinta = p.oferta ? `<div class="oferta-cinta">¡OFERTA!</div>` : '';
-
-            const imagenes = [];
-            if(p.imagen) imagenes.push(p.imagen);
-            if(p.imagen2) imagenes.push(p. imagen2);
-            if(p.imagen3) imagenes.push(p.imagen3);
-            if(imagenes.length === 0) imagenes.push('https://via.placeholder.com/600x400? text=SIN+FOTO');
-
-            let htmlImagen = '';
-            if(imagenes.length > 1){
-                let items = '';
-                imagenes.forEach((u,i) => {
-                    items += `<div class="carousel-item ${i===0? 'active':''}"><img src="${u}" alt="Foto ${i+1}: ${desc}" loading="lazy"></div>`;
-                });
-                htmlImagen = `<div id="carousel-${index}" class="carousel slide" data-bs-interval="false"><div class="carousel-inner">${items}</div><button class="carousel-control-prev" type="button" data-bs-target="#carousel-${index}" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button><button class="carousel-control-next" type="button" data-bs-target="#carousel-${index}" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button></div>`;
-            } else {
-                htmlImagen = `<img src="${imagenes[0]}" alt="${desc||codigo}" loading="lazy">`;
-            }
-
-            let colorSelectorHtml = '';
-            if (colorsArr.length > 0) {
-                colorSelectorHtml = `<select class="color-select">` + colorsArr.map(c => `<option value="${c}">${c}</option>`).join('') + `</select>`;
-            } else {
-                colorSelectorHtml = `<input class="color-select form-control form-control-sm" placeholder="Escribe color" style="width:140px;" />`;
-            }
-
-            html += `
-          <div class="col">
-            <div class="card-image-focus position-relative" data-doc-id="${p.$id || ''}">
-              ${badgeNuevo}
-              ${ofertaCinta}
-              ${moqBadgeHtml}
-
-              <div class="img-zona">${htmlImagen}</div>
-
-              <div class="info-zona">
-                <h5 class="titulo-prod mb-1">${desc}</h5>
-                <div class="codigo-text mb-2">REF: ${codigo}${colorsArr.length ?  ' • ' + colorsArr[0] : ''}</div>
-
-                <div class="action-block">
-                  <div class="d-flex justify-content-between align-items-center w-100">
-                    <div>
-                      <p class="precio-unidad-label mb-0">Precio Venta</p>
-                      <div class="precio-unidad-valor">Bs. ${precioU}</div>
-                    </div>
-                    <div class="text-end">
-                      <div class="precio-mayor-valor">Bs. ${precioM}</div>
-                      <div class="precio-mayor-label">PRECIO MAYOR</div>
-                    </div>
-                  </div>
-
-                  <div style="width:100%;display:flex;justify-content:center;margin-top:8px;gap:10px;align-items:center;">
-                    <div class="inline-qty">
-                      <input type="number" class="quote-qty-input" min="1" value="1" />
-                    </div>
-
-                    <div>
-                      ${colorSelectorHtml}
-                    </div>
-
-                    <div>
-                      <button class="add-quote-btn" data-codigo="${codigo}" data-desc="${encodeURIComponent(desc)}" data-color="${encodeURIComponent(colorsArr[0] || '')}" data-pricebo="${encodeURIComponent(precioBO)}">
-                        <i class="bi bi-plus-lg"></i> Agregar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        `;
-        });
-
-        divProd.innerHTML = html;
-
-        document.querySelectorAll('.add-quote-btn').forEach(btn => {
-            btn.dataset.desc = decodeURIComponent(btn.dataset.desc || '');
-            btn.dataset.color = decodeURIComponent(btn.dataset.color || '');
-            btn.dataset.pricebo = decodeURIComponent(btn.dataset.pricebo || '');
-            btn.addEventListener('click', (ev) => {
-                toggleSelectFromButton(ev.currentTarget);
-            });
-        });
-
-        document.querySelectorAll('.add-quote-btn').forEach(btn => {
-            const code = btn.dataset.codigo;
-            const color = decodeURIComponent(btn.dataset.color || '');
-            const key = `${code}|${color}`;
-            if (selectedForQuote.has(key)) {
-                btn.classList.add('selected');
-                const card = btn.closest('.card-image-focus');
-                if (card) card.classList.add('card-selected');
-                const it = selectedForQuote.get(key);
-                const input = btn.closest('.info-zona').querySelector('.quote-qty-input');
-                if (input) input.value = it.qty;
-            } else {
-                btn.classList. remove('selected');
-            }
-        });
-
-        updateSelectionUI();
-    }
-
-    document.addEventListener('click', (e) => {
-        if (e.target && e.target.id === 'sendWhatsApp') {
-            const ta = document.getElementById('cotizarText');
-            const userText = ta.value.trim();
-
-            let summaryLines = [];
-            let total = 0;
-            selectedForQuote.forEach(it => {
-                summaryLines.push(`${it. codigo} • ${it.color || 'N/A'} • x${it.qty} = ${formatCurrency(it.precio * it.qty)}`);
-                total += it.precio * it.qty;
-            });
-            const summary = summaryLines.length
-                ? `Productos:\n${summaryLines.join('\n')}\nTotal estimado: ${formatCurrency(total)}\n\n`
-                : '';
-
-            const finalMessage = summary + (userText || 'Hola, quiero cotizar estos productos.');
-            if (!selectedForQuote.size) {
-                if (! confirm('No hay productos seleccionados. ¿Deseas enviar un mensaje libre por WhatsApp?')) return;
-            }
-            const waLink = `https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(finalMessage)}`;
-            window.open(waLink, '_blank');
-        }
-
-        if (e.target && e.target.id === 'clearSelection') {
-            selectedForQuote.clear();
-            document.querySelectorAll('.add-quote-btn. selected').forEach(b => b.classList.remove('selected'));
-            document.querySelectorAll('.card-image-focus.card-selected'). forEach(c => c.classList.remove('card-selected'));
-            document.querySelectorAll('.quote-qty-input').forEach(i => i.value = 1);
-            document.querySelectorAll('.color-select').forEach(s => { if (s. tagName === 'INPUT') s.value = ''; });
-            updateSelectionUI();
-        }
-    });
-
-    window.filtrar = function(categoria, btn){
-        document.querySelectorAll('.btn-cat, .subcategory-btn, .category-dropdown').forEach(b => b.classList.remove('active'));
-        
-        if(btn) {
-            btn.classList.add('active');
-            if (btn.classList.contains('subcategory-btn')) {
-                const parentDropdown = btn.closest('.category-group'). querySelector('.category-dropdown');
-                if (parentDropdown) parentDropdown.classList.add('active');
-            }
-        }
-        
-        if(categoria === 'Todo') {
-            renderizar(todosLosProductos);
-        } else {
-            renderizar(todosLosProductos.filter(p => (p.categoria || 'General') === categoria));
-        }
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchBox = document.getElementById('searchBox');
-        if(searchBox){
-            searchBox. addEventListener('input', function(){
-                const q = this.value.toLowerCase(). trim();
-                if(! q){ renderizar(todosLosProductos); return; }
-                const filtered = todosLosProductos. filter(p => (p.descripcion||'').toLowerCase().includes(q) || (p.codigo||'').toLowerCase(). includes(q));
-                renderizar(filtered);
-                document.querySelectorAll('.btn-cat, .subcategory-btn, . category-dropdown').forEach(b => b.classList.remove('active'));
-            });
-        }
-        iniciar();
-    });
+document.addEventListener('DOMContentLoaded', ()=>{
+  const search = document.getElementById('searchBox');
+  search.addEventListener('input', ()=>{
+    const q = search.value.toLowerCase().trim();
+    if(!q) { render(todos); return; }
+    render(todos.filter(p =>
+      (p.descripcion||'').toLowerCase().includes(q) ||
+      (p.codigo||'').toLowerCase().includes(q)
+    ));
+  });
+  iniciar();
+});
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
