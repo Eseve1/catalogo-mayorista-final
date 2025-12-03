@@ -7,7 +7,7 @@
 
   <!-- Fuentes y CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn. jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
@@ -22,12 +22,12 @@
     . btn-cat{ background:#f8f9fa; color:#222; padding:7px 16px; border-radius:18px; margin:0 6px; font-weight:700; text-transform:capitalize; border:1px solid #ebeaeb; font-size:0.95rem; }
     .btn-cat. active{ background:var(--accent); color:#fff; border-color:#1450b9; box-shadow:0 2px 6px #2363ec20; }
 
-    /* 🔥 OCULTAR CONTADOR DE PRODUCTOS */
+    /* Ocultar contador */
     #contador {
-      display: none !important;
+        display: none ! important;
     }
 
-    /* 🔥 ESTILOS PARA EL SUBMENU */
+    /* Estilos para el submenu */
     . category-group {
       position: relative;
       display: inline-block;
@@ -42,7 +42,7 @@
       font-weight:700; 
       text-transform:capitalize; 
       border:1px solid #ebeaeb; 
-      font-size:0. 95rem;
+      font-size:0.95rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -71,7 +71,7 @@
       margin-top: 5px;
     }
 
-    .category-group:hover .subcategories {
+    .category-group:hover . subcategories {
       display: block;
     }
 
@@ -93,7 +93,7 @@
       border-radius: 0 0 8px 8px;
     }
 
-    . subcategory-btn:first-child {
+    .subcategory-btn:first-child {
       border-radius: 8px 8px 0 0;
     }
 
@@ -107,12 +107,12 @@
       color: white;
     }
 
-    .card-image-focus{ background:#fffdfb; border:1px solid #e9eaea; border-radius:12px; box-shadow:0 4px 20px rgba(37,48,97,0.06); transition:box-shadow . 18s, transform .14s, border-left .18s, background . 2s; display:flex; flex-direction:column; height:100%; position:relative; }
+    .card-image-focus{ background:#fffdfb; border:1px solid #e9eaea; border-radius:12px; box-shadow:0 4px 20px rgba(37,48,97,0.06); transition:box-shadow . 18s, transform .14s, border-left . 18s, background . 2s; display:flex; flex-direction:column; height:100%; position:relative; }
     .card-image-focus:hover{ transform:translateY(-4px); box-shadow:0 10px 22px rgba(18,94,176,0.10); }
 
     . card-image-focus. card-selected { border-left: 6px solid var(--green-ws); background: linear-gradient(90deg, rgba(35,191,61,0.04), rgba(255,255,255,0.0)); box-shadow: 0 10px 30px rgba(35,191,61,0.14); transform: translateY(-6px) scale(1.006); }
 
-    . oferta-cinta{ position:absolute; left:-36px; top:14px; z-index:20; background:linear-gradient(90deg,#ea4838 80%,#fca800 100%); color:#fff; padding:4px 34px; transform:rotate(-28deg); font-weight:800; font-size:. 95rem; border-radius:6px; box-shadow:0 6px 12px rgba(234,72,56,0.18); }
+    . oferta-cinta{ position:absolute; left:-36px; top:14px; z-index:20; background:linear-gradient(90deg,#ea4838 80%,#fca800 100%); color:#fff; padding:4px 34px; transform:rotate(-28deg); font-weight:800; font-size:. 95rem; border-radius:6px; box-shadow:0 6px 12px rgba(234,72,56,0. 18); }
     .badge-nuevo{ position:absolute; left:0; top:12px; z-index:15; background:linear-gradient(90deg,#ecbf28 55%,#ed9f16 100%); padding:5px 14px; font-weight:800; border-radius:0 8px 8px 0; color:#222; }
 
     .moq-badge { position:absolute; top:8px; right:8px; z-index:25; background:#ff8300e6; color:#fff; padding:6px 10px; font-weight:800; font-size:0.82rem; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
@@ -128,7 +128,7 @@
     .precio-unidad-label{ font-size:0.78rem; color:#8f8f8f; margin-bottom:2px; }
     .precio-unidad-valor{ color:#9da0a2; text-decoration:line-through; font-weight:600; font-size:0. 88rem; }
 
-    .precio-mayor-valor{ font-size:1. 05rem; color:#d94d3f; font-weight:800; line-height:1; }
+    .precio-mayor-valor{ font-size:1.05rem; color:#d94d3f; font-weight:800; line-height:1; }
     .precio-mayor-label{ font-size:0.8rem; color:#c28813; font-weight:700; }
 
     . action-block{ position:relative; z-index:2; margin-top:6px; display:flex; flex-direction:column; align-items:center; gap:8px; }
@@ -141,7 +141,7 @@
     .add-quote-btn { background:#fff; border:1px dashed #c6c6c6; color:#333; padding:6px 10px; border-radius:10px; font-weight:600; font-size:0. 88rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
     .add-quote-btn. selected { background:#e6f9ea; border:1px solid #1aa242; color:#0a6b1a; }
 
-    .floating-cta { position:fixed; right:18px; bottom:18px; z-index:1200; background:var(--green-ws); color:#fff; border-radius:999px; padding:12px 18px; font-weight:800; display:inline-flex; align-items:center; gap:10px; box-shadow:0 8px 28px rgba(35,191,61,0.18); cursor:pointer; border:none; }
+    . floating-cta { position:fixed; right:18px; bottom:18px; z-index:1200; background:var(--green-ws); color:#fff; border-radius:999px; padding:12px 18px; font-weight:800; display:inline-flex; align-items:center; gap:10px; box-shadow:0 8px 28px rgba(35,191,61,0.18); cursor:pointer; border:none; }
     .floating-cta . bs { background: #fff; color: #1d1d1d; padding:3px 8px; border-radius:8px; font-weight:700; }
 
     .modal-body . selected-list { max-height:260px; overflow:auto; margin-bottom:12px; }
@@ -231,7 +231,7 @@
 
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div><strong>Total estimado:</strong></div>
-            <div><strong id="selectedTotal">Bs.  0</strong></div>
+            <div><strong id="selectedTotal">Bs. 0</strong></div>
           </div>
 
           <label for="cotizarText" class="form-label">Mensaje (opcional):</label>
@@ -278,7 +278,7 @@
 
     function updateSelectionUI() {
       const count = selectedForQuote.size;
-      document. getElementById('selectedCount').innerText = count;
+      document. getElementById('selectedCount'). innerText = count;
 
       const list = document.getElementById('selectedList');
       list.innerHTML = '';
@@ -377,8 +377,8 @@
             btn.classList.remove('selected');
             const input = btn.closest('. info-zona').querySelector('.quote-qty-input');
             if (input) input. value = 1;
-            const card = btn. closest('.card-image-focus');
-            if (card) card.classList.remove('card-selected');
+            const card = btn.closest('.card-image-focus');
+            if (card) card. classList.remove('card-selected');
           }
         });
         updateSelectionUI();
@@ -397,14 +397,14 @@
 
       // update textarea default message if user hasn't typed custom
       const ta = document.getElementById('cotizarText');
-      if (! ta.value || ta.value.trim(). startsWith('Hola, quiero cotizar')) {
+      if (! ta. value || ta.value.trim(). startsWith('Hola, quiero cotizar')) {
         const lines = [];
         selectedForQuote.forEach((it) => {
           lines.push(`${it.codigo} (${it.color || 'N/A'}) x${it.qty} @ ${formatCurrency(it.precio)} = ${formatCurrency(it.precio * it.qty)}`);
         });
         const base = lines.length
           ? `Hola, quiero cotizar los siguientes productos:\n${lines.join('\n')}\nTotal estimado: ${formatCurrency(total)}\n\nDetalles adicionales:`
-          : 'Hola, quiero cotizar.  Indica productos o copia/pega referencias aquí.';
+          : 'Hola, quiero cotizar.  Indica productos o copia/pega referencias aquí. ';
         if (! ta.value) ta.value = base;
       }
     }
@@ -449,7 +449,7 @@
       }
     }
 
-    // 🔥 FUNCIÓN ACTUALIZADA PARA CONSTRUIR MENU CON SUBMENU
+    // Función para construir menu con submenu
     function buildCategoryMenu(productos) {
       const categorias = new Set();
       const relojesCategorias = new Set();
@@ -468,13 +468,13 @@
       
       // Agregar categorías regulares (excepto las de relojes)
       categorias.forEach(cat => {
-        if (!cat.toLowerCase().includes('reloj')) {
+        if (! cat.toLowerCase().includes('reloj')) {
           htmlMenu += `<button class="btn-cat" onclick="window.filtrar('${cat}', this)">${cat}</button>`;
         }
       });
 
-      // 🔥 AGREGAR SUBMENU DE RELOJES
-      if (relojesCategorias. size > 0) {
+      // Agregar submenu de relojes
+      if (relojesCategorias.size > 0) {
         htmlMenu += `
           <div class="category-group">
             <button class="category-dropdown">
@@ -505,7 +505,7 @@
       const spanCount = document.getElementById('contador');
 
       try{
-        const client = new Client(). setEndpoint('https://fra. cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
+        const client = new Client(). setEndpoint('https://fra. cloud.appwrite.io/v1'). setProject('692ee6b70012153cd33c');
         const databases = new Databases(client);
 
         // cargar primera página (sin cursor)
@@ -520,10 +520,10 @@
           return;
         }
 
-        // 🔥 NO MOSTRAR LA CANTIDAD AL CLIENTE
+        // NO mostrar contador al cliente
         // spanCount.innerText = `${todosLosProductos.length} Productos (cargados)`;
 
-        // 🔥 USAR LA NUEVA FUNCIÓN PARA CONSTRUIR EL MENU
+        // Usar la nueva función para construir el menu
         menuCat.innerHTML = buildCategoryMenu(todosLosProductos);
 
         renderizar(todosLosProductos);
@@ -539,11 +539,11 @@
             if (newDocs && newDocs.length) {
               todosLosProductos. push(...newDocs);
               
-              // 🔥 NO MOSTRAR LA CANTIDAD AL CLIENTE
-              // spanCount. innerText = `${todosLosProductos.length} Productos (cargados)`;
+              // NO mostrar contador al cliente
+              // spanCount.innerText = `${todosLosProductos.length} Productos (cargados)`;
               
-              // 🔥 ACTUALIZAR MENU CON NUEVAS CATEGORÍAS
-              menuCat.innerHTML = buildCategoryMenu(todosLosProductos);
+              // actualizar menu con nuevas categorías
+              menuCat. innerHTML = buildCategoryMenu(todosLosProductos);
               
               renderizar(todosLosProductos);
             } else {
@@ -552,9 +552,9 @@
             }
           } catch (err) {
             console.error('Error cargando más documentos:', err);
-            alert('Ocurrió un error al cargar más productos.  Revisa la consola o reintenta.');
+            alert('Ocurrió un error al cargar más productos. Revisa la consola o reintenta.');
           } finally {
-            document.getElementById('loadMoreBtn'). disabled = false;
+            document.getElementById('loadMoreBtn').disabled = false;
             updateLoadMoreButton();
           }
         });
@@ -595,7 +595,7 @@
     }
 
     function renderizar(lista){
-      const divProd = document.getElementById('productos');
+      const divProd = document. getElementById('productos');
       if(! lista || lista.length === 0){
         divProd.innerHTML = '<div class="col-12 text-center text-muted py-5">No hay productos. </div>';
         return;
@@ -775,7 +775,7 @@
       }
     });
 
-    // 🔥 FUNCIÓN FILTRAR ACTUALIZADA PARA MANEJAR SUBCATEGORÍAS
+    // Función filtrar actualizada para manejar subcategorías
     window.filtrar = function(categoria, btn){
       // Limpiar todos los estados active
       document.querySelectorAll('.btn-cat, .subcategory-btn, .category-dropdown').forEach(b => b.classList. remove('active'));
@@ -784,7 +784,7 @@
         btn. classList.add('active');
         // Si es una subcategoría, también marcar el dropdown padre
         if (btn.classList.contains('subcategory-btn')) {
-          const parentDropdown = btn.closest('.category-group').querySelector('.category-dropdown');
+          const parentDropdown = btn. closest('.category-group').querySelector('.category-dropdown');
           if (parentDropdown) parentDropdown.classList.add('active');
         }
       }
