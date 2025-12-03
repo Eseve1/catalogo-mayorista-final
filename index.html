@@ -235,7 +235,6 @@
 <!-- Appwrite client -->
 <script type="module">
     import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14. 0.1/+esm";
-
     const MI_WHATSAPP = "59161333335";
     const DEFAULT_MOQ = "6 UNID";
     const DATABASE_ID = '692ee774002e9a3c8601';
@@ -433,8 +432,8 @@
         const spanCount = document.getElementById('contador');
 
         try{
-            const client = new Client(). setEndpoint('https://fra. cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
-            const databases = new Databases(client);
+            const client = new Client(). setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
             const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
 
             todosLosProductos = res. documents || [];
@@ -686,6 +685,6 @@
     });
 </script>
 
-<script src="https://cdn.jsdelivr. net/npm/bootstrap@5. 3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
