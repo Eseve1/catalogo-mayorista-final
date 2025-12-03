@@ -428,7 +428,7 @@
         try{
             const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
             const databases = new Databases(client);
-            const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
+            const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [ { limit: 100 } ]);
 
             todosLosProductos = res. documents || [];
             menuCat.innerHTML = buildCategoryMenu(todosLosProductos);
