@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Catálogo Mayorista - Cotizar (resaltado al agregar)</title>
+  <title>Catálogo Mayorista - MOQ manejado</title>
 
   <!-- Fuentes y CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -11,50 +11,27 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    :root { --green-ws:#23bf3d; --accent:#2363ec; --bg:#f3f2ef; --highlight: #ffeedd; }
+    :root { --green-ws:#23bf3d; --accent:#2363ec; --bg:#f3f2ef; }
 
     body { background: var(--bg); font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding-bottom: 120px; }
 
-    .header-clean{
-      background:var(--accent);
-      background-image: linear-gradient(80deg,var(--accent) 50%,#0e214d 150%);
-      color:#fff; padding:12px 16px; position:sticky; top:0; z-index:1000;
-      box-shadow:0 4px 10px rgba(32,65,180,0.11);
-    }
+    .header-clean{ background:var(--accent); background-image: linear-gradient(80deg,var(--accent) 50%,#0e214d 150%); color:#fff; padding:12px 16px; position:sticky; top:0; z-index:1000; box-shadow:0 4px 10px rgba(32,65,180,0.11); }
 
     .categorias-wrapper{ background:#fff; padding:8px 0; position:sticky; top:56px; z-index:900; overflow-x:auto; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.04); }
 
     .btn-cat{ background:#f8f9fa; color:#222; padding:7px 16px; border-radius:18px; margin:0 6px; font-weight:700; text-transform:capitalize; border:1px solid #ebeaeb; font-size:0.95rem; }
     .btn-cat.active{ background:var(--accent); color:#fff; border-color:#1450b9; box-shadow:0 2px 6px #2363ec20; }
 
-    .card-image-focus{
-      background:#fffdfb; border:1px solid #e9eaea; border-radius:12px;
-      box-shadow:0 4px 20px rgba(37,48,97,0.06); transition:box-shadow .18s, transform .14s, border-left .18s, background .2s;
-      display:flex; flex-direction:column; height:100%; position:relative;
-    }
+    .card-image-focus{ background:#fffdfb; border:1px solid #e9eaea; border-radius:12px; box-shadow:0 4px 20px rgba(37,48,97,0.06); transition:box-shadow .18s, transform .14s, border-left .18s, background .2s; display:flex; flex-direction:column; height:100%; position:relative; }
     .card-image-focus:hover{ transform:translateY(-4px); box-shadow:0 10px 22px rgba(18,94,176,0.10); }
 
-    /* ESTILO: cuando el producto está seleccionado para cotizar, "dale vida" con color y brillo */
-    .card-image-focus.card-selected {
-      border-left: 6px solid var(--green-ws);
-      background: linear-gradient(90deg, rgba(35,191,61,0.04), rgba(255,255,255,0.0));
-      box-shadow: 0 10px 30px rgba(35,191,61,0.14);
-      transform: translateY(-6px) scale(1.006);
-      animation: subtlePulse 1.6s ease-in-out 1;
-    }
-
-    @keyframes subtlePulse {
-      0% { box-shadow: 0 6px 18px rgba(35,191,61,0.12); }
-      50% { box-shadow: 0 12px 30px rgba(35,191,61,0.20); }
-      100% { box-shadow: 0 6px 18px rgba(35,191,61,0.12); }
-    }
+    .card-image-focus.card-selected { border-left: 6px solid var(--green-ws); background: linear-gradient(90deg, rgba(35,191,61,0.04), rgba(255,255,255,0.0)); box-shadow: 0 10px 30px rgba(35,191,61,0.14); transform: translateY(-6px) scale(1.006); }
 
     .oferta-cinta{ position:absolute; left:-36px; top:14px; z-index:20; background:linear-gradient(90deg,#ea4838 80%,#fca800 100%); color:#fff; padding:4px 34px; transform:rotate(-28deg); font-weight:800; font-size:.95rem; border-radius:6px; box-shadow:0 6px 12px rgba(234,72,56,0.18); }
     .badge-nuevo{ position:absolute; left:0; top:12px; z-index:15; background:linear-gradient(90deg,#ecbf28 55%,#ed9f16 100%); padding:5px 14px; font-weight:800; border-radius:0 8px 8px 0; color:#222; }
 
     .moq-badge { position:absolute; top:8px; right:8px; z-index:25; background:#ff8300e6; color:#fff; padding:6px 10px; font-weight:800; font-size:0.82rem; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
 
-    /* imagen - mostrar completa */
     .img-zona{ position:relative; z-index:1; height:220px; background:#fff; border-bottom:1px solid #eee; padding:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px; }
     .img-zona img, .carousel-item img { width:auto; max-width:100%; height:100%; max-height:100%; object-fit:contain; object-position:center; display:block; border-radius:8px; opacity:0; transition:opacity .36s; }
     .img-zona img[src], .carousel-item img[src] { opacity:1; }
@@ -73,12 +50,12 @@
 
     .inline-qty { display:inline-flex; align-items:center; gap:8px; }
     .quote-qty-input { width:72px; padding:6px 8px; border-radius:8px; border:1px solid #d6d6d6; text-align:center; }
+
     .color-select { padding:6px 8px; border-radius:8px; border:1px solid #d6d6d6; min-width:120px; }
 
     .add-quote-btn { background:#fff; border:1px dashed #c6c6c6; color:#333; padding:6px 10px; border-radius:10px; font-weight:600; font-size:0.88rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
     .add-quote-btn.selected { background:#e6f9ea; border:1px solid #1aa242; color:#0a6b1a; }
 
-    /* Floating CTA with "Bs." */
     .floating-cta { position:fixed; right:18px; bottom:18px; z-index:1200; background:var(--green-ws); color:#fff; border-radius:999px; padding:12px 18px; font-weight:800; display:inline-flex; align-items:center; gap:10px; box-shadow:0 8px 28px rgba(35,191,61,0.18); cursor:pointer; border:none; }
     .floating-cta .bs { background: #fff; color: #1d1d1d; padding:3px 8px; border-radius:8px; font-weight:700; }
 
@@ -159,7 +136,10 @@
     import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
 
     const MI_WHATSAPP = "59161333335";
-    const DEFAULT_MOQ = "6 UNID";
+    const DEFAULT_MOQ = "6 UNID"; // fallback si p.moq es null/undefined/""
+    const DATABASE_ID = '692ee774002e9a3c8601';
+    const COLLECTION_ID = 'catalogo';
+
     let todosLosProductos = [];
     // Map key = `${codigo}|${color}` => { codigo, descripcion, color, precio (number), qty }
     let selectedForQuote = new Map();
@@ -304,7 +284,6 @@
         const base = lines.length
           ? `Hola, quiero cotizar los siguientes productos:\n${lines.join('\n')}\nTotal estimado: ${formatCurrency(total)}\n\nDetalles adicionales:`
           : 'Hola, quiero cotizar. Indica productos o copia/pega referencias aquí.';
-        // don't overwrite if user edited
         if (!ta.value) ta.value = base;
       }
     }
@@ -317,7 +296,7 @@
       try{
         const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
         const databases = new Databases(client);
-        const res = await databases.listDocuments('692ee774002e9a3c8601','catalogo');
+        const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
 
         todosLosProductos = res.documents || [];
         spanCount.innerText = `${todosLosProductos.length} Productos`;
@@ -340,7 +319,6 @@
     function toggleSelectFromButton(btn) {
       const codigo = btn.dataset.codigo;
       const desc = decodeURIComponent(btn.dataset.desc || '');
-      // color prefer from select (if exists), else from button dataset
       const colorSelect = btn.closest('.info-zona').querySelector('.color-select');
       const colorFromInput = colorSelect ? (colorSelect.value || colorSelect.value.trim()) : decodeURIComponent(btn.dataset.color || '');
       const color = colorFromInput || '';
@@ -380,13 +358,29 @@
         const precioM = p.preciopormayor || '0';
         const precioBOraw = p.precioBO || p.precioBol || p.precioBolivianos || p.preciopormayor || precioM || precioU;
         const precioBO = precioBOraw;
+
+        // Colors detection
         let colorsArr = [];
         if (Array.isArray(p.colores) && p.colores.length) colorsArr = p.colores;
         else if (Array.isArray(p.colors) && p.colors.length) colorsArr = p.colors;
         else if (p.color) colorsArr = [p.color];
         else if (p.color1) colorsArr = [p.color1];
         else if (p.colores_text) colorsArr = String(p.colores_text).split(',').map(s => s.trim()).filter(Boolean);
-        const moq = p.moq || DEFAULT_MOQ;
+
+        // MOQ handling: if null/undefined/"" => fallback; if 0 => hide; if >0 => show MIN. n UNID
+        const rawMoq = p.moq;
+        let moqBadgeHtml = '';
+        if (rawMoq === undefined || rawMoq === null || String(rawMoq).trim() === '') {
+          moqBadgeHtml = `<div class="moq-badge">MIN. ${DEFAULT_MOQ}</div>`;
+        } else {
+          const digits = String(rawMoq).match(/\d+/);
+          const n = digits ? parseInt(digits[0], 10) : NaN;
+          if (Number.isFinite(n) && n > 0) {
+            moqBadgeHtml = `<div class="moq-badge">MIN. ${n} UNID</div>`;
+          } else {
+            moqBadgeHtml = ''; // hide when moq === 0 or non-numeric
+          }
+        }
 
         const badgeNuevo = p.nuevo ? `<div class="badge-nuevo">¡Nuevo!</div>` : '';
         const ofertaCinta = p.oferta ? `<div class="oferta-cinta">¡OFERTA!</div>` : '';
@@ -418,10 +412,10 @@
 
         html += `
           <div class="col">
-            <div class="card-image-focus position-relative">
+            <div class="card-image-focus position-relative" data-doc-id="${p.$id || ''}">
               ${badgeNuevo}
               ${ofertaCinta}
-              <div class="moq-badge">MIN. ${moq}</div>
+              ${moqBadgeHtml}
 
               <div class="img-zona">${htmlImagen}</div>
 
