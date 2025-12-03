@@ -68,6 +68,8 @@
     .qty-controls button { padding:3px 8px; border-radius:6px; border:1px solid #d0d0d0; background:#fff; cursor:pointer; }
     .remove-item { background:transparent; border:none; color:#cc3333; font-weight:700; cursor:pointer; }
 
+    .load-more-wrap { text-align:center; margin:18px 0; }
+
     @media (max-width:768px){ .img-zona{ height:260px; } .precio-mayor-valor{ font-size:1.2rem; } }
     @media (max-width:450px){ .img-zona{ height:200px; } .titulo-prod{ font-size:1rem; } .floating-cta { right:12px; bottom:12px; padding:10px 14px; } }
   </style>
@@ -90,6 +92,11 @@
     <div id="productos" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
       <div class="col-12 text-center py-5"><div class="spinner-border text-secondary" role="status"></div></div>
     </div>
+
+    <div class="load-more-wrap">
+      <button id="loadMoreBtn" class="btn btn-outline-primary" style="display:none;">Cargar más</button>
+      <div id="loadingMore" style="display:none;margin-top:10px;"><div class="spinner-border spinner-border-sm text-secondary" role="status"></div> Cargando...</div>
+    </div>
   </div>
 
   <!-- Floating CTA (single) with Bs. -->
@@ -105,7 +112,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="cotizarModalLabel">Enviar cotización por WhatsApp</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
           <p>Productos seleccionados (ajusta cantidades o colores si quieres):</p>
@@ -133,14 +140,20 @@
 
   <!-- Appwrite client -->
   <script type="module">
-    import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
+    import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
 
     const MI_WHATSAPP = "59161333335";
     const DEFAULT_MOQ = "6 UNID"; // fallback si p.moq es null/undefined/""
     const DATABASE_ID = '692ee774002e9a3c8601';
     const COLLECTION_ID = 'catalogo';
 
-    let todosLosProductos = [];
+    // Paginación por cursores
+    const pageSize = 50; // ajusta si quieres (50/100, etc.)
+    let lastCursorId = null; // id del último documento recibido (cursor)
+    let noMoreDocs = false;
+    let isFetching = false;
+
+    let todosLosProductos = []; // acumulador de páginas cargadas
     // Map key = `${codigo}|${color}` => { codigo, descripcion, color, precio (number), qty }
     let selectedForQuote = new Map();
 
@@ -288,6 +301,46 @@
       }
     }
 
+    async function fetchPage(databases, cursorId = null) {
+      if (noMoreDocs || isFetching) return [];
+      isFetching = true;
+      document.getElementById('loadingMore').style.display = 'inline-block';
+      document.getElementById('loadMoreBtn').style.display = 'none';
+
+      try {
+        const queries = [ Query.limit(pageSize) ];
+        if (cursorId) queries.push(Query.cursorAfter(cursorId));
+        const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, queries);
+        const docs = res.documents || [];
+        // update cursor: last document id of this batch
+        if (docs.length > 0) {
+          lastCursorId = docs[docs.length - 1].$id;
+        }
+        // if less than pageSize => no hay más
+        if (docs.length < pageSize) {
+          noMoreDocs = true;
+        }
+        return docs;
+      } catch (err) {
+        console.error('Error al cargar página:', err);
+        // decide comportamiento: dejo noMoreDocs = true para evitar bucle, y muestro botón para reintentar
+        noMoreDocs = false;
+        return Promise.reject(err);
+      } finally {
+        isFetching = false;
+        document.getElementById('loadingMore').style.display = 'none';
+      }
+    }
+
+    function updateLoadMoreButton() {
+      const btn = document.getElementById('loadMoreBtn');
+      if (noMoreDocs) {
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'inline-block';
+      }
+    }
+
     async function iniciar(){
       const divProd = document.getElementById('productos');
       const menuCat = document.getElementById('menu-cat');
@@ -296,11 +349,22 @@
       try{
         const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
         const databases = new Databases(client);
-        const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
 
-        todosLosProductos = res.documents || [];
-        spanCount.innerText = `${todosLosProductos.length} Productos`;
+        // cargar primera página (sin cursor)
+        try {
+          const firstDocs = await fetchPage(databases, null);
+          todosLosProductos.push(...firstDocs);
+          // si firstDocs es vacío -> no hay nada
+          if (firstDocs.length === 0) noMoreDocs = true;
+        } catch (pageErr) {
+          console.error('Error cargando la primera página:', pageErr);
+          divProd.innerHTML = `<div class="text-danger text-center p-4">No se pudo cargar la primera página.<br><small>${pageErr.message || pageErr}</small><br><button onclick="location.reload()" class="btn btn-outline-primary mt-2">Reintentar</button></div>`;
+          return;
+        }
 
+        spanCount.innerText = `${todosLosProductos.length} Productos (cargados)`;
+
+        // Construir menú de categorías con los cargados hasta ahora
         const categorias = new Set();
         todosLosProductos.forEach(p => categorias.add(p.categoria || 'General'));
         let htmlMenu = `<button class="btn-cat active" onclick="window.filtrar('Todo', this)">Todo</button>`;
@@ -308,6 +372,37 @@
         menuCat.innerHTML = htmlMenu;
 
         renderizar(todosLosProductos);
+
+        // mostrar/ocultar boton cargar más
+        updateLoadMoreButton();
+
+        // evento del botón "Cargar más"
+        document.getElementById('loadMoreBtn').addEventListener('click', async () => {
+          try {
+            document.getElementById('loadMoreBtn').disabled = true;
+            const newDocs = await fetchPage(databases, lastCursorId);
+            if (newDocs && newDocs.length) {
+              todosLosProductos.push(...newDocs);
+              spanCount.innerText = `${todosLosProductos.length} Productos (cargados)`;
+              // actualizar categorías en caso de haber nuevas
+              const cats = new Set();
+              todosLosProductos.forEach(p => cats.add(p.categoria || 'General'));
+              let menuHtml = `<button class="btn-cat active" onclick="window.filtrar('Todo', this)">Todo</button>`;
+              cats.forEach(cat => menuHtml += `<button class="btn-cat" onclick="window.filtrar('${cat}', this)">${cat}</button>`);
+              menuCat.innerHTML = menuHtml;
+              renderizar(todosLosProductos);
+            } else {
+              // si no trajo más, marcar sin más docs
+              noMoreDocs = true;
+            }
+          } catch (err) {
+            console.error('Error cargando más documentos:', err);
+            alert('Ocurrió un error al cargar más productos. Revisa la consola o reintenta.');
+          } finally {
+            document.getElementById('loadMoreBtn').disabled = false;
+            updateLoadMoreButton();
+          }
+        });
 
       }catch(err){
         divProd.innerHTML = `<div class="text-danger text-center p-4">No se pudo conectar con el catálogo.<br><small>${err.message}</small><br><button onclick="location.reload()" class="btn btn-outline-primary mt-2">Reintentar</button></div>`;
