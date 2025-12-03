@@ -3,234 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Mayorista - Final</title>
-    
+    <title>Catálogo Mayorista - Mejorado</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
     <style>
-        body { 
-            background-color: #f0f2f5; 
-            font-family: 'Inter', sans-serif; 
-            padding-bottom: 80px; 
+        body {
+            background-color: #f3f2ef;
+            font-family: 'Inter', sans-serif;
+            padding-bottom: 80px;
         }
-
-        /* HEADER AZUL FUERTE (ESTILO WALMART) */
         .header-clean {
-            background-color: #0071DC; 
+            background-color: #2363ec;
+            background-image: linear-gradient(80deg,#2363ec 50%,#0e214d 150%);
             color: white; padding: 15px; position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(32,65,180,0.11);
         }
-
-        /* BARRA DE CATEGORÍAS */
         .categorias-wrapper {
             background: white; padding: 10px 0; position: sticky; top: 60px; z-index: 900;
-            overflow-x: auto; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            overflow-x: auto; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.04);
         }
         .btn-cat {
-            background: #f8f9fa; color: #333; padding: 8px 20px; border-radius: 20px; margin: 0 5px; font-weight: 600; text-transform: capitalize;
+            background: #f8f9fa; color: #222; padding: 8px 20px; border-radius: 20px; margin: 0 5px; font-weight: 700; text-transform: capitalize; letter-spacing: 0.006em;
+            border: 1.2px solid #ebeaeb;
         }
-        .btn-cat.active { background: #0071DC; color: white; border-color: #0071DC; }
-
-        /* TARJETA DE PRODUCTO */
+        .btn-cat.active {
+            background: #2363ec; color: white; border-color: #1450b9;
+            box-shadow: 0 2px 6px #2363ec20;
+        }
+        /* Card */
         .card-image-focus {
-            background: white; border-radius: 8px; overflow: hidden; height: 100%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
-            display: flex; flex-direction: column;
+            background: #fffdfb;
+            border: 1.3px solid #e9eaea;
+            border-radius: 13px;
+            box-shadow: 0 4px 24px 0 rgba(37, 48, 97, 0.06);
+            transition: box-shadow .22s, transform .17s, border-color .14s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
-
-        /* ZONA DE FOTO (GRANDE) */
-        .img-zona { height: 250px; background: #fff; border-bottom: 1px solid #eee; position: relative; padding: 10px; }
-        .img-zona img { width: 100%; height: 100%; object-fit: contain; }
-        .carousel, .carousel-inner, .carousel-item { height: 100%; }
-
-        /* ETIQUETA DE MÍNIMO DE COMPRA (MOQ) */
+        .card-image-focus:hover {
+            box-shadow: 0 12px 32px rgba(18, 94, 176, 0.14), 0 1.5px 8px rgba(220, 130, 60, 0.065);
+            transform: translateY(-8px) scale(1.02);
+            border-color: #fdb34386;
+        }
         .moq-badge {
             position: absolute; top: 0; right: 0; z-index: 10;
-            background-color: #0071DC; color: white; padding: 4px 8px; font-size: 0.8rem; font-weight: 700;
-            border-bottom-left-radius: 8px;
+            background-color: #ff8300e6; color: white;
+            font-size: 0.89rem; font-weight: 800;
+            letter-spacing: 0.02em;
+            padding: 4px 13px 4px 10px;
+            border-bottom-left-radius: 9px;
         }
-
-        .info-zona { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-        .titulo-prod { font-size: 0.95rem; font-weight: 600; color: #333; height: 2.4em; overflow: hidden; }
-
-        /* PRECIOS (VERDE GANANCIA - FOCO) */
-        .precio-mayor-valor { 
-            font-size: 1.8rem; 
-            color: #198754; /* VERDE GANANCIA */
-            font-weight: 900; 
-            line-height: 1;
+        .oferta-cinta {
+            position: absolute;
+            left: -38px; top: 18px; z-index: 20;
+            background: linear-gradient(90deg, #ea4838 80%, #fca800 100%);
+            color: #fff;
+            font-size: 0.98rem;
+            font-weight: 800;
+            padding: 4px 38px 4px 25px;
+            transform: rotate(-28deg);
+            box-shadow: 0 6px 14px #ea483828;
+            letter-spacing:0.04em;
+            border-radius: 8px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.10);
         }
-        
-        /* Precio Unidad (Secundario/Tachado) */
-        .precio-unidad-valor { font-size: 0.9rem; color: #999; text-decoration: line-through; }
-        .precio-unidad-label { font-size: 0.7rem; color: #999; }
-        
-        .action-block { padding-top: 10px; margin-top: auto; }
-
+        .badge-nuevo {
+            position: absolute;
+            top: 14px; left: 0;
+            z-index: 7;
+            border-radius: 0 9px 9px 0;
+            background: linear-gradient(90deg, #ecbf28 55%, #ed9f16 100%);
+            color: #222;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 1.5px 8px #fcb32c0c;
+            padding: 6px 18px 6px 13px;
+        }
+        .img-zona { height: 250px; background: #fff; border-bottom: 1px solid #eee; position: relative; padding: 10px; }
+        .img-zona img {
+            width: 100%; height: 100%; object-fit: contain;
+            opacity: 0;
+            transition: opacity .43s;
+            border-radius: 8px;
+            background: #faf7ed;
+            box-shadow: 0 1px 8px #fff4e590;
+        }
+        .img-zona img[src] { opacity: 1; }
+        .carousel, .carousel-inner, .carousel-item { height: 100%; }
+        .info-zona { padding: 15px; flex-grow: 1; display: flex; flex-direction: column;}
+        /* Título con espacio ajustado */
+        .titulo-prod {
+            font-size: 1.06rem;
+            font-weight: 700;
+            color: #191e2f;
+            min-height: 1.25em;
+            max-height: 2.5em;
+            overflow: hidden;
+            letter-spacing: 0.02em;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+        }
+        .codigo-text { color: #676970; font-size: 0.95em; letter-spacing:0.02em; }
+        .precio-mayor-valor {
+            font-size: 2.25rem;
+            color: #ea4838;
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 10px #ea483824;
+        }
+        .precio-unidad-valor {
+            color: #b1b5b7; opacity: .84; font-weight: 600;
+            text-decoration: line-through;
+        }
+        .precio-unidad-label { font-size: 0.84rem; color: #dbad15; font-weight: bold; letter-spacing:0.01em; }
+        .action-block { padding-top: 10px; margin-top: auto; display: flex; flex-direction: column; align-items: center;}
         .btn-whatsapp-card {
-            margin-top: 8px; background-color: #25D366; color: white; border: none; width: 100%;
-            padding: 8px; border-radius: 6px; font-weight: 600; text-align: center; text-decoration: none;
+            margin-top: 14px; background-color: #23bf3d; color: white; border: none;
+            min-width: 140px; max-width: 94%; width: auto; align-self: center;
+            padding: 9px 18px 9px 15px; border-radius: 16px; font-weight: 700; text-align: center; text-decoration: none;
+            font-size: 1rem; letter-spacing:0.01em; box-shadow: 0 3px 18px #179b1c28;
+            display: inline-flex; align-items: center; gap: 9px;
+            transition: background .13s, transform .13s, box-shadow .18s;
+            outline: none;
+            white-space: nowrap;
+        }
+        .btn-whatsapp-card i {
+            font-size: 1.18rem; line-height: 1;
+        }
+        .btn-whatsapp-card:hover, .btn-whatsapp-card:focus {
+            background: #198f2a;
+            color: #fff;
+            transform: scale(1.032) translateY(-1px);
+            box-shadow: 0 8px 22px #179b1c41;
+        }
+        @media (max-width:450px){
+            .btn-whatsapp-card {font-size:.96rem; padding:9px 10px;}
+            .img-zona{height:170px;}
         }
     </style>
 </head>
 <body>
-
-    <div class="header-clean d-flex justify-content-between align-items-center">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="fw-bold fs-5"><i class="bi bi-person-workspace"></i> Catálogo MAYORISTA</div>
-            <div class="badge bg-light text-secondary border" id="contador">0 Productos</div>
-        </div>
+<div class="header-clean d-flex justify-content-between align-items-center">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="fw-bold fs-5"><i class="bi bi-person-workspace"></i> Catálogo MAYORISTA</div>
+        <div class="badge bg-light text-secondary border" id="contador">0 Productos</div>
     </div>
-
-    <div class="categorias-wrapper" id="menu-cat"></div>
-
-    <div class="container-fluid px-2 mt-3">
-        <div id="productos" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
-            <div class="col-12 text-center py-5"><div class="spinner-border text-secondary"></div></div>
-        </div>
+</div>
+<div class="categorias-wrapper" id="menu-cat"></div>
+<div class="container-fluid py-2" style="text-align:right;">
+    <input id="searchBox" placeholder="Buscar producto..." class="form-control" style="max-width:300px;display:inline-block;">
+</div>
+<div class="container-fluid px-2 mt-3">
+    <div id="productos" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+        <div class="col-12 text-center py-5"><div class="spinner-border text-secondary"></div></div>
     </div>
+</div>
+<script type="module">
+    import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
+    const MI_WHATSAPP = "59161333335";
+    const DEFAULT_MOQ = "6 UNID";
+    let todosLosProductos = [];
 
-    <script type="module">
-        import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
-
-        // CONFIGURACIÓN VITAL
-        const MI_WHATSAPP = "59161333335"; 
-        const DEFAULT_MOQ = "6 UNID"; // Valor por defecto
-        let todosLosProductos = [];
-        
-        async function iniciar() {
-            const divProd = document.getElementById('productos');
-            const menuCat = document.getElementById('menu-cat');
-            const spanCount = document.getElementById('contador');
-
-            try {
-                // CONEXIÓN FRANKFURT Y TUS IDS
-                const client = new Client()
-                    .setEndpoint('https://fra.cloud.appwrite.io/v1') 
-                    .setProject('692ee6b70012153cd33c');             
-
-                const databases = new Databases(client);
-
-                const res = await databases.listDocuments('692ee774002e9a3c8601', 'catalogo');
-                todosLosProductos = res.documents;
-                spanCount.innerText = `${todosLosProductos.length} Productos`;
-
-                // GENERAR CATEGORÍAS
-                const categorias = new Set();
-                todosLosProductos.forEach(p => categorias.add(p['categoria'] || 'General'));
-                let htmlMenu = `<button class="btn-cat active" onclick="window.filtrar('Todo', this)">Todo</button>`;
-                categorias.forEach(cat => {
-                    htmlMenu += `<button class="btn-cat" onclick="window.filtrar('${cat}', this)">${cat}</button>`;
-                });
-                menuCat.innerHTML = htmlMenu;
-
-                // MOSTRAR TODO
-                renderizar(todosLosProductos);
-
-            } catch (error) {
-                divProd.innerHTML = `<div class="text-danger text-center p-4">Error: ${error.message}</div>`;
-            }
+    async function iniciar() {
+        const divProd = document.getElementById('productos');
+        const menuCat = document.getElementById('menu-cat');
+        const spanCount = document.getElementById('contador');
+        try {
+            const client = new Client()
+                .setEndpoint('https://fra.cloud.appwrite.io/v1')
+                .setProject('692ee6b70012153cd33c');
+            const databases = new Databases(client);
+            const res = await databases.listDocuments('692ee774002e9a3c8601', 'catalogo');
+            todosLosProductos = res.documents;
+            spanCount.innerText = `${todosLosProductos.length} Productos`;
+            const categorias = new Set();
+            todosLosProductos.forEach(p => categorias.add(p['categoria'] || 'General'));
+            let htmlMenu = `<button class="btn-cat active" onclick="window.filtrar('Todo', this)">Todo</button>`;
+            categorias.forEach(cat => {
+                htmlMenu += `<button class="btn-cat" onclick="window.filtrar('${cat}', this)">${cat}</button>`;
+            });
+            menuCat.innerHTML = htmlMenu;
+            renderizar(todosLosProductos);
+        } catch (error) {
+            divProd.innerHTML = `<div class="text-danger text-center p-4">
+            No se pudo conectar con el catálogo.<br>
+            <small>${error.message}</small>
+            <br><button onclick="location.reload()" class="btn btn-outline-primary mt-2">Reintentar</button>
+        </div>`;
         }
-
-        function renderizar(lista) {
-            const divProd = document.getElementById('productos');
-            let html = '';
-
-            if (lista.length === 0) {
-                divProd.innerHTML = '<div class="col-12 text-center text-muted py-5">No hay productos.</div>';
-                return;
+    }
+    function renderizar(lista) {
+        const divProd = document.getElementById('productos');
+        let html = '';
+        if (lista.length === 0) {
+            divProd.innerHTML = '<div class="col-12 text-center text-muted py-5">No hay productos.</div>';
+            return;
+        }
+        lista.forEach((p, index) => {
+            const codigo = p['codigo'] || 'S/C';
+            const desc = p['descripcion'] || '';
+            const precioU = p['precioUnidad'] || '0';
+            const precioM = p['preciopormayor'] || '0';
+            const moq = p['moq'] || DEFAULT_MOQ;
+            let badgeNuevo = (p.nuevo) ? `<div class="badge-nuevo">¡Nuevo!</div>` : "";
+            let ofertaCinta = (p.oferta) ? `<div class="oferta-cinta">¡OFERTA!</div>` : "";
+            const imagenes = [];
+            if(p['imagen']) imagenes.push(p['imagen']);
+            if(p['imagen2']) imagenes.push(p['imagen2']);
+            if(p['imagen3']) imagenes.push(p['imagen3']);
+            if(imagenes.length === 0) imagenes.push('https://via.placeholder.com/400?text=SIN+FOTO');
+            const linkWs = desc && codigo
+                ? `https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent("Hola, me interesa el producto mayorista: " + desc + " (Cod: " + codigo + ").")}`
+                : '#';
+            const disableAttr = (!desc || !codigo) ? 'disabled' : '';
+            let htmlImagen = '';
+            if (imagenes.length > 1) {
+                let itemsHtml = '';
+                imagenes.forEach((imgUrl, i) => {
+                    itemsHtml += `<div class="carousel-item ${i===0 ? 'active' : ''}"><img src="${imgUrl}" alt="Foto ${i+1}: ${desc}" loading="lazy"></div>`;
+                });
+                htmlImagen = `
+                <div id="carousel-${index}" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner">${itemsHtml}</div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${index}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-${index}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+            `;
+            } else {
+                htmlImagen = `<img src="${imagenes[0]}" alt="${desc || codigo}" loading="lazy">`;
             }
-
-            lista.forEach((p, index) => {
-                const codigo = p['codigo'] || 'S/C';
-                const desc = p['descripcion'] || ''; // Quitamos el valor por defecto para que no se vea
-                const precioU = p['precioUnidad'] || '0'; 
-                const precioM = p['preciopormayor'] || '0'; 
-                const moq = p['moq'] || DEFAULT_MOQ; 
-                
-                // Recolectar imágenes para carrusel
-                const imagenes = [];
-                if(p['imagen']) imagenes.push(p['imagen']);
-                if(p['imagen2']) imagenes.push(p['imagen2']);
-                if(p['imagen3']) imagenes.push(p['imagen3']);
-                if(imagenes.length === 0) imagenes.push('https://via.placeholder.com/400?text=SIN+FOTO');
-
-                const linkWs = `https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent("Hola, me interesa el producto mayorista: " + desc + " (Cod: " + codigo + ").")}`;
-
-                // Lógica Carrusel
-                let htmlImagen = '';
-                if (imagenes.length > 1) {
-                    let itemsHtml = '';
-                    imagenes.forEach((imgUrl, i) => {
-                        itemsHtml += `<div class="carousel-item ${i===0 ? 'active' : ''}"><img src="${imgUrl}" alt="Foto ${i+1}"></div>`;
-                    });
-
-                    htmlImagen = `
-                        <div id="carousel-${index}" class="carousel slide" data-bs-interval="false">
-                            <div class="carousel-inner">${itemsHtml}</div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${index}" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carousel-${index}" data-bs-slide="next">
-                                <span class="carousel-control-next-icon"></span>
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    htmlImagen = `<img src="${imagenes[0]}" alt="${codigo}">`;
-                }
-
-                html += `
-                    <div class="col">
-                        <div class="card-image-focus">
-                            
-                            <div class="moq-badge">MIN. ${moq}</div>
-                            
-                            <div class="img-zona">
-                                ${htmlImagen}
-                            </div>
-
-                            <div class="info-zona">
-                                <h5 class="titulo-prod mb-1">${desc}</h5>
-                                <div class="codigo-text mb-3">REF: ${codigo}</div>
-
-                                <div class="action-block">
-                                    <div class="d-flex justify-content-between align-items-end mb-2">
-                                        <div class="text-start">
-                                            <p class="precio-unidad-label mb-0">Precio Venta</p>
-                                            <div class="precio-unidad-valor">Bs. ${precioU}</div>
-                                        </div>
-                                        <div class="text-end">
-                                            <p class="precio-mayor-valor">Bs. ${precioM}</p>
-                                            <p class="precio-unidad-label mb-0" style="color: #198754; font-weight: 700;">PRECIO MAYOR</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <a href="${linkWs}" target="_blank" class="btn-whatsapp-card">
-                                        <i class="bi bi-whatsapp"></i> Pedir por WhatsApp
-                                    </a>
+            html += `
+            <div class="col">
+                <div class="card-image-focus">
+                    ${badgeNuevo}
+                    ${ofertaCinta}
+                    <div class="moq-badge">MIN. ${moq}</div>
+                    <div class="img-zona">
+                        ${htmlImagen}
+                    </div>
+                    <div class="info-zona">
+                        <h5 class="titulo-prod mb-1">${desc}</h5>
+                        <div class="codigo-text mb-3">REF: ${codigo}</div>
+                        <div class="action-block">
+                            <div class="d-flex justify-content-between align-items-end mb-2 w-100">
+                                <div class="text-start">
+                                    <p class="precio-unidad-label mb-0">Precio Venta</p>
+                                    <div class="precio-unidad-valor">Bs. ${precioU}</div>
+                                </div>
+                                <div class="text-end">
+                                    <p class="precio-mayor-valor">Bs. ${precioM}</p>
+                                    <p class="precio-unidad-label mb-0" style="color: #dbad15; font-weight: 700;">PRECIO MAYOR</p>
                                 </div>
                             </div>
+                            <a href="${linkWs}" target="_blank" class="btn-whatsapp-card" ${disableAttr} role="button" aria-label="Contactar por WhatsApp">
+                                <i class="bi bi-whatsapp"></i> <span>Pedir por WhatsApp</span>
+                            </a>
                         </div>
                     </div>
-                `;
+                </div>
+            </div>
+        `;
+        });
+        divProd.innerHTML = html;
+    }
+    window.filtrar = function(categoria, btn) {
+        document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (categoria === 'Todo') renderizar(todosLosProductos);
+        else renderizar(todosLosProductos.filter(p => (p['categoria'] || 'General') === categoria));
+    };
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchBox = document.getElementById('searchBox');
+        if (searchBox) {
+            searchBox.addEventListener('input', function() {
+                const busqueda = this.value.toLowerCase();
+                renderizar(todosLosProductos.filter(p =>
+                    (p.descripcion || '').toLowerCase().includes(busqueda) ||
+                    (p.codigo || '').toLowerCase().includes(busqueda)
+                ));
+                document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
             });
-            divProd.innerHTML = html;
         }
-
-        window.filtrar = function(categoria, btn) {
-            document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if (categoria === 'Todo') renderizar(todosLosProductos);
-            else renderizar(todosLosProductos.filter(p => (p['categoria'] || 'General') === categoria));
-        }
-
-        iniciar();
-    </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    });
+    iniciar();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
