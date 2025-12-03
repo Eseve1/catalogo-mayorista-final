@@ -1,299 +1,278 @@
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Catálogo Mayorista - MOQ manejado</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Catálogo Mayorista - MOQ manejado</title>
 
-  <!-- Fuentes y CSS -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn. jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Fuentes y CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
-  <style>
-    :root { --green-ws:#23bf3d; --accent:#2363ec; --bg:#f3f2ef; }
+    <style>
+        :root { --green-ws:#23bf3d; --accent:#2363ec; --bg:#f3f2ef; }
+        
+        /* OCULTAR CONTADOR */
+        #contador { display: none ! important; }
 
-    body { background: var(--bg); font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding-bottom: 120px; }
+        body { background: var(--bg); font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding-bottom: 120px; }
 
-    .header-clean{ background:var(--accent); background-image: linear-gradient(80deg,var(--accent) 50%,#0e214d 150%); color:#fff; padding:12px 16px; position:sticky; top:0; z-index:1000; box-shadow:0 4px 10px rgba(32,65,180,0.11); }
+        .header-clean{ background:var(--accent); background-image: linear-gradient(80deg,var(--accent) 50%,#0e214d 150%); color:#fff; padding:12px 16px; position:sticky; top:0; z-index:1000; box-shadow:0 4px 10px rgba(32,65,180,0.11); }
 
-    . categorias-wrapper{ background:#fff; padding:8px 0; position:sticky; top:56px; z-index:900; overflow-x:auto; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.04); }
+        .categorias-wrapper{ background:#fff; padding:8px 0; position:sticky; top:56px; z-index:900; overflow-x:auto; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.04); }
 
-    . btn-cat{ background:#f8f9fa; color:#222; padding:7px 16px; border-radius:18px; margin:0 6px; font-weight:700; text-transform:capitalize; border:1px solid #ebeaeb; font-size:0.95rem; }
-    .btn-cat. active{ background:var(--accent); color:#fff; border-color:#1450b9; box-shadow:0 2px 6px #2363ec20; }
+        .btn-cat{ background:#f8f9fa; color:#222; padding:7px 16px; border-radius:18px; margin:0 6px; font-weight:700; text-transform:capitalize; border:1px solid #ebeaeb; font-size:0.95rem; }
+        .btn-cat. active{ background:var(--accent); color:#fff; border-color:#1450b9; box-shadow:0 2px 6px #2363ec20; }
 
-    /* Ocultar contador */
-    #contador {
-        display: none ! important;
-    }
+        /* ESTILOS SUBMENU */
+        .category-group {
+            position: relative;
+            display: inline-block;
+            margin: 0 6px;
+        }
 
-    /* Estilos para el submenu */
-    . category-group {
-      position: relative;
-      display: inline-block;
-      margin: 0 6px;
-    }
+        .category-dropdown {
+            background:#f8f9fa;
+            color:#222;
+            padding:7px 16px;
+            border-radius:18px;
+            font-weight:700;
+            text-transform:capitalize;
+            border:1px solid #ebeaeb;
+            font-size:0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-    .category-dropdown {
-      background:#f8f9fa; 
-      color:#222; 
-      padding:7px 16px; 
-      border-radius:18px; 
-      font-weight:700; 
-      text-transform:capitalize; 
-      border:1px solid #ebeaeb; 
-      font-size:0.95rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
+        .category-dropdown:hover,
+        .category-dropdown.active {
+            background:var(--accent);
+            color:#fff;
+            border-color:#1450b9;
+            box-shadow:0 2px 6px #2363ec20;
+        }
 
-    .category-dropdown:hover,
-    .category-dropdown.active { 
-      background:var(--accent); 
-      color:#fff; 
-      border-color:#1450b9; 
-      box-shadow:0 2px 6px #2363ec20; 
-    }
+        .subcategories {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            z-index: 1200;
+            min-width: 200px;
+            margin-top: 5px;
+        }
 
-    .subcategories {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      z-index: 1200;
-      min-width: 200px;
-      margin-top: 5px;
-    }
+        . category-group:hover .subcategories {
+            display: block;
+        }
 
-    .category-group:hover . subcategories {
-      display: block;
-    }
+        .subcategory-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
 
-    .subcategory-btn {
-      display: block;
-      width: 100%;
-      padding: 10px 15px;
-      border: none;
-      background: white;
-      text-align: left;
-      cursor: pointer;
-      font-weight: 600;
-      color: #333;
-      border-bottom: 1px solid #f0f0f0;
-    }
+        .subcategory-btn:last-child {
+            border-bottom: none;
+            border-radius: 0 0 8px 8px;
+        }
 
-    .subcategory-btn:last-child {
-      border-bottom: none;
-      border-radius: 0 0 8px 8px;
-    }
+        .subcategory-btn:first-child {
+            border-radius: 8px 8px 0 0;
+        }
 
-    .subcategory-btn:first-child {
-      border-radius: 8px 8px 0 0;
-    }
+        .subcategory-btn:hover {
+            background: #f8f9fa;
+            color: var(--accent);
+        }
 
-    .subcategory-btn:hover {
-      background: #f8f9fa;
-      color: var(--accent);
-    }
+        . subcategory-btn.active {
+            background: var(--accent);
+            color: white;
+        }
 
-    . subcategory-btn.active {
-      background: var(--accent);
-      color: white;
-    }
+        . card-image-focus{ background:#fffdfb; border:1px solid #e9eaea; border-radius:12px; box-shadow:0 4px 20px rgba(37,48,97,0.06); transition:box-shadow . 18s, transform .14s, border-left .18s, background . 2s; display:flex; flex-direction:column; height:100%; position:relative; }
+        .card-image-focus:hover{ transform:translateY(-4px); box-shadow:0 10px 22px rgba(18,94,176,0.10); }
 
-    .card-image-focus{ background:#fffdfb; border:1px solid #e9eaea; border-radius:12px; box-shadow:0 4px 20px rgba(37,48,97,0.06); transition:box-shadow . 18s, transform .14s, border-left . 18s, background . 2s; display:flex; flex-direction:column; height:100%; position:relative; }
-    .card-image-focus:hover{ transform:translateY(-4px); box-shadow:0 10px 22px rgba(18,94,176,0.10); }
+        .card-image-focus. card-selected { border-left: 6px solid var(--green-ws); background: linear-gradient(90deg, rgba(35,191,61,0.04), rgba(255,255,255,0.0)); box-shadow: 0 10px 30px rgba(35,191,61,0.14); transform: translateY(-6px) scale(1.006); }
 
-    . card-image-focus. card-selected { border-left: 6px solid var(--green-ws); background: linear-gradient(90deg, rgba(35,191,61,0.04), rgba(255,255,255,0.0)); box-shadow: 0 10px 30px rgba(35,191,61,0.14); transform: translateY(-6px) scale(1.006); }
+        .oferta-cinta{ position:absolute; left:-36px; top:14px; z-index:20; background:linear-gradient(90deg,#ea4838 80%,#fca800 100%); color:#fff; padding:4px 34px; transform:rotate(-28deg); font-weight:800; font-size:. 95rem; border-radius:6px; box-shadow:0 6px 12px rgba(234,72,56,0.18); }
+        .badge-nuevo{ position:absolute; left:0; top:12px; z-index:15; background:linear-gradient(90deg,#ecbf28 55%,#ed9f16 100%); padding:5px 14px; font-weight:800; border-radius:0 8px 8px 0; color:#222; }
 
-    . oferta-cinta{ position:absolute; left:-36px; top:14px; z-index:20; background:linear-gradient(90deg,#ea4838 80%,#fca800 100%); color:#fff; padding:4px 34px; transform:rotate(-28deg); font-weight:800; font-size:. 95rem; border-radius:6px; box-shadow:0 6px 12px rgba(234,72,56,0. 18); }
-    .badge-nuevo{ position:absolute; left:0; top:12px; z-index:15; background:linear-gradient(90deg,#ecbf28 55%,#ed9f16 100%); padding:5px 14px; font-weight:800; border-radius:0 8px 8px 0; color:#222; }
+        .moq-badge { position:absolute; top:8px; right:8px; z-index:25; background:#ff8300e6; color:#fff; padding:6px 10px; font-weight:800; font-size:0.82rem; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
 
-    .moq-badge { position:absolute; top:8px; right:8px; z-index:25; background:#ff8300e6; color:#fff; padding:6px 10px; font-weight:800; font-size:0.82rem; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
+        .img-zona{ position:relative; z-index:1; height:220px; background:#fff; border-bottom:1px solid #eee; padding:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px; }
+        .img-zona img, .carousel-item img { width:auto; max-width:100%; height:100%; max-height:100%; object-fit:contain; object-position:center; display:block; border-radius:8px; opacity:0; transition:opacity .36s; }
+        .img-zona img[src], .carousel-item img[src] { opacity:1; }
 
-    . img-zona{ position:relative; z-index:1; height:220px; background:#fff; border-bottom:1px solid #eee; padding:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px; }
-    .img-zona img, .carousel-item img { width:auto; max-width:100%; height:100%; max-height:100%; object-fit:contain; object-position:center; display:block; border-radius:8px; opacity:0; transition:opacity .36s; }
-    .img-zona img[src], .carousel-item img[src] { opacity:1; }
+        .info-zona{ padding:12px; display:flex; flex-direction:column; gap:8px; flex-grow:1; }
+        .titulo-prod{ font-size:1.02rem; font-weight:700; color:#191e2f; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:1.2em; }
+        .codigo-text{ color:#676970; font-size:0.95rem; }
 
-    .info-zona{ padding:12px; display:flex; flex-direction:column; gap:8px; flex-grow:1; }
-    .titulo-prod{ font-size:1.02rem; font-weight:700; color:#191e2f; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:1.2em; }
-    .codigo-text{ color:#676970; font-size:0.95rem; }
+        .precio-unidad-label{ font-size:0.78rem; color:#8f8f8f; margin-bottom:2px; }
+        .precio-unidad-valor{ color:#9da0a2; text-decoration:line-through; font-weight:600; font-size:0.88rem; }
 
-    .precio-unidad-label{ font-size:0.78rem; color:#8f8f8f; margin-bottom:2px; }
-    .precio-unidad-valor{ color:#9da0a2; text-decoration:line-through; font-weight:600; font-size:0. 88rem; }
+        .precio-mayor-valor{ font-size:1.05rem; color:#d94d3f; font-weight:800; line-height:1; }
+        .precio-mayor-label{ font-size:0. 8rem; color:#c28813; font-weight:700; }
 
-    .precio-mayor-valor{ font-size:1.05rem; color:#d94d3f; font-weight:800; line-height:1; }
-    .precio-mayor-label{ font-size:0.8rem; color:#c28813; font-weight:700; }
+        .action-block{ position:relative; z-index:2; margin-top:6px; display:flex; flex-direction:column; align-items:center; gap:8px; }
 
-    . action-block{ position:relative; z-index:2; margin-top:6px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+        .inline-qty { display:inline-flex; align-items:center; gap:8px; }
+        .quote-qty-input { width:72px; padding:6px 8px; border-radius:8px; border:1px solid #d6d6d6; text-align:center; }
 
-    .inline-qty { display:inline-flex; align-items:center; gap:8px; }
-    .quote-qty-input { width:72px; padding:6px 8px; border-radius:8px; border:1px solid #d6d6d6; text-align:center; }
+        .color-select { padding:6px 8px; border-radius:8px; border:1px solid #d6d6d6; min-width:120px; }
 
-    .color-select { padding:6px 8px; border-radius:8px; border:1px solid #d6d6d6; min-width:120px; }
+        .add-quote-btn { background:#fff; border:1px dashed #c6c6c6; color:#333; padding:6px 10px; border-radius:10px; font-weight:600; font-size:0.88rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+        .add-quote-btn. selected { background:#e6f9ea; border:1px solid #1aa242; color:#0a6b1a; }
 
-    .add-quote-btn { background:#fff; border:1px dashed #c6c6c6; color:#333; padding:6px 10px; border-radius:10px; font-weight:600; font-size:0. 88rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
-    .add-quote-btn. selected { background:#e6f9ea; border:1px solid #1aa242; color:#0a6b1a; }
+        .floating-cta { position:fixed; right:18px; bottom:18px; z-index:1200; background:var(--green-ws); color:#fff; border-radius:999px; padding:12px 18px; font-weight:800; display:inline-flex; align-items:center; gap:10px; box-shadow:0 8px 28px rgba(35,191,61,0.18); cursor:pointer; border:none; }
+        .floating-cta . bs { background: #fff; color: #1d1d1d; padding:3px 8px; border-radius:8px; font-weight:700; }
 
-    . floating-cta { position:fixed; right:18px; bottom:18px; z-index:1200; background:var(--green-ws); color:#fff; border-radius:999px; padding:12px 18px; font-weight:800; display:inline-flex; align-items:center; gap:10px; box-shadow:0 8px 28px rgba(35,191,61,0.18); cursor:pointer; border:none; }
-    .floating-cta . bs { background: #fff; color: #1d1d1d; padding:3px 8px; border-radius:8px; font-weight:700; }
+        .modal-body . selected-list { max-height:260px; overflow:auto; margin-bottom:12px; }
+        .selected-item { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 4px; border-bottom:1px solid #efefef; }
+        .selected-item .left { flex:1; min-width:0; }
+        .selected-item .right { text-align:right; width:200px; }
 
-    .modal-body . selected-list { max-height:260px; overflow:auto; margin-bottom:12px; }
-    .selected-item { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 4px; border-bottom:1px solid #efefef; }
-    .selected-item . left { flex:1; min-width:0; }
-    . selected-item .right { text-align:right; width:200px; }
+        .qty-controls { display:inline-flex; gap:6px; align-items:center; }
+        .qty-controls button { padding:3px 8px; border-radius:6px; border:1px solid #d0d0d0; background:#fff; cursor:pointer; }
+        .remove-item { background:transparent; border:none; color:#cc3333; font-weight:700; cursor:pointer; }
 
-    .qty-controls { display:inline-flex; gap:6px; align-items:center; }
-    .qty-controls button { padding:3px 8px; border-radius:6px; border:1px solid #d0d0d0; background:#fff; cursor:pointer; }
-    .remove-item { background:transparent; border:none; color:#cc3333; font-weight:700; cursor:pointer; }
-
-    .load-more-wrap { text-align:center; margin:18px 0; }
-
-    @media (max-width:768px){ 
-      .img-zona{ height:260px; } 
-      .precio-mayor-valor{ font-size:1.2rem; } 
-      .subcategories {
-        position: fixed;
-        top: auto;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin-top: 0;
-        border-radius: 15px 15px 0 0;
-      }
-    }
-    @media (max-width:450px){ 
-      .img-zona{ height:200px; } 
-      . titulo-prod{ font-size:1rem; } 
-      .floating-cta { right:12px; bottom:12px; padding:10px 14px; }
-      .category-group {
-        margin: 2px;
-      }
-      .category-dropdown {
-        padding: 5px 12px;
-        font-size: 0.85rem;
-      }
-    }
-  </style>
+        @media (max-width:768px){ 
+            .img-zona{ height:260px; } 
+            .precio-mayor-valor{ font-size:1. 2rem; }
+            .subcategories {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin-top: 0;
+                border-radius: 15px 15px 0 0;
+            }
+        }
+        @media (max-width:450px){ 
+            .img-zona{ height:200px; } 
+            .titulo-prod{ font-size:1rem; } 
+            .floating-cta { right:12px; bottom:12px; padding:10px 14px; }
+            .category-group { margin: 2px; }
+            .category-dropdown { padding: 5px 12px; font-size: 0.85rem; }
+        }
+    </style>
 </head>
 <body>
-  <div class="header-clean d-flex align-items-center">
+<div class="header-clean d-flex align-items-center">
     <div class="container d-flex justify-content-between align-items-center">
-      <div class="fw-bold"><i class="bi bi-person-workspace"></i> Catálogo MAYORISTA</div>
-      <div class="badge bg-light text-secondary border" id="contador">0 Productos</div>
+        <div class="fw-bold"><i class="bi bi-person-workspace"></i> Catálogo MAYORISTA</div>
+        <div class="badge bg-light text-secondary border" id="contador">0 Productos</div>
     </div>
-  </div>
+</div>
 
-  <div class="categorias-wrapper" id="menu-cat"></div>
+<div class="categorias-wrapper" id="menu-cat"></div>
 
-  <div class="container-fluid py-2" style="text-align:right;">
+<div class="container-fluid py-2" style="text-align:right;">
     <input id="searchBox" placeholder="Buscar producto..." class="form-control" style="max-width:320px; display:inline-block;">
-  </div>
+</div>
 
-  <div class="container-fluid px-2 mt-3">
+<div class="container-fluid px-2 mt-3">
     <div id="productos" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
-      <div class="col-12 text-center py-5"><div class="spinner-border text-secondary" role="status"></div></div>
+        <div class="col-12 text-center py-5"><div class="spinner-border text-secondary" role="status"></div></div>
     </div>
+</div>
 
-    <div class="load-more-wrap">
-      <button id="loadMoreBtn" class="btn btn-outline-primary" style="display:none;">Cargar más</button>
-      <div id="loadingMore" style="display:none;margin-top:10px;"><div class="spinner-border spinner-border-sm text-secondary" role="status"></div> Cargando... </div>
-    </div>
-  </div>
-
-  <!-- Floating CTA (single) with Bs.  -->
-  <button id="floatingCta" class="floating-cta" type="button" data-bs-toggle="modal" data-bs-target="#cotizarModal" title="Cotizar ahora">
+<!-- Floating CTA (single) with Bs.  -->
+<button id="floatingCta" class="floating-cta" type="button" data-bs-toggle="modal" data-bs-target="#cotizarModal" title="Cotizar ahora">
     <span class="bs">Bs.</span>
     Cotizar ahora
     <span id="selectedCount" class="count" style="background:#fff;color:#111;padding:3px 7px;border-radius:8px;margin-left:6px;font-weight:700;">0</span>
-  </button>
+</button>
 
-  <!-- Modal: Cotizar -->
-  <div class="modal fade" id="cotizarModal" tabindex="-1" aria-labelledby="cotizarModalLabel" aria-hidden="true">
+<!-- Modal: Cotizar -->
+<div class="modal fade" id="cotizarModal" tabindex="-1" aria-labelledby="cotizarModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="cotizarModalLabel">Enviar cotización por WhatsApp</h5>
-          <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p>Productos seleccionados (ajusta cantidades o colores si quieres):</p>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cotizarModalLabel">Enviar cotización por WhatsApp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>Productos seleccionados (ajusta cantidades o colores si quieres):</p>
 
-          <div class="selected-list" id="selectedList">
-            <!-- items dinámicos -->
-          </div>
+                <div class="selected-list" id="selectedList">
+                    <!-- items dinámicos -->
+                </div>
 
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div><strong>Total estimado:</strong></div>
-            <div><strong id="selectedTotal">Bs. 0</strong></div>
-          </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div><strong>Total estimado:</strong></div>
+                    <div><strong id="selectedTotal">Bs.  0</strong></div>
+                </div>
 
-          <label for="cotizarText" class="form-label">Mensaje (opcional):</label>
-          <textarea id="cotizarText" class="form-control" placeholder="Escribe tu mensaje... "></textarea>
-          <div class="form-text mt-2">El mensaje final incluirá los códigos, color, cantidades y total estimado.</div>
+                <label for="cotizarText" class="form-label">Mensaje (opcional):</label>
+                <textarea id="cotizarText" class="form-control" placeholder="Escribe tu mensaje..."></textarea>
+                <div class="form-text mt-2">El mensaje final incluirá los códigos, color, cantidades y total estimado.</div>
+            </div>
+            <div class="modal-footer">
+                <button id="clearSelection" type="button" class="btn btn-outline-secondary">Limpiar selección</button>
+                <button id="sendWhatsApp" type="button" class="btn btn-success">Enviar por WhatsApp</button>
+            </div>
         </div>
-        <div class="modal-footer">
-          <button id="clearSelection" type="button" class="btn btn-outline-secondary">Limpiar selección</button>
-          <button id="sendWhatsApp" type="button" class="btn btn-success">Enviar por WhatsApp</button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  <!-- Appwrite client -->
-  <script type="module">
-    import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
+<!-- Appwrite client -->
+<script type="module">
+    import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14. 0.1/+esm";
 
     const MI_WHATSAPP = "59161333335";
-    const DEFAULT_MOQ = "6 UNID"; // fallback si p.moq es null/undefined/""
+    const DEFAULT_MOQ = "6 UNID";
     const DATABASE_ID = '692ee774002e9a3c8601';
     const COLLECTION_ID = 'catalogo';
 
-    // Paginación por cursores
-    const pageSize = 50; // ajusta si quieres (50/100, etc.)
-    let lastCursorId = null; // id del último documento recibido (cursor)
-    let noMoreDocs = false;
-    let isFetching = false;
-
-    let todosLosProductos = []; // acumulador de páginas cargadas
-    // Map key = `${codigo}|${color}` => { codigo, descripcion, color, precio (number), qty }
+    let todosLosProductos = [];
     let selectedForQuote = new Map();
 
     function parsePriceToNumber(raw) {
-      if (raw === undefined || raw === null) return 0;
-      const s = String(raw).replace(/[^\d.,-]/g, ''). replace(',', '.');
-      const n = parseFloat(s);
-      return Number.isFinite(n) ?  n : 0;
+        if (raw === undefined || raw === null) return 0;
+        const s = String(raw).replace(/[^\d.,-]/g, ''). replace(',', '.');
+        const n = parseFloat(s);
+        return Number. isFinite(n) ? n : 0;
     }
 
     function formatCurrency(n) {
-      return 'Bs.  ' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        return 'Bs. ' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
     }
 
     function updateSelectionUI() {
-      const count = selectedForQuote.size;
-      document. getElementById('selectedCount'). innerText = count;
+        const count = selectedForQuote.size;
+        document.getElementById('selectedCount').innerText = count;
 
-      const list = document.getElementById('selectedList');
-      list.innerHTML = '';
-      let total = 0;
-      selectedForQuote.forEach((item, key) => {
-        const subtotal = item.precio * item.qty;
-        total += subtotal;
-        const el = document.createElement('div');
-        el. className = 'selected-item';
-        el.dataset.key = key;
-        el.innerHTML = `
+        const list = document.getElementById('selectedList');
+        list.innerHTML = '';
+        let total = 0;
+        selectedForQuote.forEach((item, key) => {
+            const subtotal = item.precio * item.qty;
+            total += subtotal;
+            const el = document.createElement('div');
+            el.className = 'selected-item';
+            el.dataset.key = key;
+            el.innerHTML = `
           <div class="left">
-            <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item. descripcion}</div>
-            <div style="font-size:0.9rem;color:#666">
-              REF: ${item. codigo} • Color:
+            <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.descripcion}</div>
+            <div style="font-size:0. 9rem;color:#666">
+              REF: ${item.codigo} • Color:
               <input type="text" value="${item.color || ''}" data-key="${key}" class="form-control form-control-sm color-edit-input" style="display:inline-block; width:120px; margin-left:6px;" />
             </div>
           </div>
@@ -307,360 +286,262 @@
               </div>
               <button class="remove-item" data-key="${key}" title="Quitar">✕</button>
             </div>
-            <div style="font-size:0. 9rem;color:#444;margin-top:6px;">Subtotal: <strong>${formatCurrency(subtotal)}</strong></div>
+            <div style="font-size:0.9rem;color:#444;margin-top:6px;">Subtotal: <strong>${formatCurrency(subtotal)}</strong></div>
           </div>
         `;
-        list.appendChild(el);
-      });
-
-      document.getElementById('selectedTotal').innerText = formatCurrency(total);
-
-      // attach events
-      list.querySelectorAll('.qty-incr'). forEach(b => b.addEventListener('click', (e) => {
-        const k = e.currentTarget.dataset.key; const it = selectedForQuote.get(k);
-        if (! it) return;
-        it.qty += 1;
-        selectedForQuote. set(k, it);
-        // sync card qty input if present
-        document.querySelectorAll(`.add-quote-btn`).forEach(btn => {
-          const code = btn.dataset. codigo;
-          const color = decodeURIComponent(btn.dataset.color || '');
-          const keyBtn = `${code}|${color}`;
-          if (keyBtn === k) {
-            const input = btn.closest('.info-zona').querySelector('.quote-qty-input');
-            if (input) input.value = it. qty;
-          }
+            list.appendChild(el);
         });
-        updateSelectionUI();
-      }));
-      list.querySelectorAll('.qty-decr').forEach(b => b.addEventListener('click', (e) => {
-        const k = e. currentTarget.dataset. key; const it = selectedForQuote. get(k);
-        if (!it) return;
-        if (it.qty > 1) {
-          it.qty -= 1;
-          selectedForQuote. set(k, it);
-          // sync card qty input
-          document.querySelectorAll(`.add-quote-btn`).forEach(btn => {
-            const code = btn.dataset. codigo;
-            const color = decodeURIComponent(btn. dataset.color || '');
-            const keyBtn = `${code}|${color}`;
-            if (keyBtn === k) {
-              const input = btn.closest('. info-zona').querySelector('.quote-qty-input');
-              if (input) input. value = it.qty;
+
+        document.getElementById('selectedTotal').innerText = formatCurrency(total);
+
+        list.querySelectorAll('.qty-incr').forEach(b => b.addEventListener('click', (e) => {
+            const k = e.currentTarget.dataset.key; const it = selectedForQuote.get(k);
+            if (! it) return;
+            it.qty += 1;
+            selectedForQuote.set(k, it);
+            document.querySelectorAll(`.add-quote-btn`).forEach(btn => {
+                const code = btn.dataset.codigo;
+                const color = decodeURIComponent(btn.dataset.color || '');
+                const keyBtn = `${code}|${color}`;
+                if (keyBtn === k) {
+                    const input = btn.closest('. info-zona').querySelector('.quote-qty-input');
+                    if (input) input.value = it.qty;
+                }
+            });
+            updateSelectionUI();
+        }));
+        list.querySelectorAll('. qty-decr').forEach(b => b.addEventListener('click', (e) => {
+            const k = e.currentTarget.dataset. key; const it = selectedForQuote.get(k);
+            if (!it) return;
+            if (it.qty > 1) {
+                it.qty -= 1;
+                selectedForQuote. set(k, it);
+                document.querySelectorAll(`. add-quote-btn`).forEach(btn => {
+                    const code = btn.dataset.codigo;
+                    const color = decodeURIComponent(btn.dataset. color || '');
+                    const keyBtn = `${code}|${color}`;
+                    if (keyBtn === k) {
+                        const input = btn.closest('.info-zona').querySelector('.quote-qty-input');
+                        if (input) input.value = it.qty;
+                    }
+                });
+            } else {
+                selectedForQuote.delete(k);
+                document.querySelectorAll('. add-quote-btn').forEach(btn => {
+                    const code = btn.dataset.codigo;
+                    const color = decodeURIComponent(btn.dataset.color || '');
+                    const keyBtn = `${code}|${color}`;
+                    if (keyBtn === k) {
+                        btn.classList.remove('selected');
+                        const card = btn.closest('.card-image-focus');
+                        if (card) card.classList.remove('card-selected');
+                    }
+                });
             }
-          });
-        } else {
-          selectedForQuote.delete(k);
-          // untoggle button + remove highlight
-          document.querySelectorAll('. add-quote-btn'). forEach(btn => {
-            const code = btn.dataset.codigo;
-            const color = decodeURIComponent(btn.dataset.color || '');
-            const keyBtn = `${code}|${color}`;
-            if (keyBtn === k) {
-              btn.classList.remove('selected');
-              const card = btn.closest('. card-image-focus');
-              if (card) card.classList.remove('card-selected');
-            }
-          });
+            updateSelectionUI();
+        }));
+        list.querySelectorAll('.remove-item').forEach(b => b.addEventListener('click', (e) => {
+            const k = e.currentTarget.dataset.key;
+            selectedForQuote.delete(k);
+            document.querySelectorAll('.add-quote-btn').forEach(btn => {
+                const code = btn.dataset.codigo;
+                const color = decodeURIComponent(btn.dataset.color || '');
+                const keyBtn = `${code}|${color}`;
+                if (keyBtn === k) {
+                    btn. classList.remove('selected');
+                    const input = btn.closest('.info-zona').querySelector('.quote-qty-input');
+                    if (input) input.value = 1;
+                    const card = btn.closest('.card-image-focus');
+                    if (card) card.classList. remove('card-selected');
+                }
+            });
+            updateSelectionUI();
+        }));
+
+        list.querySelectorAll('.color-edit-input').forEach(inp => {
+            inp.addEventListener('input', (e) => {
+                const k = e.currentTarget.dataset.key;
+                const it = selectedForQuote.get(k);
+                if (!it) return;
+                it.color = e.currentTarget.value. trim();
+                selectedForQuote.set(k, it);
+            });
+        });
+
+        const ta = document.getElementById('cotizarText');
+        if (! ta. value || ta.value.trim(). startsWith('Hola, quiero cotizar')) {
+            const lines = [];
+            selectedForQuote.forEach((it) => {
+                lines.push(`${it.codigo} (${it.color || 'N/A'}) x${it.qty} @ ${formatCurrency(it.precio)} = ${formatCurrency(it. precio * it.qty)}`);
+            });
+            const base = lines.length
+                ? `Hola, quiero cotizar los siguientes productos:\n${lines.join('\n')}\nTotal estimado: ${formatCurrency(total)}\n\nDetalles adicionales:`
+                : 'Hola, quiero cotizar.  Indica productos o copia/pega referencias aquí.';
+            if (! ta.value) ta.value = base;
         }
-        updateSelectionUI();
-      }));
-      list. querySelectorAll('. remove-item').forEach(b => b. addEventListener('click', (e) => {
-        const k = e.currentTarget.dataset.key;
-        selectedForQuote. delete(k);
-        // untoggle buttons in grid and reset qty inputs
-        document. querySelectorAll('. add-quote-btn').forEach(btn => {
-          const code = btn.dataset. codigo;
-          const color = decodeURIComponent(btn. dataset.color || '');
-          const keyBtn = `${code}|${color}`;
-          if (keyBtn === k) {
-            btn.classList.remove('selected');
-            const input = btn.closest('. info-zona').querySelector('.quote-qty-input');
-            if (input) input. value = 1;
-            const card = btn.closest('.card-image-focus');
-            if (card) card. classList.remove('card-selected');
-          }
-        });
-        updateSelectionUI();
-      }));
-
-      // color edit inputs in modal: update map on change
-      list.querySelectorAll('.color-edit-input').forEach(inp => {
-        inp.addEventListener('input', (e) => {
-          const k = e.currentTarget. dataset.key;
-          const it = selectedForQuote.get(k);
-          if (! it) return;
-          it.color = e.currentTarget.value. trim();
-          selectedForQuote.set(k, it);
-        });
-      });
-
-      // update textarea default message if user hasn't typed custom
-      const ta = document.getElementById('cotizarText');
-      if (! ta. value || ta.value.trim(). startsWith('Hola, quiero cotizar')) {
-        const lines = [];
-        selectedForQuote.forEach((it) => {
-          lines.push(`${it.codigo} (${it.color || 'N/A'}) x${it.qty} @ ${formatCurrency(it.precio)} = ${formatCurrency(it.precio * it.qty)}`);
-        });
-        const base = lines.length
-          ? `Hola, quiero cotizar los siguientes productos:\n${lines.join('\n')}\nTotal estimado: ${formatCurrency(total)}\n\nDetalles adicionales:`
-          : 'Hola, quiero cotizar.  Indica productos o copia/pega referencias aquí. ';
-        if (! ta.value) ta.value = base;
-      }
     }
 
-    async function fetchPage(databases, cursorId = null) {
-      if (noMoreDocs || isFetching) return [];
-      isFetching = true;
-      document.getElementById('loadingMore').style.display = 'inline-block';
-      document.getElementById('loadMoreBtn').style.display = 'none';
-
-      try {
-        const queries = [ Query.limit(pageSize) ];
-        if (cursorId) queries.push(Query. cursorAfter(cursorId));
-        const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, queries);
-        const docs = res.documents || [];
-        // update cursor: last document id of this batch
-        if (docs.length > 0) {
-          lastCursorId = docs[docs.length - 1].$id;
-        }
-        // if less than pageSize => no hay más
-        if (docs.length < pageSize) {
-          noMoreDocs = true;
-        }
-        return docs;
-      } catch (err) {
-        console.error('Error al cargar página:', err);
-        // decide comportamiento: dejo noMoreDocs = true para evitar bucle, y muestro botón para reintentar
-        noMoreDocs = false;
-        return Promise.reject(err);
-      } finally {
-        isFetching = false;
-        document.getElementById('loadingMore').style.display = 'none';
-      }
-    }
-
-    function updateLoadMoreButton() {
-      const btn = document.getElementById('loadMoreBtn');
-      if (noMoreDocs) {
-        btn.style.display = 'none';
-      } else {
-        btn.style.display = 'inline-block';
-      }
-    }
-
-    // Función para construir menu con submenu
+    // FUNCIÓN PARA CONSTRUIR MENU CON SUBMENU
     function buildCategoryMenu(productos) {
-      const categorias = new Set();
-      const relojesCategorias = new Set();
-      
-      productos.forEach(p => {
-        const cat = p.categoria || 'General';
-        categorias.add(cat);
+        const categorias = new Set();
+        const relojesCategorias = new Set();
         
-        // Si la categoría contiene "reloj", agregarla a subcategorías
-        if (cat.toLowerCase().includes('reloj')) {
-          relojesCategorias.add(cat);
-        }
-      });
-
-      let htmlMenu = `<button class="btn-cat active" onclick="window.filtrar('Todo', this)">Todo</button>`;
-      
-      // Agregar categorías regulares (excepto las de relojes)
-      categorias.forEach(cat => {
-        if (! cat.toLowerCase().includes('reloj')) {
-          htmlMenu += `<button class="btn-cat" onclick="window.filtrar('${cat}', this)">${cat}</button>`;
-        }
-      });
-
-      // Agregar submenu de relojes
-      if (relojesCategorias.size > 0) {
-        htmlMenu += `
-          <div class="category-group">
-            <button class="category-dropdown">
-              Relojes 
-              <i class="bi bi-chevron-down"></i>
-            </button>
-            <div class="subcategories">
-        `;
-        
-        // Agregar subcategorías de relojes
-        relojesCategorias.forEach(cat => {
-          const displayName = cat.replace(/reloj/i, '').trim() || 'Todos';
-          htmlMenu += `<button class="subcategory-btn" onclick="window.filtrar('${cat}', this)">${displayName}</button>`;
+        productos.forEach(p => {
+            const cat = p.categoria || 'General';
+            categorias.add(cat);
+            
+            if (cat. toLowerCase(). includes('reloj')) {
+                relojesCategorias.add(cat);
+            }
         });
-        
-        htmlMenu += `
-            </div>
-          </div>
-        `;
-      }
 
-      return htmlMenu;
+        let htmlMenu = `<button class="btn-cat active" onclick="window.filtrar('Todo', this)">Todo</button>`;
+        
+        categorias.forEach(cat => {
+            if (! cat.toLowerCase().includes('reloj')) {
+                htmlMenu += `<button class="btn-cat" onclick="window.filtrar('${cat}', this)">${cat}</button>`;
+            }
+        });
+
+        if (relojesCategorias. size > 0) {
+            htmlMenu += `
+                <div class="category-group">
+                    <button class="category-dropdown">
+                        Relojes 
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="subcategories">
+            `;
+            
+            relojesCategorias. forEach(cat => {
+                const displayName = cat.replace(/reloj/i, '').trim() || 'Todos';
+                htmlMenu += `<button class="subcategory-btn" onclick="window.filtrar('${cat}', this)">${displayName}</button>`;
+            });
+            
+            htmlMenu += `
+                    </div>
+                </div>
+            `;
+        }
+
+        return htmlMenu;
     }
 
     async function iniciar(){
-      const divProd = document.getElementById('productos');
-      const menuCat = document.getElementById('menu-cat');
-      const spanCount = document.getElementById('contador');
+        const divProd = document.getElementById('productos');
+        const menuCat = document.getElementById('menu-cat');
+        const spanCount = document.getElementById('contador');
 
-      try{
-        const client = new Client(). setEndpoint('https://fra. cloud.appwrite.io/v1'). setProject('692ee6b70012153cd33c');
-        const databases = new Databases(client);
+        try{
+            const client = new Client(). setEndpoint('https://fra. cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
+            const databases = new Databases(client);
+            const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
 
-        // cargar primera página (sin cursor)
-        try {
-          const firstDocs = await fetchPage(databases, null);
-          todosLosProductos. push(...firstDocs);
-          // si firstDocs es vacío -> no hay nada
-          if (firstDocs.length === 0) noMoreDocs = true;
-        } catch (pageErr) {
-          console.error('Error cargando la primera página:', pageErr);
-          divProd.innerHTML = `<div class="text-danger text-center p-4">No se pudo cargar la primera página. <br><small>${pageErr.message || pageErr}</small><br><button onclick="location.reload()" class="btn btn-outline-primary mt-2">Reintentar</button></div>`;
-          return;
+            todosLosProductos = res. documents || [];
+            // spanCount.innerText = `${todosLosProductos. length} Productos`;
+
+            menuCat.innerHTML = buildCategoryMenu(todosLosProductos);
+
+            renderizar(todosLosProductos);
+
+        }catch(err){
+            divProd.innerHTML = `<div class="text-danger text-center p-4">No se pudo conectar con el catálogo. <br><small>${err.message}</small><br><button onclick="location.reload()" class="btn btn-outline-primary mt-2">Reintentar</button></div>`;
+            console.error("Error iniciar:", err);
         }
-
-        // NO mostrar contador al cliente
-        // spanCount.innerText = `${todosLosProductos.length} Productos (cargados)`;
-
-        // Usar la nueva función para construir el menu
-        menuCat.innerHTML = buildCategoryMenu(todosLosProductos);
-
-        renderizar(todosLosProductos);
-
-        // mostrar/ocultar boton cargar más
-        updateLoadMoreButton();
-
-        // evento del botón "Cargar más"
-        document. getElementById('loadMoreBtn').addEventListener('click', async () => {
-          try {
-            document.getElementById('loadMoreBtn').disabled = true;
-            const newDocs = await fetchPage(databases, lastCursorId);
-            if (newDocs && newDocs.length) {
-              todosLosProductos. push(...newDocs);
-              
-              // NO mostrar contador al cliente
-              // spanCount.innerText = `${todosLosProductos.length} Productos (cargados)`;
-              
-              // actualizar menu con nuevas categorías
-              menuCat. innerHTML = buildCategoryMenu(todosLosProductos);
-              
-              renderizar(todosLosProductos);
-            } else {
-              // si no trajo más, marcar sin más docs
-              noMoreDocs = true;
-            }
-          } catch (err) {
-            console.error('Error cargando más documentos:', err);
-            alert('Ocurrió un error al cargar más productos. Revisa la consola o reintenta.');
-          } finally {
-            document.getElementById('loadMoreBtn').disabled = false;
-            updateLoadMoreButton();
-          }
-        });
-
-      }catch(err){
-        divProd.innerHTML = `<div class="text-danger text-center p-4">No se pudo conectar con el catálogo.<br><small>${err.message}</small><br><button onclick="location.reload()" class="btn btn-outline-primary mt-2">Reintentar</button></div>`;
-        console.error("Error iniciar:", err);
-      }
     }
 
-    // Use codigo|color as unique key so same code with different color can be separate
     function toggleSelectFromButton(btn) {
-      const codigo = btn.dataset. codigo;
-      const desc = decodeURIComponent(btn.dataset.desc || '');
-      const colorSelect = btn.closest('. info-zona').querySelector('.color-select');
-      const colorFromInput = colorSelect ?  (colorSelect.value || colorSelect.value. trim()) : decodeURIComponent(btn.dataset.color || '');
-      const color = colorFromInput || '';
-      const rawPriceBo = btn.dataset.pricebo || btn.dataset.price || '0';
-      const precio = parsePriceToNumber(rawPriceBo);
-      const qtyInput = btn. closest('.info-zona').querySelector('.quote-qty-input');
-      const qty = Math.max(1, parseInt(qtyInput ?  qtyInput.value : 1) || 1);
+        const codigo = btn.dataset.codigo;
+        const desc = decodeURIComponent(btn.dataset.desc || '');
+        const colorSelect = btn.closest('.info-zona').querySelector('.color-select');
+        const colorFromInput = colorSelect ?  (colorSelect.value || colorSelect.value.trim()) : decodeURIComponent(btn.dataset.color || '');
+        const color = colorFromInput || '';
+        const rawPriceBo = btn.dataset.pricebo || btn.dataset.price || '0';
+        const precio = parsePriceToNumber(rawPriceBo);
+        const qtyInput = btn.closest('.info-zona').querySelector('.quote-qty-input');
+        const qty = Math.max(1, parseInt(qtyInput ?  qtyInput.value : 1) || 1);
 
-      if (! codigo) return;
-      const key = `${codigo}|${color}`;
-      const cardEl = btn.closest('. card-image-focus');
+        if (! codigo) return;
+        const key = `${codigo}|${color}`;
+        const cardEl = btn.closest('.card-image-focus');
 
-      if (selectedForQuote.has(key)) {
-        selectedForQuote.delete(key);
-        btn.classList.remove('selected');
-        if (cardEl) cardEl.classList.remove('card-selected');
-        if (qtyInput) qtyInput.value = 1;
-      } else {
-        selectedForQuote.set(key, { codigo, descripcion: desc, color: color, precio, qty });
-        btn.classList.add('selected');
-        if (cardEl) cardEl.classList. add('card-selected');
-      }
-      updateSelectionUI();
+        if (selectedForQuote.has(key)) {
+            selectedForQuote. delete(key);
+            btn.classList.remove('selected');
+            if (cardEl) cardEl.classList.remove('card-selected');
+            if (qtyInput) qtyInput.value = 1;
+        } else {
+            selectedForQuote.set(key, { codigo, descripcion: desc, color: color, precio, qty });
+            btn.classList.add('selected');
+            if (cardEl) cardEl.classList.add('card-selected');
+        }
+        updateSelectionUI();
     }
 
     function renderizar(lista){
-      const divProd = document. getElementById('productos');
-      if(! lista || lista.length === 0){
-        divProd.innerHTML = '<div class="col-12 text-center text-muted py-5">No hay productos. </div>';
-        return;
-      }
-      let html = '';
-      lista.forEach((p, index) => {
-        const codigo = p.codigo || 'S/C';
-        const desc = p.descripcion || '';
-        const precioU = p.precioUnidad || '0';
-        const precioM = p.preciopormayor || '0';
-        const precioBOraw = p.precioBO || p.precioBol || p.precioBolivianos || p.preciopormayor || precioM || precioU;
-        const precioBO = precioBOraw;
-
-        // Colors detection
-        let colorsArr = [];
-        if (Array.isArray(p.colores) && p.colores.length) colorsArr = p. colores;
-        else if (Array.isArray(p.colors) && p.colors.length) colorsArr = p.colors;
-        else if (p.color) colorsArr = [p.color];
-        else if (p.color1) colorsArr = [p.color1];
-        else if (p.colores_text) colorsArr = String(p.colores_text).split(',').map(s => s.trim()). filter(Boolean);
-
-        // MOQ handling: if null/undefined/"" => fallback; if 0 => hide; if >0 => show MIN.  n UNID
-        const rawMoq = p.moq;
-        let moqBadgeHtml = '';
-        if (rawMoq === undefined || rawMoq === null || String(rawMoq).trim() === '') {
-          moqBadgeHtml = `<div class="moq-badge">MIN. ${DEFAULT_MOQ}</div>`;
-        } else {
-          const digits = String(rawMoq).match(/\d+/);
-          const n = digits ? parseInt(digits[0], 10) : NaN;
-          if (Number.isFinite(n) && n > 0) {
-            moqBadgeHtml = `<div class="moq-badge">MIN. ${n} UNID</div>`;
-          } else {
-            moqBadgeHtml = ''; // hide when moq === 0 or non-numeric
-          }
+        const divProd = document.getElementById('productos');
+        if(! lista || lista.length === 0){
+            divProd.innerHTML = '<div class="col-12 text-center text-muted py-5">No hay productos. </div>';
+            return;
         }
+        let html = '';
+        lista.forEach((p, index) => {
+            const codigo = p.codigo || 'S/C';
+            const desc = p. descripcion || '';
+            const precioU = p.precioUnidad || '0';
+            const precioM = p.preciopormayor || '0';
+            const precioBOraw = p.precioBO || p.precioBol || p.precioBolivianos || p.preciopormayor || precioM || precioU;
+            const precioBO = precioBOraw;
 
-        const badgeNuevo = p.nuevo ? `<div class="badge-nuevo">¡Nuevo!</div>` : '';
-        const ofertaCinta = p.oferta ? `<div class="oferta-cinta">¡OFERTA!</div>` : '';
+            let colorsArr = [];
+            if (Array.isArray(p.colores) && p.colores.length) colorsArr = p.colores;
+            else if (Array.isArray(p.colors) && p.colors.length) colorsArr = p.colors;
+            else if (p.color) colorsArr = [p.color];
+            else if (p.color1) colorsArr = [p. color1];
+            else if (p.colores_text) colorsArr = String(p.colores_text). split(',').map(s => s.trim()). filter(Boolean);
 
-        const imagenes = [];
-        if(p.imagen) imagenes.push(p.imagen);
-        if(p. imagen2) imagenes.push(p. imagen2);
-        if(p.imagen3) imagenes. push(p.imagen3);
-        if(imagenes.length === 0) imagenes.push('https://via.placeholder. com/600x400? text=SIN+FOTO');
+            const rawMoq = p.moq;
+            let moqBadgeHtml = '';
+            if (rawMoq === undefined || rawMoq === null || String(rawMoq).trim() === '') {
+                moqBadgeHtml = `<div class="moq-badge">MIN.  ${DEFAULT_MOQ}</div>`;
+            } else {
+                const digits = String(rawMoq). match(/\d+/);
+                const n = digits ? parseInt(digits[0], 10) : NaN;
+                if (Number.isFinite(n) && n > 0) {
+                    moqBadgeHtml = `<div class="moq-badge">MIN. ${n} UNID</div>`;
+                } else {
+                    moqBadgeHtml = '';
+                }
+            }
 
-        let htmlImagen = '';
-        if(imagenes.length > 1){
-          let items = '';
-          imagenes. forEach((u,i) => {
-            items += `<div class="carousel-item ${i===0? 'active':''}"><img src="${u}" alt="Foto ${i+1}: ${desc}" loading="lazy"></div>`;
-          });
-          htmlImagen = `<div id="carousel-${index}" class="carousel slide" data-bs-interval="false"><div class="carousel-inner">${items}</div><button class="carousel-control-prev" type="button" data-bs-target="#carousel-${index}" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button><button class="carousel-control-next" type="button" data-bs-target="#carousel-${index}" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button></div>`;
-        } else {
-          htmlImagen = `<img src="${imagenes[0]}" alt="${desc||codigo}" loading="lazy">`;
-        }
+            const badgeNuevo = p.nuevo ? `<div class="badge-nuevo">¡Nuevo!</div>` : '';
+            const ofertaCinta = p.oferta ? `<div class="oferta-cinta">¡OFERTA! </div>` : '';
 
-        // Build color selector
-        let colorSelectorHtml = '';
-        if (colorsArr.length > 0) {
-          colorSelectorHtml = `<select class="color-select">` + colorsArr. map(c => `<option value="${c}">${c}</option>`).join('') + `</select>`;
-        } else {
-          colorSelectorHtml = `<input class="color-select form-control form-control-sm" placeholder="Escribe color" style="width:140px;" />`;
-        }
+            const imagenes = [];
+            if(p.imagen) imagenes.push(p.imagen);
+            if(p.imagen2) imagenes.push(p. imagen2);
+            if(p.imagen3) imagenes.push(p.imagen3);
+            if(imagenes.length === 0) imagenes.push('https://via.placeholder.com/600x400?text=SIN+FOTO');
 
-        html += `
+            let htmlImagen = '';
+            if(imagenes.length > 1){
+                let items = '';
+                imagenes.forEach((u,i) => {
+                    items += `<div class="carousel-item ${i===0? 'active':''}"><img src="${u}" alt="Foto ${i+1}: ${desc}" loading="lazy"></div>`;
+                });
+                htmlImagen = `<div id="carousel-${index}" class="carousel slide" data-bs-interval="false"><div class="carousel-inner">${items}</div><button class="carousel-control-prev" type="button" data-bs-target="#carousel-${index}" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button><button class="carousel-control-next" type="button" data-bs-target="#carousel-${index}" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button></div>`;
+            } else {
+                htmlImagen = `<img src="${imagenes[0]}" alt="${desc||codigo}" loading="lazy">`;
+            }
+
+            let colorSelectorHtml = '';
+            if (colorsArr.length > 0) {
+                colorSelectorHtml = `<select class="color-select">` + colorsArr.map(c => `<option value="${c}">${c}</option>`).join('') + `</select>`;
+            } else {
+                colorSelectorHtml = `<input class="color-select form-control form-control-sm" placeholder="Escribe color" style="width:140px;" />`;
+            }
+
+            html += `
           <div class="col">
             <div class="card-image-focus position-relative" data-doc-id="${p.$id || ''}">
               ${badgeNuevo}
@@ -706,112 +587,105 @@
             </div>
           </div>
         `;
-      });
-
-      divProd.innerHTML = html;
-
-      // attach listeners for add-quote-btn
-      document.querySelectorAll('.add-quote-btn').forEach(btn => {
-        btn.dataset.desc = decodeURIComponent(btn.dataset.desc || '');
-        btn.dataset.color = decodeURIComponent(btn.dataset. color || '');
-        btn.dataset. pricebo = decodeURIComponent(btn.dataset.pricebo || '');
-        btn.addEventListener('click', (ev) => {
-          toggleSelectFromButton(ev.currentTarget);
         });
-      });
 
-      // restore selected state styling if items already selected
-      document. querySelectorAll('. add-quote-btn'). forEach(btn => {
-        const code = btn.dataset. codigo;
-        const color = decodeURIComponent(btn.dataset.color || '');
-        const key = `${code}|${color}`;
-        if (selectedForQuote.has(key)) {
-          btn. classList.add('selected');
-          const card = btn.closest('.card-image-focus');
-          if (card) card.classList.add('card-selected');
-          const it = selectedForQuote.get(key);
-          const input = btn.closest('.info-zona'). querySelector('.quote-qty-input');
-          if (input) input.value = it. qty;
-        } else {
-          btn.classList.remove('selected');
-        }
-      });
+        divProd.innerHTML = html;
 
-      updateSelectionUI();
+        document.querySelectorAll('.add-quote-btn').forEach(btn => {
+            btn.dataset.desc = decodeURIComponent(btn.dataset.desc || '');
+            btn.dataset.color = decodeURIComponent(btn.dataset.color || '');
+            btn.dataset.pricebo = decodeURIComponent(btn.dataset.pricebo || '');
+            btn.addEventListener('click', (ev) => {
+                toggleSelectFromButton(ev.currentTarget);
+            });
+        });
+
+        document.querySelectorAll('.add-quote-btn').forEach(btn => {
+            const code = btn.dataset.codigo;
+            const color = decodeURIComponent(btn.dataset.color || '');
+            const key = `${code}|${color}`;
+            if (selectedForQuote.has(key)) {
+                btn.classList.add('selected');
+                const card = btn.closest('.card-image-focus');
+                if (card) card.classList.add('card-selected');
+                const it = selectedForQuote.get(key);
+                const input = btn.closest('.info-zona').querySelector('.quote-qty-input');
+                if (input) input.value = it.qty;
+            } else {
+                btn.classList. remove('selected');
+            }
+        });
+
+        updateSelectionUI();
     }
 
-    // send WhatsApp: include codes, colors, quantities and total
     document.addEventListener('click', (e) => {
-      if (e.target && e.target.id === 'sendWhatsApp') {
-        const ta = document.getElementById('cotizarText');
-        const userText = ta.value. trim();
+        if (e.target && e.target.id === 'sendWhatsApp') {
+            const ta = document.getElementById('cotizarText');
+            const userText = ta.value.trim();
 
-        let summaryLines = [];
-        let total = 0;
-        selectedForQuote.forEach(it => {
-          summaryLines.push(`${it.codigo} • ${it.color || 'N/A'} • x${it.qty} = ${formatCurrency(it.precio * it.qty)}`);
-          total += it.precio * it.qty;
-        });
-        const summary = summaryLines.length
-          ? `Productos:\n${summaryLines.join('\n')}\nTotal estimado: ${formatCurrency(total)}\n\n`
-          : '';
+            let summaryLines = [];
+            let total = 0;
+            selectedForQuote.forEach(it => {
+                summaryLines.push(`${it. codigo} • ${it.color || 'N/A'} • x${it.qty} = ${formatCurrency(it.precio * it.qty)}`);
+                total += it.precio * it.qty;
+            });
+            const summary = summaryLines. length
+                ? `Productos:\n${summaryLines.join('\n')}\nTotal estimado: ${formatCurrency(total)}\n\n`
+                : '';
 
-        const finalMessage = summary + (userText || 'Hola, quiero cotizar estos productos.');
-        if (! selectedForQuote.size) {
-          if (! confirm('No hay productos seleccionados. ¿Deseas enviar un mensaje libre por WhatsApp?')) return;
+            const finalMessage = summary + (userText || 'Hola, quiero cotizar estos productos.');
+            if (!selectedForQuote.size) {
+                if (! confirm('No hay productos seleccionados. ¿Deseas enviar un mensaje libre por WhatsApp?')) return;
+            }
+            const waLink = `https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(finalMessage)}`;
+            window.open(waLink, '_blank');
         }
-        const waLink = `https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(finalMessage)}`;
-        window.open(waLink, '_blank');
-      }
 
-      // clear selection
-      if (e.target && e.target.id === 'clearSelection') {
-        selectedForQuote.clear();
-        document.querySelectorAll('.add-quote-btn. selected').forEach(b => b.classList. remove('selected'));
-        document.querySelectorAll('.card-image-focus. card-selected').forEach(c => c.classList. remove('card-selected'));
-        document.querySelectorAll('.quote-qty-input').forEach(i => i.value = 1);
-        document.querySelectorAll('.color-select').forEach(s => { if (s.tagName === 'INPUT') s.value = ''; });
-        updateSelectionUI();
-      }
+        if (e.target && e.target.id === 'clearSelection') {
+            selectedForQuote.clear();
+            document.querySelectorAll('.add-quote-btn. selected').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.card-image-focus.card-selected'). forEach(c => c.classList.remove('card-selected'));
+            document.querySelectorAll('.quote-qty-input'). forEach(i => i.value = 1);
+            document.querySelectorAll('.color-select').forEach(s => { if (s. tagName === 'INPUT') s.value = ''; });
+            updateSelectionUI();
+        }
     });
 
-    // Función filtrar actualizada para manejar subcategorías
+    // FUNCIÓN FILTRAR ACTUALIZADA PARA MANEJAR SUBCATEGORÍAS
     window.filtrar = function(categoria, btn){
-      // Limpiar todos los estados active
-      document.querySelectorAll('.btn-cat, .subcategory-btn, .category-dropdown').forEach(b => b.classList. remove('active'));
-      
-      if(btn) {
-        btn. classList.add('active');
-        // Si es una subcategoría, también marcar el dropdown padre
-        if (btn.classList.contains('subcategory-btn')) {
-          const parentDropdown = btn. closest('.category-group').querySelector('.category-dropdown');
-          if (parentDropdown) parentDropdown.classList.add('active');
+        document.querySelectorAll('.btn-cat, .subcategory-btn, .category-dropdown').forEach(b => b.classList.remove('active'));
+        
+        if(btn) {
+            btn.classList.add('active');
+            if (btn.classList.contains('subcategory-btn')) {
+                const parentDropdown = btn.closest('.category-group'). querySelector('.category-dropdown');
+                if (parentDropdown) parentDropdown.classList.add('active');
+            }
         }
-      }
-      
-      if(categoria === 'Todo') {
-        renderizar(todosLosProductos);
-      } else {
-        renderizar(todosLosProductos.filter(p => (p.categoria || 'General') === categoria));
-      }
+        
+        if(categoria === 'Todo') {
+            renderizar(todosLosProductos);
+        } else {
+            renderizar(todosLosProductos.filter(p => (p.categoria || 'General') === categoria));
+        }
     };
 
-    // Buscador + init
     document.addEventListener('DOMContentLoaded', () => {
-      const searchBox = document.getElementById('searchBox');
-      if(searchBox){
-        searchBox. addEventListener('input', function(){
-          const q = this.value. toLowerCase(). trim();
-          if(! q){ renderizar(todosLosProductos); return; }
-          const filtered = todosLosProductos.filter(p => (p.descripcion||'').toLowerCase().includes(q) || (p.codigo||'').toLowerCase().includes(q));
-          renderizar(filtered);
-          document.querySelectorAll('.btn-cat, .subcategory-btn, .category-dropdown').forEach(b => b.classList. remove('active'));
-        });
-      }
-      iniciar();
+        const searchBox = document.getElementById('searchBox');
+        if(searchBox){
+            searchBox. addEventListener('input', function(){
+                const q = this.value.toLowerCase(). trim();
+                if(! q){ renderizar(todosLosProductos); return; }
+                const filtered = todosLosProductos. filter(p => (p.descripcion||'').toLowerCase().includes(q) || (p.codigo||'').toLowerCase(). includes(q));
+                renderizar(filtered);
+                document.querySelectorAll('.btn-cat, .subcategory-btn, . category-dropdown').forEach(b => b.classList.remove('active'));
+            });
+        }
+        iniciar();
     });
-  </script>
+</script>
 
-  <script src="https://cdn. jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr. net/npm/bootstrap@5. 3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
