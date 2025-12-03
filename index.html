@@ -8,7 +8,7 @@
     <!-- Fuentes y CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10. 0/font/bootstrap-icons. css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
         :root { --green-ws:#23bf3d; --accent:#2363ec; --bg:#f3f2ef; }
@@ -226,7 +226,7 @@
 </div>
 
 <script type="module">
-    import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14. 0.1/+esm";
+    import { Client, Databases } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
 
     const MI_WHATSAPP = "59161333335";
     const DEFAULT_MOQ = "6 UNID";
@@ -238,9 +238,9 @@
 
     function parsePriceToNumber(raw) {
         if (raw === undefined || raw === null) return 0;
-        const s = String(raw). replace(/[^\d. ,-]/g, ''). replace(',', '.');
+        const s = String(raw).replace(/[^\d.,-]/g, '').replace(',', '.');
         const n = parseFloat(s);
-        return Number. isFinite(n) ? n : 0;
+        return Number.isFinite(n) ? n : 0;
     }
 
     function formatCurrency(n) {
@@ -426,7 +426,7 @@
         const menuCat = document.getElementById('menu-cat');
 
         try{
-            const client = new Client(). setEndpoint('https://fra. cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
+            const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject('692ee6b70012153cd33c');
             const databases = new Databases(client);
             const res = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
 
@@ -675,6 +675,6 @@
     });
 </script>
 
-<script src="https://cdn.jsdelivr. net/npm/bootstrap@5. 3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
