@@ -76,7 +76,7 @@
   <div id="loginScreen">
     <i class="bi bi-shield-lock-fill" style="font-size: 3rem; color: var(--primary);"></i>
     <h3>Acceso Admin</h3>
-    <input type="password" id="passInput" placeholder="Contraseña">
+    <input type="password" id="passInput">
     <button onclick="checkPass()">Entrar</button>
     <p id="loginError" style="color: #ff6b6b; display: none;">Contraseña incorrecta</p>
   </div>
@@ -92,28 +92,28 @@
         
         <div class="form-group">
             <label>Nombre / Descripción</label>
-            <input type="text" id="name" placeholder="Ej: Reloj Casio Vintage" required>
+            <input type="text" id="name" required>
         </div>
 
         <div class="row">
           <div class="form-group">
               <label>Categoría (Grande)</label>
-              <input type="text" id="cat" list="listaCategorias" placeholder="Ej: Moda y Equipaje" required>
+              <input type="text" id="cat" list="listaCategorias" required>
           </div>
           <div class="form-group">
               <label>Tipo (Detalle)</label>
-              <input type="text" id="type" placeholder="Ej: Reloj / Pechera">
+              <input type="text" id="type">
           </div>
         </div>
 
         <div class="row">
-          <div class="form-group"><label>Código</label><input type="text" id="code" placeholder="A-01" required></div>
-          <div class="form-group"><label>MOQ</label><input type="number" id="moq" placeholder="6" required></div>
+          <div class="form-group"><label>Código</label><input type="text" id="code" required></div>
+          <div class="form-group"><label>MOQ</label><input type="number" id="moq" required></div>
         </div>
         
         <div class="row">
-          <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01" placeholder="0.00"></div>
-          <div class="form-group"><label>Precio Mayor (Bs)</label><input type="number" id="price" step="0.01" placeholder="0.00" required></div>
+          <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01"></div>
+          <div class="form-group"><label>Precio Mayor (Bs)</label><input type="number" id="price" step="0.01" required></div>
         </div>
         
         <div class="photos-grid">
@@ -130,14 +130,14 @@
     <div class="container">
       <h2>Buscador</h2>
       <div class="search-box">
-        <input type="text" id="search" placeholder="Escribe nombre, código o 'error'...">
+        <input type="text" id="search">
         <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
       </div>
       <div id="list">
           <div class="empty-state">
               <i class="bi bi-search"></i>
               <p>La lista está vacía.</p>
-              <p style="font-size:0.9rem">Escribe arriba para encontrar productos.</p>
+              <p style="font-size:0.9rem">Usa el buscador.</p>
           </div>
       </div>
     </div>
@@ -190,7 +190,7 @@
           descripcion: document.getElementById('name').value, 
           codigo: document.getElementById('code').value, 
           categoria: document.getElementById('cat').value,
-          tipo: document.getElementById('type').value, // <--- NUEVO CAMPO
+          tipo: document.getElementById('type').value, 
           preciopormayor: Number(document.getElementById('price').value), 
           precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value), 
@@ -217,7 +217,7 @@
     async function doSearch() {
       const q = document.getElementById('search').value.toLowerCase().trim(); 
       const list = document.getElementById('list'); 
-      if(!q) { list.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>La lista está vacía.</p><p style="font-size:0.9rem">Escribe arriba para encontrar productos.</p></div>'; return; }
+      if(!q) { list.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>La lista está vacía.</p><p style="font-size:0.9rem">Usa el buscador.</p></div>'; return; }
       list.innerHTML = '<p style="text-align:center; color:#999">Buscando...</p>';
       try {
         const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
@@ -259,7 +259,7 @@
       document.getElementById('name').value = d.descripcion; 
       document.getElementById('code').value = d.codigo; 
       document.getElementById('cat').value = d.categoria;
-      document.getElementById('type').value = d.tipo || ''; // <--- CARGAR TIPO
+      document.getElementById('type').value = d.tipo || ''; 
       
       document.getElementById('price').value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; 
@@ -282,6 +282,20 @@
       ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; document.getElementById('dropZone'+n).querySelector('p').style.display = 'block'; });
       document.getElementById('formTitle').innerText = "Nuevo Producto"; document.getElementById('btnSave').innerText = "Guardar Producto"; document.getElementById('btnSave').style.background = "#FFB800"; document.getElementById('btnCancel').style.display = "none";
     }
+
+    // --- AUTO-LLENADO MÁGICO ---
+    document.getElementById('name').addEventListener('blur', function(e) {
+        const nombre = e.target.value.trim();
+        const campoTipo = document.getElementById('type');
+        // Si el tipo está vacío, intentar adivinar con la primera palabra del nombre
+        if(nombre.length > 0 && campoTipo.value === '') {
+            const primeraPalabra = nombre.split(' ')[0];
+            if(primeraPalabra.length > 2) {
+                // Pone la primera letra en mayúscula
+                campoTipo.value = primeraPalabra.charAt(0).toUpperCase() + primeraPalabra.slice(1).toLowerCase();
+            }
+        }
+    });
   </script>
 </body>
 </html>
