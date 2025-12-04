@@ -9,8 +9,8 @@
 <style>
 :root{
   --bg:#f6f8fb;
-  --text:#111;           
-  --accent:#FFB800;      /* Amarillo Marca */
+  --text:#111;            
+  --accent:#FFB800;       /* Amarillo Marca */
   --accent-dark:#e0a200;
   --card-border:#e5e5e5;
 }
@@ -216,7 +216,16 @@ async function iniciar(){
 
 function renderCategorias(){
   const menu = document.getElementById('menu-cat');
-  const cats = ['Todo', ...new Set(todos.map(p => p.categoria || 'Varios'))];
+  
+  // 1. Obtenemos las categorías únicas
+  let listadoCategorias = [...new Set(todos.map(p => p.categoria || 'Varios'))];
+  
+  // 2. MAGIA: Las ordenamos alfabéticamente (A-Z)
+  listadoCategorias.sort();
+
+  // 3. Agregamos 'Todo' al principio
+  const cats = ['Todo', ...listadoCategorias];
+
   menu.innerHTML = cats.map(c => 
     `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`
   ).join('');
@@ -283,5 +292,3 @@ iniciar();
 
 </body>
 </html>
-
-
