@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Corregido</title>
+  <title>Admin Panel - 2 Fotos</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -32,7 +32,7 @@
     #appContent { display: none; }
 
     .container { 
-      max-width: 500px; margin: 0 auto 30px; background: var(--card); 
+      max-width: 600px; margin: 0 auto 30px; background: var(--card); 
       padding: 30px; border-radius: var(--border-radius); 
       box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
     }
@@ -55,18 +55,21 @@
     .btn-main:active { transform: scale(0.98); }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
-    /* FOTO */
+    /* FOTOS GRID */
+    .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+
     .photo-area {
-      border: 2px dashed #ddd; border-radius: 12px; padding: 20px; text-align: center;
-      margin-bottom: 20px; position: relative; background: #fafafa;
-      cursor: pointer; transition: all 0.2s;
+      border: 2px dashed #ddd; border-radius: 12px; padding: 15px; text-align: center;
+      position: relative; background: #fafafa; height: 180px;
+      cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center;
     }
     .photo-area:hover { border-color: #bbb; background: #f4f4f4; }
     .photo-area.dragover { border-color: var(--primary); background-color: #fff8e1; }
     
-    .photo-area img { max-width: 100%; max-height: 250px; border-radius: 8px; display: none; margin: 10px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .photo-area i { font-size: 2rem; color: #ccc; margin-bottom: 10px; display: block; }
-    .photo-area p { margin: 0; color: #888; font-size: 0.8rem; }
+    .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
+    .photo-area i { font-size: 1.8rem; color: #ccc; margin-bottom: 8px; display: block; }
+    .photo-area p { margin: 0; color: #888; font-size: 0.75rem; }
+    .photo-label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; text-align: center; color: #666; }
 
     /* LISTA */
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -113,7 +116,9 @@
       <h2 id="formTitle">Nuevo Producto</h2>
       <form id="productForm">
         <input type="hidden" id="editId">
-        <input type="hidden" id="oldImg">
+        <!-- Campos ocultos para URLs viejas -->
+        <input type="hidden" id="oldImg1">
+        <input type="hidden" id="oldImg2">
         <input type="hidden" id="currentStockStatus" value="true">
 
         <div class="form-group">
@@ -143,18 +148,34 @@
           </div>
         </div>
 
-        <!-- CAMBIO AQUÍ: input type="number" en lugar de "text" -->
         <div class="form-group">
           <label>MOQ (Mínimo de Compra)</label>
           <input type="number" id="moq" placeholder="Ej: 6" required>
         </div>
 
-        <label style="margin-top:10px; display:block;">Fotografía</label>
-        <div class="photo-area" id="dropZone">
-            <img id="previewImg" src="" alt="Vista previa">
-            <i class="bi bi-cloud-upload"></i>
-            <input type="file" id="file" accept="image/*" style="display:none;" onchange="previewFile()">
-            <p id="photoHelp">Toca para seleccionar o arrastra la imagen aquí</p>
+        <!-- SECCIÓN DE FOTOS DUAL -->
+        <div class="photos-grid">
+            <!-- FOTO 1 -->
+            <div>
+                <div class="photo-label">Foto Principal</div>
+                <div class="photo-area" id="dropZone1">
+                    <img id="previewImg1" src="" alt="Vista previa">
+                    <i class="bi bi-camera-fill"></i>
+                    <input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)">
+                    <p id="help1">Principal</p>
+                </div>
+            </div>
+            
+            <!-- FOTO 2 -->
+            <div>
+                <div class="photo-label">Foto 2 (Opcional)</div>
+                <div class="photo-area" id="dropZone2">
+                    <img id="previewImg2" src="" alt="Vista previa">
+                    <i class="bi bi-camera"></i>
+                    <input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)">
+                    <p id="help2">Secundaria</p>
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
@@ -192,25 +213,26 @@
     const db = new Appwrite.Databases(client);
     const storage = new Appwrite.Storage(client);
 
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('file');
-    const previewImg = document.getElementById('previewImg');
-    const iconUpload = dropZone.querySelector('i');
-    
-    // --- DRAG & DROP ---
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
-    });
-    ['dragenter', 'dragover'].forEach(eventName => dropZone.classList.add('dragover'));
-    ['dragleave', 'drop'].forEach(eventName => dropZone.classList.remove('dragover'));
+    // --- CONFIG DRAG & DROP PARA AMBAS ZONAS ---
+    function setupDragDrop(zoneId, inputId, previewNum) {
+        const zone = document.getElementById(zoneId);
+        const input = document.getElementById(inputId);
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+            zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+        ['dragenter', 'dragover'].forEach(evt => zone.classList.add('dragover'));
+        ['dragleave', 'drop'].forEach(evt => zone.classList.remove('dragover'));
 
-    dropZone.addEventListener('drop', e => {
-      const dt = e.dataTransfer;
-      fileInput.files = dt.files;
-      previewFile();
-    });
-    
-    dropZone.addEventListener('click', () => fileInput.click());
+        zone.addEventListener('drop', e => {
+            input.files = e.dataTransfer.files;
+            previewFile(previewNum);
+        });
+        zone.addEventListener('click', () => input.click());
+    }
+
+    setupDragDrop('dropZone1', 'file1', 1);
+    setupDragDrop('dropZone2', 'file2', 2);
 
     function checkPass() {
       if(document.getElementById('passInput').value === PASS) {
@@ -219,24 +241,41 @@
       } else { document.getElementById('loginError').style.display = 'block'; }
     }
 
-    function previewFile() {
-      const file = fileInput.files[0];
+    function previewFile(num) {
+      const file = document.getElementById('file' + num).files[0];
+      const img = document.getElementById('previewImg' + num);
+      const icon = document.getElementById('dropZone' + num).querySelector('i');
+      const txt = document.getElementById('dropZone' + num).querySelector('p');
+
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) { 
-            previewImg.src = e.target.result; 
-            previewImg.style.display = 'block'; 
-            iconUpload.style.display = 'none';
+            img.src = e.target.result; 
+            img.style.display = 'block'; 
+            icon.style.display = 'none';
+            txt.style.display = 'none';
         };
         reader.readAsDataURL(file);
       }
     }
 
-    // --- COMPRESIÓN ---
-    async function compressImage(imageFile) {
-      const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true }
-      try { return await imageCompression(imageFile, options); } 
-      catch (error) { console.log(error); return imageFile; }
+    // --- FUNCIÓN HELPER PARA SUBIR FOTO ---
+    async function uploadPhoto(fileInput) {
+        if(fileInput.files && fileInput.files.length > 0) {
+            const originalFile = fileInput.files[0];
+            const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
+            
+            // 1. Comprimir
+            let compressedBlob = await imageCompression(originalFile, options);
+            
+            // 2. Convertir Blob a File para Appwrite
+            const fileToSend = new File([compressedBlob], originalFile.name, { type: originalFile.type });
+            
+            // 3. Subir
+            const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileToSend);
+            return `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
+        }
+        return null;
     }
 
     // --- GUARDAR ---
@@ -246,27 +285,23 @@
       const btn = document.getElementById('btnSave');
       const msg = document.getElementById('msg');
       
-      btn.disabled = true; btn.innerText = "Procesando...";
+      btn.disabled = true; btn.innerText = "Subiendo fotos...";
       msg.style.display = 'none';
 
       try {
-        let imgUrl = document.getElementById('oldImg').value;
+        // URLs iniciales (viejas o vacías)
+        let finalUrl1 = document.getElementById('oldImg1').value;
+        let finalUrl2 = document.getElementById('oldImg2').value;
 
-        // Corrección del archivo Blob -> File para Appwrite
-        if(fileInput.files && fileInput.files.length > 0) {
-          const originalFile = fileInput.files[0];
-          
-          let compressedBlob = await compressImage(originalFile);
-          
-          const fileToSend = new File([compressedBlob], originalFile.name, { type: originalFile.type });
-          
-          const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileToSend);
-          
-          imgUrl = `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
-        } 
-        else if (!imgUrl) {
-            imgUrl = ""; 
-        }
+        // Subir Foto 1 si hay nueva
+        const newUrl1 = await uploadPhoto(document.getElementById('file1'));
+        if(newUrl1) finalUrl1 = newUrl1;
+
+        // Subir Foto 2 si hay nueva
+        const newUrl2 = await uploadPhoto(document.getElementById('file2'));
+        if(newUrl2) finalUrl2 = newUrl2;
+
+        if(!finalUrl1) throw new Error("La foto principal es obligatoria");
 
         const unitPriceValue = document.getElementById('priceUnit').value;
         const finalUnitPrice = (unitPriceValue !== "" && unitPriceValue !== null) ? Number(unitPriceValue) : 0;
@@ -277,17 +312,16 @@
           categoria: document.getElementById('cat').value,
           preciopormayor: Number(document.getElementById('price').value),
           precioUnidad: finalUnitPrice, 
-          // CAMBIO AQUÍ: Convertir el valor a Number para que sea un entero válido
           moq: Number(document.getElementById('moq').value), 
-          imagen: imgUrl,
+          imagen: finalUrl1,
+          imagen2: finalUrl2, // <--- AQUÍ SE GUARDA LA FOTO 2
           disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
 
         if(id) {
           await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data);
-          msg.innerText = "✅ Actualizado";
+          msg.innerText = "✅ Actualizado con fotos";
         } else {
-          if(!imgUrl && !fileInput.files.length) throw new Error("Falta foto");
           await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data);
           msg.innerText = "✅ Guardado";
         }
@@ -367,32 +401,41 @@
 
     window.editItem = function(d) {
       document.getElementById('editId').value = d.$id;
-      document.getElementById('oldImg').value = d.imagen;
       document.getElementById('name').value = d.descripcion;
       document.getElementById('code').value = d.codigo;
       document.getElementById('cat').value = d.categoria;
-      
       document.getElementById('price').value = d.preciopormayor; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; 
-      
-      // CAMBIO AQUÍ: Asegurar valor numérico al editar, default 6
       document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
 
+      // FOTO 1
+      document.getElementById('oldImg1').value = d.imagen || "";
       if(d.imagen) {
-          previewImg.src = d.imagen; 
-          previewImg.style.display = 'block'; 
-          iconUpload.style.display = 'none';
+          const img1 = document.getElementById('previewImg1');
+          img1.src = d.imagen; img1.style.display = 'block'; 
+          document.getElementById('dropZone1').querySelector('i').style.display = 'none';
+          document.getElementById('dropZone1').querySelector('p').style.display = 'none';
+      }
+
+      // FOTO 2
+      document.getElementById('oldImg2').value = d.imagen2 || "";
+      const img2 = document.getElementById('previewImg2');
+      const icon2 = document.getElementById('dropZone2').querySelector('i');
+      const txt2 = document.getElementById('dropZone2').querySelector('p');
+      if(d.imagen2) {
+          img2.src = d.imagen2; img2.style.display = 'block'; 
+          icon2.style.display = 'none'; txt2.style.display = 'none';
       } else {
-          previewImg.style.display = 'none';
-          iconUpload.style.display = 'block';
+          // Limpiar visualmente si no tiene foto 2
+          img2.style.display = 'none'; img2.src = "";
+          icon2.style.display = 'block'; txt2.style.display = 'block';
       }
       
       document.getElementById('formTitle').innerText = "Editando: " + d.codigo;
       document.getElementById('btnSave').innerText = "Actualizar";
       document.getElementById('btnSave').style.background = "#2563eb";
       document.getElementById('btnCancel').style.display = "block";
-      document.getElementById('photoHelp').innerText = "Subir nueva foto reemplaza la anterior.";
       window.scrollTo({top:0, behavior:'smooth'});
     }
 
@@ -404,15 +447,23 @@
     window.resetForm = function() {
       document.getElementById('productForm').reset();
       document.getElementById('editId').value = "";
-      document.getElementById('oldImg').value = "";
-      fileInput.value = ""; 
+      document.getElementById('oldImg1').value = "";
+      document.getElementById('oldImg2').value = "";
+      document.getElementById('file1').value = ""; 
+      document.getElementById('file2').value = ""; 
       
+      // Resetear visuales de fotos
+      ['1','2'].forEach(n => {
+          document.getElementById('previewImg'+n).style.display = 'none';
+          document.getElementById('previewImg'+n).src = "";
+          document.getElementById('dropZone'+n).querySelector('i').style.display = 'block';
+          document.getElementById('dropZone'+n).querySelector('p').style.display = 'block';
+      });
+
       document.getElementById('formTitle').innerText = "Nuevo Producto";
       document.getElementById('btnSave').innerText = "Guardar Producto";
       document.getElementById('btnSave').style.background = "#FFB800";
       document.getElementById('btnCancel').style.display = "none";
-      previewImg.style.display = 'none'; iconUpload.style.display = 'block';
-      document.getElementById('photoHelp').innerText = "Toca para seleccionar o arrastra la imagen aquí";
     }
   </script>
 </body>
