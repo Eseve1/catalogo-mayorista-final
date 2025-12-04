@@ -61,9 +61,9 @@
     }
     
     /* ESTILOS DE ESTADO */
-    .product-item.agotado { background: #f3f4f6; border-color: #ddd; }
+    .product-item.agotado { background: #fef2f2; border-color: #fecaca; } /* Fondo rojizo suave */
     .product-item.agotado .prod-img { filter: grayscale(100%); opacity: 0.6; }
-    .product-item.agotado .prod-title { color: #888; text-decoration: line-through; }
+    .product-item.agotado .prod-title { color: #991b1b; text-decoration: line-through; }
     
     .prod-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #eee; }
     .prod-info { flex: 1; }
@@ -76,9 +76,12 @@
     .btn-edit { background: #eff6ff; color: #3b82f6; } /* Azul */
     .btn-del { background: #fef2f2; color: #ef4444; }  /* Rojo claro */
     
-    /* Botón de Stock Dinámico */
-    .btn-power { background: #dcfce7; color: #166534; } /* Verde (Encendido) */
-    .btn-power.off { background: #fee2e2; color: #991b1b; } /* Rojo (Apagado) */
+    /* CORRECCIÓN DE COLORES DE STOCK */
+    /* Stock (Encendido) -> Ahora es Azul Neutro (No verde) */
+    .btn-power { background: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; } 
+    
+    /* Agotado (Apagado) -> Rojo Intenso */
+    .btn-power.off { background: #fee2e2; color: #dc2626; border-color: #fca5a5; } 
 
     #msg { text-align: center; margin-top: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 8px; }
     .success { background: #dcfce7; color: #166534; }
@@ -136,7 +139,11 @@
         <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
       </div>
       <div id="list"></div>
-      <p style="text-align:center; color:#888; font-size:0.9rem;">Usa el botón <i class="bi bi-power"></i> para activar/desactivar stock.</p>
+      <p style="text-align:center; color:#888; font-size:0.9rem;">
+        <i class="bi bi-power" style="color:#4b5563"></i> Stock | 
+        <i class="bi bi-pencil-fill" style="color:#3b82f6"></i> Editar | 
+        <i class="bi bi-trash-fill" style="color:#ef4444"></i> Borrar
+      </p>
     </div>
   </div>
 
@@ -187,9 +194,9 @@
           const enStock = (d.disponible === undefined) ? true : d.disponible;
           
           const div = document.createElement('div');
-          // Añadimos clase 'agotado' si no hay stock para que se vea gris
+          // Añadimos clase 'agotado' si no hay stock para que se vea rojo/gris
           div.className = 'product-item' + (enStock ? '' : ' agotado');
-          div.id = 'card-' + d.$id; // ID para actualizar visualmente sin recargar
+          div.id = 'card-' + d.$id;
 
           div.innerHTML = `
             <img src="${d.imagen}" class="prod-img">
@@ -200,16 +207,18 @@
             <div class="actions">
               
               <!-- BOTÓN POWER (CAMBIO RÁPIDO) -->
+              <!-- Si enStock es true: Botón Gris (Normal) -->
+              <!-- Si enStock es false: Botón Rojo (Agotado) -->
               <button class="btn-icon btn-power ${enStock ? '' : 'off'}" onclick="toggleStock('${d.$id}', ${enStock}, this)">
                 <i class="bi bi-power"></i>
               </button>
 
-              <!-- EDITAR (Lápiz) -->
+              <!-- EDITAR -->
               <button class="btn-icon btn-edit" onclick='editItem(${JSON.stringify(d)})'>
                 <i class="bi bi-pencil-fill"></i>
               </button>
               
-              <!-- BORRAR (Basura) -->
+              <!-- BORRAR -->
               <button class="btn-icon btn-del" onclick="delItem('${d.$id}')">
                 <i class="bi bi-trash-fill"></i>
               </button>
@@ -221,41 +230,38 @@
       } catch(e) { alert("Error: " + e.message); }
     }
 
-    // --- NUEVO: FUNCIÓN CAMBIO RÁPIDO DE STOCK ---
+    // --- TOGGLE STOCK ---
     async function toggleStock(docId, currentState, btn) {
-      // Feedback visual inmediato (antes de confirmar con la DB para que se sienta rápido)
       const newState = !currentState;
       const card = document.getElementById('card-' + docId);
       
-      // Cambiar icono a "cargando"
       const originalIcon = btn.innerHTML;
       btn.innerHTML = '<span style="font-size:0.8rem">...</span>';
       btn.disabled = true;
 
       try {
-        // Actualizar en Appwrite
         await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, {
           disponible: newState
         });
 
-        // Actualizar botón y estado visual final
         btn.innerHTML = '<i class="bi bi-power"></i>';
+        
+        // Aplicar clases de color según el estado
         btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`;
         
-        // Actualizar la tarjeta entera (Gris o Normal)
         if(newState) {
           card.classList.remove('agotado');
         } else {
           card.classList.add('agotado');
         }
         
-        // Actualizar el evento onclick para que la próxima vez funcione con el nuevo estado
+        // Actualizar onclick
         btn.onclick = function() { toggleStock(docId, newState, btn); };
 
       } catch (err) {
         console.error(err);
         alert("Error al actualizar: " + err.message);
-        btn.innerHTML = originalIcon; // Volver atrás si falló
+        btn.innerHTML = originalIcon;
       } finally {
         btn.disabled = false;
       }
@@ -270,7 +276,7 @@
       document.getElementById('cat').value = d.categoria;
       document.getElementById('price').value = d.preciopormayor;
       document.getElementById('moq').value = d.moq;
-      // Guardar estado actual oculto por si guarda sin tocar stock
+      // Guardar estado actual oculto
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
 
       const preview = document.getElementById('previewImg');
@@ -310,7 +316,7 @@
           preciopormayor: Number(document.getElementById('price').value),
           moq: String(document.getElementById('moq').value),
           imagen: imgUrl,
-          // Si es nuevo: true. Si editas: mantiene lo que tenía.
+          // Mantener estado de stock al editar
           disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
 
