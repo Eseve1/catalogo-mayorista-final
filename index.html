@@ -19,11 +19,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* --- TURBO PARA CELULARES (NUEVO) --- */
+/* --- TURBO PARA CELULARES --- */
 @media (max-width: 768px) {
     .header-track {
-        animation-duration: 12s; /* Más rápido en celular */
-        font-size: 0.9rem;       /* Letra ajustada */
+        animation-duration: 12s; 
+        font-size: 0.9rem;       
         gap: 20px;
     }
 }
@@ -75,9 +75,36 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .old-price{font-size:0.9rem; color:#999; text-decoration:line-through; margin-bottom:3px;}
 .cta{ background:#000; color:#fff; border-radius:8px; padding:8px 12px; font-weight:800; font-size:.85rem; display:inline-flex; align-items:center; gap:6px; width:100%; justify-content:center; }
 
+/* BOTÓN WHATSAPP */
 .whatsapp{ position:fixed; right:20px; bottom:20px; z-index:100; background:#25D366; color:#fff; border-radius:50px; padding:12px 24px; font-weight:800; text-decoration:none; box-shadow:0 4px 20px rgba(37,211,102,0.4); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:1rem; }
 .whatsapp:hover{transform:scale(1.05);}
-@media (max-width:992px){ .sidebar{position:static; margin-bottom:20px; max-height:none;} #menu-cat{flex-direction:row; flex-wrap:wrap; overflow-y:visible;} .btn-cat{flex:1; text-align:center; white-space:nowrap;} }
+
+/* --- NUEVO BANNER FLOTANTE --- */
+.descuento-flotante{ 
+    position:fixed; 
+    left:20px; 
+    bottom:20px; 
+    z-index:100; 
+    background: #ef4444; /* Rojo */
+    color: #fff; 
+    border-radius:10px; 
+    padding:12px 18px; 
+    font-weight:900; 
+    text-decoration:none; 
+    box-shadow:0 4px 20px rgba(239, 68, 68, 0.4); 
+    display:flex; 
+    align-items:center; 
+    gap:8px; 
+    font-size:1rem; 
+    text-transform: uppercase;
+    animation: pulse 1.5s infinite; /* Animación para llamar la atención */
+}
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@media (max-width: 576px) { 
+    .whatsapp { bottom: 80px; } /* Mueve el WA arriba para que no choque con el banner en móvil */
+    .descuento-flotante { left: 10px; bottom: 10px; font-size: 0.9rem; padding: 10px 14px; }
+}
+
 </style>
 </head>
 <body>
@@ -116,6 +143,9 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 </div>
 
 <a class="whatsapp" href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido." target="_blank"><i class="bi bi-whatsapp" style="font-size:1.3rem"></i> Hacer Pedido</a>
+
+<a class="descuento-flotante" href="#"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO FIN DE AÑO!</a>
+
 
 <script type="module">
 import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
