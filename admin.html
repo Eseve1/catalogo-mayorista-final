@@ -3,108 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Migración</title>
+  <title>Admin Panel - Final</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
-    :root {
-      --primary: #FFB800; 
-      --bg: #f4f4f5;
-      --card: #ffffff;
-      --text: #18181b;
-      --border-radius: 12px;
-    }
-
+    :root { --primary: #FFB800; --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --border-radius: 12px; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; min-height: 100vh; }
 
-    /* LOGIN */
-    #loginScreen {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: #000; z-index: 9999;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      color: #fff; padding: 20px;
-    }
+    #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; padding: 20px; }
     #loginScreen input { padding: 15px; border-radius: 10px; border: none; font-size: 1.2rem; text-align: center; margin-top: 20px; width: 200px; }
     #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     #appContent { display: none; }
 
-    .container { 
-      max-width: 600px; margin: 0 auto 30px; background: var(--card); 
-      padding: 30px; border-radius: var(--border-radius); 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-    }
+    .container { max-width: 600px; margin: 0 auto 30px; background: var(--card); padding: 30px; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
     h2 { margin-top: 0; text-align: center; font-size: 1.4rem; color: #111; font-weight: 800; margin-bottom: 25px; }
 
-    /* FORMULARIO */
     .form-group { margin-bottom: 15px; }
     label { display: block; margin: 0 0 6px; font-weight: 600; font-size: 0.85rem; color: #555; }
-    
-    input[type="text"], input[type="number"] { 
-      width: 100%; padding: 12px 15px; 
-      border: 2px solid #f0f0f0; border-radius: 10px; 
-      font-size: 0.95rem; transition: 0.2s; background: #fafafa;
-    }
+    input[type="text"], input[type="number"] { width: 100%; padding: 12px 15px; border: 2px solid #f0f0f0; border-radius: 10px; font-size: 0.95rem; transition: 0.2s; background: #fafafa; }
     input:focus { outline: none; border-color: var(--primary); background: #fff; }
-    
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
-    
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
-    .btn-main:active { transform: scale(0.98); }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
-    /* FOTOS GRID */
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-
-    .photo-area {
-      border: 2px dashed #ddd; border-radius: 12px; padding: 15px; text-align: center;
-      position: relative; background: #fafafa; height: 180px;
-      cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center;
-    }
-    .photo-area:hover { border-color: #bbb; background: #f4f4f4; }
-    .photo-area.dragover { border-color: var(--primary); background-color: #fff8e1; }
-    
+    .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 15px; text-align: center; position: relative; background: #fafafa; height: 180px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
-    .photo-area i { font-size: 1.8rem; color: #ccc; margin-bottom: 8px; display: block; }
-    .photo-area p { margin: 0; color: #888; font-size: 0.75rem; }
-    .photo-label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; text-align: center; color: #666; }
-
-    /* ZONA DE MIGRACION */
-    .migration-zone {
-        margin-top: 60px; padding: 25px; background: #fff5f5; 
-        border: 2px dashed #ff9b9b; border-radius: 12px; text-align: center;
-    }
+    
+    .migration-zone { margin-top: 60px; padding: 25px; background: #fff5f5; border: 2px dashed #ff9b9b; border-radius: 12px; text-align: center; }
     .migration-title { color: #c53030; font-weight: 800; margin-bottom: 10px; }
     .btn-backup { background: #3182ce; color: white; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; border:none; margin-bottom: 10px; cursor: pointer; }
     .btn-restore { background: #38a169; color: white; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; border:none; cursor: pointer; }
 
-    /* LISTA */
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
-    
-    .product-item { 
-      display: flex; align-items: center; gap: 15px; padding: 12px; 
-      background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; 
-      margin-bottom: 10px; position: relative; transition: 0.3s; 
-    }
+    .product-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; margin-bottom: 10px; position: relative; transition: 0.3s; }
     .product-item.agotado { background: #fff5f5; border-color: #fed7d7; }
-    .product-item.agotado .prod-title { color: #e53e3e; text-decoration: line-through; }
-    .product-item.agotado .prod-img { filter: grayscale(100%); opacity: 0.7; }
-    
     .prod-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #eee; }
     .prod-info { flex: 1; }
     .prod-title { font-weight: 700; margin: 0 0 2px; font-size: 0.95rem; }
     .prod-sub { font-size: 0.8rem; color: #666; }
-    
     .actions { display: flex; gap: 6px; }
     .btn-icon { width: 38px; height: 38px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
     .btn-edit { background: #eff6ff; color: #3b82f6; } 
     .btn-del { background: #fff5f5; color: #ef4444; }  
     .btn-power { background: #f0fdf4; color: #166534; } 
     .btn-power.off { background: #f3f4f6; color: #9ca3af; } 
-
     #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2f2; color: #991b1b; }
@@ -128,61 +75,20 @@
         <input type="hidden" id="oldImg1">
         <input type="hidden" id="oldImg2">
         <input type="hidden" id="currentStockStatus" value="true">
-
-        <div class="form-group">
-          <label>Nombre / Descripción</label>
-          <input type="text" id="name" placeholder="Ej: Reloj Casio Vintage" required>
-        </div>
-
+        <div class="form-group"><label>Nombre / Descripción</label><input type="text" id="name" placeholder="Ej: Reloj Casio Vintage" required></div>
         <div class="row">
-          <div class="form-group">
-            <label>Código</label>
-            <input type="text" id="code" placeholder="A-01" required>
-          </div>
-          <div class="form-group">
-            <label>Categoría</label>
-            <input type="text" id="cat" placeholder="Relojes" required>
-          </div>
+          <div class="form-group"><label>Código</label><input type="text" id="code" placeholder="A-01" required></div>
+          <div class="form-group"><label>Categoría</label><input type="text" id="cat" placeholder="Relojes" required></div>
         </div>
-
         <div class="row">
-          <div class="form-group">
-            <label>P. Unidad (Opcional)</label>
-            <input type="number" id="priceUnit" step="0.01" placeholder="0.00">
-          </div>
-          <div class="form-group">
-            <label>Precio Mayor (Bs)</label>
-            <input type="number" id="price" step="0.01" placeholder="0.00" required>
-          </div>
+          <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01" placeholder="0.00"></div>
+          <div class="form-group"><label>Precio Mayor (Bs)</label><input type="number" id="price" step="0.01" placeholder="0.00" required></div>
         </div>
-
-        <div class="form-group">
-          <label>MOQ (Mínimo de Compra)</label>
-          <input type="number" id="moq" placeholder="Ej: 6" required>
-        </div>
-
-        <!-- FOTOS DUAL -->
+        <div class="form-group"><label>MOQ (Mínimo de Compra)</label><input type="number" id="moq" placeholder="Ej: 6" required></div>
         <div class="photos-grid">
-            <div>
-                <div class="photo-label">Foto Principal</div>
-                <div class="photo-area" id="dropZone1">
-                    <img id="previewImg1" src="" alt="Vista previa">
-                    <i class="bi bi-camera-fill"></i>
-                    <input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)">
-                    <p id="help1">Principal</p>
-                </div>
-            </div>
-            <div>
-                <div class="photo-label">Foto 2 (Opcional)</div>
-                <div class="photo-area" id="dropZone2">
-                    <img id="previewImg2" src="" alt="Vista previa">
-                    <i class="bi bi-camera"></i>
-                    <input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)">
-                    <p id="help2">Secundaria</p>
-                </div>
-            </div>
+            <div><div class="photo-label">Foto Principal</div><div class="photo-area" id="dropZone1"><img id="previewImg1"><i class="bi bi-camera-fill" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)"><p>Principal</p></div></div>
+            <div><div class="photo-label">Foto 2 (Opcional)</div><div class="photo-area" id="dropZone2"><img id="previewImg2"><i class="bi bi-camera" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)"><p>Secundaria</p></div></div>
         </div>
-
         <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
         <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Cancelar Edición</button>
         <div id="msg"></div>
@@ -191,299 +97,147 @@
 
     <div class="container">
       <h2>Inventario</h2>
-      <div class="search-box">
-        <input type="text" id="search" placeholder="Buscar por nombre o código...">
-        <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
-      </div>
+      <div class="search-box"><input type="text" id="search" placeholder="Buscar..."><button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button></div>
       <div id="list"></div>
-      <p style="text-align:center; color:#999; font-size:0.85rem; margin-top:20px;">
-        <i class="bi bi-power"></i> Stock | <i class="bi bi-pencil-fill"></i> Editar | <i class="bi bi-trash-fill"></i> Borrar
-      </p>
+      <p style="text-align:center; color:#999; font-size:0.85rem; margin-top:20px;">Stock | Editar | Borrar</p>
     </div>
 
-    <!-- ZONA DE MIGRACIÓN DE PRECIOS -->
+    <!-- ZONA DE MIGRACIÓN COMPLETA -->
     <div class="container migration-zone">
         <h3 class="migration-title">⚠️ ZONA DE MIGRACIÓN ⚠️</h3>
-        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Usa esto SOLO para cambiar los precios a Decimales.</p>
-        
-        <button onclick="descargarRespaldo()" class="btn-backup">
-            <i class="bi bi-download"></i> 1. DESCARGAR RESPALDO
-        </button>
-        
-        <button onclick="document.getElementById('restoreInput').click()" class="btn-restore">
-            <i class="bi bi-upload"></i> 2. RESTAURAR PRECIOS
-        </button>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Guarda Mayorista Y Unidad antes de cambiar a Float.</p>
+        <button onclick="descargarRespaldo()" class="btn-backup"><i class="bi bi-download"></i> 1. DESCARGAR TODO (Mayor + Unidad)</button>
+        <button onclick="document.getElementById('restoreInput').click()" class="btn-restore"><i class="bi bi-upload"></i> 2. RESTAURAR TODO</button>
         <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restaurarPrecios(this)">
     </div>
-
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 
   <script>
-    const PASS = "eddy4242"; 
-    const PROJECT_ID = "692ee6b70012153cd33c";
-    const DATABASE_ID = "692ee774002e9a3c8601";
-    const COLLECTION_ID = "catalogo";
-    const BUCKET_ID = "692ef19e001ffa75d062";
-
+    const PASS = "eddy4242"; const PROJECT_ID = "692ee6b70012153cd33c"; const DATABASE_ID = "692ee774002e9a3c8601"; const COLLECTION_ID = "catalogo"; const BUCKET_ID = "692ef19e001ffa75d062";
     const client = new Appwrite.Client().setEndpoint("https://fra.cloud.appwrite.io/v1").setProject(PROJECT_ID);
-    const db = new Appwrite.Databases(client);
-    const storage = new Appwrite.Storage(client);
+    const db = new Appwrite.Databases(client); const storage = new Appwrite.Storage(client);
 
-    // --- FUNCIONES DE MIGRACIÓN (NUEVAS) ---
+    // --- MIGRACIÓN MEJORADA (AMBOS PRECIOS) ---
     async function descargarRespaldo() {
-        if(!confirm("¿Descargar copia de seguridad de todos los precios?")) return;
-        
+        if(!confirm("¿Descargar copia de TODOS los precios (Mayorista y Unidad)?")) return;
         try {
-            // Traemos todo
             let res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100)]);
             let todos = res.documents;
             if(todos.length >= 100) {
                 let res2 = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.offset(100)]);
                 todos = todos.concat(res2.documents);
             }
-
-            const backupData = todos.map(d => ({ id: d.$id, precio: d.preciopormayor }));
-            
+            // GUARDAMOS AMBOS
+            const backupData = todos.map(d => ({ 
+                id: d.$id, 
+                mayor: d.preciopormayor,
+                unidad: d.precioUnidad 
+            }));
             const blob = new Blob([JSON.stringify(backupData)], {type: "application/json"});
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "copia_precios.json";
-            a.click();
-            alert("✅ Copia descargada. Revisa tu carpeta de Descargas.");
+            const a = document.createElement('a'); a.href = url; a.download = "copia_precios_total.json"; a.click();
+            alert("✅ Copia Total descargada. Ahora ve a Appwrite.");
         } catch(e) { alert("Error: " + e.message); }
     }
 
     async function restaurarPrecios(input) {
-        const file = input.files[0];
-        if(!file) return;
-        
-        if(!confirm("¿Ya cambiaste la columna a Float en Appwrite? Esto iniciará la restauración.")) return;
-
-        const text = await file.text();
-        const lista = JSON.parse(text);
-        
-        alert(`Iniciando restauración de ${lista.length} productos. NO CIERRES ESTA PÁGINA.`);
-
+        const file = input.files[0]; if(!file) return;
+        if(!confirm("¿Ya cambiaste AMBAS columnas a Float en Appwrite?")) return;
+        const text = await file.text(); const lista = JSON.parse(text);
+        alert(`Restaurando ${lista.length} productos...`);
         let count = 0;
         for(const item of lista) {
             try {
+                // RESTAURAMOS AMBOS COMO FLOAT
                 await db.updateDocument(DATABASE_ID, COLLECTION_ID, item.id, {
-                    preciopormayor: Number(item.precio)
+                    preciopormayor: Number(item.mayor),
+                    precioUnidad: Number(item.unidad || 0)
                 });
                 count++;
-                console.log(`Restaurado ${count}/${lista.length}`);
             } catch(err) { console.error(err); }
         }
-        alert("✅ ¡Misión Cumplida! Todos los precios actualizados a Decimales.");
-        input.value = ""; // Limpiar input
+        alert("✅ ¡Listo! Precios Mayorista y Unidad ahora soportan decimales.");
+        input.value = "";
     }
 
-    // --- DRAG & DROP Y EL RESTO IGUAL ---
+    // --- LÓGICA GENERAL ---
     function setupDragDrop(zoneId, inputId, previewNum) {
-        const zone = document.getElementById(zoneId);
-        const input = document.getElementById(inputId);
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-            zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false);
-        });
-        ['dragenter', 'dragover'].forEach(evt => zone.classList.add('dragover'));
-        ['dragleave', 'drop'].forEach(evt => zone.classList.remove('dragover'));
-        zone.addEventListener('drop', e => {
-            input.files = e.dataTransfer.files;
-            previewFile(previewNum);
-        });
+        const zone = document.getElementById(zoneId); const input = document.getElementById(inputId);
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false));
+        ['dragenter', 'dragover'].forEach(evt => zone.classList.add('dragover')); ['dragleave', 'drop'].forEach(evt => zone.classList.remove('dragover'));
+        zone.addEventListener('drop', e => { input.files = e.dataTransfer.files; previewFile(previewNum); });
         zone.addEventListener('click', () => input.click());
     }
-    setupDragDrop('dropZone1', 'file1', 1);
-    setupDragDrop('dropZone2', 'file2', 2);
+    setupDragDrop('dropZone1', 'file1', 1); setupDragDrop('dropZone2', 'file2', 2);
 
-    function checkPass() {
-      if(document.getElementById('passInput').value === PASS) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('appContent').style.display = 'block';
-      } else { document.getElementById('loginError').style.display = 'block'; }
-    }
-
+    function checkPass() { if(document.getElementById('passInput').value === PASS) { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appContent').style.display = 'block'; } else { document.getElementById('loginError').style.display = 'block'; } }
     function previewFile(num) {
-      const file = document.getElementById('file' + num).files[0];
-      const img = document.getElementById('previewImg' + num);
-      const icon = document.getElementById('dropZone' + num).querySelector('i');
-      const txt = document.getElementById('dropZone' + num).querySelector('p');
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) { 
-            img.src = e.target.result; img.style.display = 'block'; 
-            icon.style.display = 'none'; txt.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-      }
+      const file = document.getElementById('file' + num).files[0]; const img = document.getElementById('previewImg' + num);
+      if (file) { const reader = new FileReader(); reader.onload = function(e) { img.src = e.target.result; img.style.display = 'block'; document.getElementById('dropZone' + num).querySelector('i').style.display = 'none'; document.getElementById('dropZone' + num).querySelector('p').style.display = 'none'; }; reader.readAsDataURL(file); }
     }
-
     async function uploadPhoto(fileInput) {
         if(fileInput.files && fileInput.files.length > 0) {
-            const originalFile = fileInput.files[0];
-            const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
+            const originalFile = fileInput.files[0]; const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
             let compressedBlob = await imageCompression(originalFile, options);
             const fileToSend = new File([compressedBlob], originalFile.name, { type: originalFile.type });
             const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileToSend);
             return `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
-        }
-        return null;
+        } return null;
     }
-
     document.getElementById('productForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('editId').value;
-      const btn = document.getElementById('btnSave');
-      const msg = document.getElementById('msg');
-      btn.disabled = true; btn.innerText = "Procesando...";
-      msg.style.display = 'none';
-
+      e.preventDefault(); const id = document.getElementById('editId').value; const btn = document.getElementById('btnSave'); const msg = document.getElementById('msg');
+      btn.disabled = true; btn.innerText = "Procesando..."; msg.style.display = 'none';
       try {
-        let finalUrl1 = document.getElementById('oldImg1').value;
-        let finalUrl2 = document.getElementById('oldImg2').value;
-        const newUrl1 = await uploadPhoto(document.getElementById('file1'));
-        if(newUrl1) finalUrl1 = newUrl1;
-        const newUrl2 = await uploadPhoto(document.getElementById('file2'));
-        if(newUrl2) finalUrl2 = newUrl2;
-
+        let finalUrl1 = document.getElementById('oldImg1').value; let finalUrl2 = document.getElementById('oldImg2').value;
+        const newUrl1 = await uploadPhoto(document.getElementById('file1')); if(newUrl1) finalUrl1 = newUrl1;
+        const newUrl2 = await uploadPhoto(document.getElementById('file2')); if(newUrl2) finalUrl2 = newUrl2;
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
-
         const data = {
-          descripcion: document.getElementById('name').value,
-          codigo: document.getElementById('code').value,
-          categoria: document.getElementById('cat').value,
-          preciopormayor: Number(document.getElementById('price').value),
-          precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
-          moq: Number(document.getElementById('moq').value), 
-          imagen: finalUrl1,
-          imagen2: finalUrl2,
-          disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
+          descripcion: document.getElementById('name').value, codigo: document.getElementById('code').value, categoria: document.getElementById('cat').value,
+          preciopormayor: Number(document.getElementById('price').value), precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
+          moq: Number(document.getElementById('moq').value), imagen: finalUrl1, imagen2: finalUrl2, disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
-
-        if(id) {
-          await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data);
-          msg.innerText = "✅ Actualizado";
-        } else {
-          await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data);
-          msg.innerText = "✅ Guardado";
-        }
-        msg.className = 'success'; msg.style.display = 'block';
-        setTimeout(() => { msg.style.display = 'none'; }, 2000); 
-        resetForm();
-        document.getElementById('list').innerHTML = ''; 
-      } catch(err) {
-        console.error(err);
-        msg.innerText = "Error: " + err.message;
-        msg.className = 'error'; msg.style.display = 'block';
-      } finally {
-        btn.disabled = false;
-        if(!id) btn.innerText = "Guardar Producto";
-      }
+        if(id) { await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); msg.innerText = "✅ Actualizado"; } 
+        else { await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); msg.innerText = "✅ Guardado"; }
+        msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
+        resetForm(); document.getElementById('list').innerHTML = ''; 
+      } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
-
     async function doSearch() {
-      const q = document.getElementById('search').value.toLowerCase();
-      const list = document.getElementById('list');
-      if(!q) return;
+      const q = document.getElementById('search').value.toLowerCase(); const list = document.getElementById('list'); if(!q) return;
       list.innerHTML = '<p style="text-align:center; color:#999">Buscando...</p>';
       try {
         const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
         const hits = res.documents.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)));
         list.innerHTML = hits.length ? '' : '<p style="text-align:center; color:#999">Sin resultados</p>';
         hits.forEach(d => {
-          const enStock = (d.disponible === undefined) ? true : d.disponible;
-          const div = document.createElement('div');
-          div.className = 'product-item' + (enStock ? '' : ' agotado');
-          div.id = 'card-' + d.$id;
-          div.innerHTML = `
-            <img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
-            <div class="prod-info">
-              <div class="prod-title">${d.descripcion}</div>
-              <div class="prod-sub">${d.codigo} | Bs. ${d.preciopormayor}</div>
-            </div>
-            <div class="actions">
-              <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
-              <button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button>
-              <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
-            </div>`;
+          const enStock = (d.disponible === undefined) ? true : d.disponible; const div = document.createElement('div'); div.className = 'product-item' + (enStock ? '' : ' agotado'); div.id = 'card-' + d.$id;
+          div.innerHTML = `<img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img"><div class="prod-info"><div class="prod-title">${d.descripcion}</div><div class="prod-sub">${d.codigo} | Bs. ${d.preciopormayor}</div></div><div class="actions"><button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button><button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button><button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button></div>`;
           list.appendChild(div);
         });
       } catch(e) { alert(e.message); }
     }
-
     async function toggleStock(docId, currentState, btn) {
-      const newState = !currentState;
-      const card = document.getElementById('card-' + docId);
-      const originalIcon = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true;
-      try {
-        await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState });
-        btn.innerHTML = '<i class="bi bi-power"></i>';
-        btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`;
-        if(newState) card.classList.remove('agotado'); else card.classList.add('agotado');
-        btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`);
-      } catch (err) { alert(err.message); btn.innerHTML = originalIcon; } finally { btn.disabled = false; }
+      const newState = !currentState; const card = document.getElementById('card-' + docId); const originalIcon = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true;
+      try { await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState }); btn.innerHTML = '<i class="bi bi-power"></i>'; btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; if(newState) card.classList.remove('agotado'); else card.classList.add('agotado'); btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); } catch (err) { alert(err.message); btn.innerHTML = originalIcon; } finally { btn.disabled = false; }
     }
-
     window.editItem = function(d) {
-      document.getElementById('editId').value = d.$id;
-      document.getElementById('name').value = d.descripcion;
-      document.getElementById('code').value = d.codigo;
-      document.getElementById('cat').value = d.categoria;
-      document.getElementById('price').value = d.preciopormayor; 
-      document.getElementById('priceUnit').value = d.precioUnidad || ''; 
-      document.getElementById('moq').value = d.moq || 6;
+      document.getElementById('editId').value = d.$id; document.getElementById('name').value = d.descripcion; document.getElementById('code').value = d.codigo; document.getElementById('cat').value = d.categoria;
+      document.getElementById('price').value = d.preciopormayor; document.getElementById('priceUnit').value = d.precioUnidad || ''; document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
-      document.getElementById('oldImg1').value = d.imagen || "";
-      if(d.imagen) {
-          const img1 = document.getElementById('previewImg1');
-          img1.src = d.imagen; img1.style.display = 'block'; 
-          document.getElementById('dropZone1').querySelector('i').style.display = 'none';
-          document.getElementById('dropZone1').querySelector('p').style.display = 'none';
-      }
-      document.getElementById('oldImg2').value = d.imagen2 || "";
-      const img2 = document.getElementById('previewImg2');
-      const icon2 = document.getElementById('dropZone2').querySelector('i');
-      const txt2 = document.getElementById('dropZone2').querySelector('p');
-      if(d.imagen2) {
-          img2.src = d.imagen2; img2.style.display = 'block'; 
-          icon2.style.display = 'none'; txt2.style.display = 'none';
-      } else {
-          img2.style.display = 'none'; img2.src = "";
-          icon2.style.display = 'block'; txt2.style.display = 'block';
-      }
-      document.getElementById('formTitle').innerText = "Editando: " + d.codigo;
-      document.getElementById('btnSave').innerText = "Actualizar";
-      document.getElementById('btnSave').style.background = "#2563eb";
-      document.getElementById('btnCancel').style.display = "block";
-      window.scrollTo({top:0, behavior:'smooth'});
+      document.getElementById('oldImg1').value = d.imagen || ""; if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; document.getElementById('dropZone1').querySelector('p').style.display = 'none'; }
+      document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i'); const txt2 = document.getElementById('dropZone2').querySelector('p');
+      if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; icon2.style.display = 'none'; txt2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; icon2.style.display = 'block'; txt2.style.display = 'block'; }
+      document.getElementById('formTitle').innerText = "Editando: " + d.codigo; document.getElementById('btnSave').innerText = "Actualizar"; document.getElementById('btnSave').style.background = "#2563eb"; document.getElementById('btnCancel').style.display = "block"; window.scrollTo({top:0, behavior:'smooth'});
     }
-
-    window.delItem = async function(id) {
-      if(!confirm("¿Borrar?")) return;
-      try { await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); document.getElementById('card-'+id).remove(); } catch(e) { alert(e.message); }
-    }
-
+    window.delItem = async function(id) { if(!confirm("¿Borrar?")) return; try { await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); document.getElementById('card-'+id).remove(); } catch(e) { alert(e.message); } }
     window.resetForm = function() {
-      document.getElementById('productForm').reset();
-      document.getElementById('editId').value = "";
-      document.getElementById('oldImg1').value = "";
-      document.getElementById('oldImg2').value = "";
-      document.getElementById('file1').value = ""; 
-      document.getElementById('file2').value = ""; 
-      ['1','2'].forEach(n => {
-          document.getElementById('previewImg'+n).style.display = 'none';
-          document.getElementById('previewImg'+n).src = "";
-          document.getElementById('dropZone'+n).querySelector('i').style.display = 'block';
-          document.getElementById('dropZone'+n).querySelector('p').style.display = 'block';
-      });
-      document.getElementById('formTitle').innerText = "Nuevo Producto";
-      document.getElementById('btnSave').innerText = "Guardar Producto";
-      document.getElementById('btnSave').style.background = "#FFB800";
-      document.getElementById('btnCancel').style.display = "none";
+      document.getElementById('productForm').reset(); document.getElementById('editId').value = ""; document.getElementById('oldImg1').value = ""; document.getElementById('oldImg2').value = ""; document.getElementById('file1').value = ""; document.getElementById('file2').value = ""; 
+      ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; document.getElementById('dropZone'+n).querySelector('p').style.display = 'block'; });
+      document.getElementById('formTitle').innerText = "Nuevo Producto"; document.getElementById('btnSave').innerText = "Guardar Producto"; document.getElementById('btnSave').style.background = "#FFB800"; document.getElementById('btnCancel').style.display = "none";
     }
   </script>
 </body>
