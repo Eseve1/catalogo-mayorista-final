@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Catálogo Mayorista</title>
+<title>Catálogo Mayorista - Ale Importadora</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 <style>
@@ -12,17 +12,17 @@
 html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
-/* Header */
+/* --- HEADER Y MARQUESINA (TEXTO QUE SE MUEVE) --- */
 .header-oferta{ width:100%; background:var(--accent); color:#000; border-bottom:2px solid var(--accent-dark); box-shadow:0 2px 10px rgba(0,0,0,.08); overflow:hidden; position:sticky; top:0; z-index:50; }
-.header-track{ display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; padding:12px 0; font-weight:900; font-size:1.1rem; letter-spacing:.5px; text-transform:uppercase; }
+.header-track{ display:flex; gap:40px; white-space:nowrap; animation:marquee 25s linear infinite; padding:12px 0; font-weight:900; font-size:1.1rem; letter-spacing:.5px; text-transform:uppercase; }
 .header-item{display:inline-flex;align-items:center;gap:10px;padding-left:20px}
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* Layout */
+/* Layout Principal */
 .main{ max-width:1600px; margin:0 auto; display:grid; grid-template-columns:260px 1fr; gap:20px; padding:20px; }
 @media (max-width:992px){ .main{grid-template-columns:1fr} }
 
-/* Sidebar */
+/* Sidebar Categorías */
 .sidebar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:16px; position:sticky; top:70px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 .sidebar h2{ margin:0 0 12px; font-size:1.1rem; font-weight:900; flex-shrink: 0; }
 #menu-cat{ display:flex; flex-direction:column; gap:8px; overflow-y: auto; padding-right: 5px; }
@@ -30,7 +30,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .btn-cat{ background:#fff; color:#444; border:1px solid #ddd; font-weight:700; border-radius:10px; padding:10px 14px; cursor:pointer; font-size:.95rem; text-align:left; transition:.2s; flex-shrink: 0; }
 .btn-cat:hover, .btn-cat.active{ background:var(--accent); color:#000; border-color:var(--accent-dark); box-shadow:0 2px 8px rgba(255,184,0,.3); }
 
-/* Toolbar y Chips */
+/* Toolbar y Chips (Botones pequeños) */
 .toolbar-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
 .toolbar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:14px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 #searchBox{ flex:1 1 300px; border:2px solid #eee; outline:none; border-radius:10px; padding:12px 16px; font-size:1rem; transition:0.2s; }
@@ -42,13 +42,13 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .chip:hover { background: #eee; }
 .chip.active { background: #000; color: #fff; border-color: #000; }
 
-/* Grid */
+/* Grid de Productos */
 .grid{display:grid; gap:20px; grid-template-columns:repeat(5,minmax(0,1fr))}
 @media (max-width:1400px){.grid{grid-template-columns:repeat(4,1fr)}}
 @media (max-width:992px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:576px){.grid{grid-template-columns:repeat(1,1fr)}}
 
-/* Card */
+/* Tarjetas (Cards) */
 .card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
 .moq{ position:absolute; top:12px; right:12px; z-index:10; background:var(--accent); color:#000; border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-transform: uppercase; }
@@ -65,13 +65,27 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .old-price{font-size:0.9rem; color:#999; text-decoration:line-through; margin-bottom:3px;}
 .cta{ background:#000; color:#fff; border-radius:8px; padding:8px 12px; font-weight:800; font-size:.85rem; display:inline-flex; align-items:center; gap:6px; width:100%; justify-content:center; }
 
+/* Botón WhatsApp */
 .whatsapp{ position:fixed; right:20px; bottom:20px; z-index:100; background:#25D366; color:#fff; border-radius:50px; padding:12px 24px; font-weight:800; text-decoration:none; box-shadow:0 4px 20px rgba(37,211,102,0.4); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:1rem; }
 .whatsapp:hover{transform:scale(1.05);}
 @media (max-width:992px){ .sidebar{position:static; margin-bottom:20px; max-height:none;} #menu-cat{flex-direction:row; flex-wrap:wrap; overflow-y:visible;} .btn-cat{flex:1; text-align:center; white-space:nowrap;} }
 </style>
 </head>
 <body>
-<div class="header-oferta"><div class="header-track"><div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div><div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div><div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div><div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div></div></div>
+
+<div class="header-oferta">
+    <div class="header-track">
+        <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A LOS 9 DEPARTAMENTOS</div>
+        <div class="header-item"><i class="bi bi-fire"></i> SOMOS IMPORTADORES DIRECTOS</div>
+        <div class="header-item"><i class="bi bi-geo-alt-fill"></i> UBICADOS EN SANTA CRUZ</div>
+        <div class="header-item"><i class="bi bi-shield-check"></i> GARANTÍA EN TUS PEDIDOS</div>
+        
+        <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A LOS 9 DEPARTAMENTOS</div>
+        <div class="header-item"><i class="bi bi-fire"></i> SOMOS IMPORTADORES DIRECTOS</div>
+        <div class="header-item"><i class="bi bi-geo-alt-fill"></i> UBICADOS EN SANTA CRUZ</div>
+        <div class="header-item"><i class="bi bi-shield-check"></i> GARANTÍA EN TUS PEDIDOS</div>
+    </div>
+</div>
 
 <div class="main">
   <aside class="sidebar">
@@ -87,6 +101,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
         </div>
         <div id="sub-chips"></div>
     </div>
+
     <div id="productos" class="grid"></div>
   </section>
 </div>
@@ -116,6 +131,7 @@ function formatearTexto(txt) { if(!txt) return ''; const lower = txt.toLowerCase
 function formatearTitulo(txt) { if(!txt) return 'Sin Nombre'; const lower = txt.toLowerCase().trim(); return lower.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' '); }
 function formatearCodigo(txt) { if(!txt) return ''; return txt.toUpperCase().trim(); }
 
+// 1. Renderizar Categorías Principales (Sidebar)
 function renderCategorias(){
   const menu = document.getElementById('menu-cat');
   let categoriasLimpias = todos.map(p => formatearTexto(p.categoria || 'Varios'));
@@ -124,6 +140,7 @@ function renderCategorias(){
   menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
 }
 
+// 2. Lógica de Filtrado Principal
 window.filtrar = function(cat, btn){
   if(btn){ document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
   catActual = cat;
@@ -138,6 +155,7 @@ window.filtrar = function(cat, btn){
   renderProductos(filtrados);
 }
 
+// 3. Renderizar Subcategorías (Chips)
 function renderSubCategorias(listaProductos){
     const container = document.getElementById('sub-chips');
     const tipos = listaProductos.map(p => p.tipo ? formatearTexto(p.tipo) : null).filter(t => t !== null);
@@ -153,6 +171,7 @@ function renderSubCategorias(listaProductos){
     }
 }
 
+// 4. Filtrado Secundario (Chips Click)
 window.filtrarSub = function(tipo, btn){
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
@@ -160,6 +179,7 @@ window.filtrarSub = function(tipo, btn){
     if(tipo === 'todos'){ renderProductos(base); } else { renderProductos(base.filter(p => formatearTexto(p.tipo) === tipo)); }
 }
 
+// 5. Renderizar Grid de Productos
 function renderProductos(lista){
   const grid = document.getElementById('productos');
   if(lista.length === 0){ grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#888;">Sin productos.</div>`; return; }
