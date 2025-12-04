@@ -9,47 +9,44 @@
 <style>
 :root{
   --bg:#f6f8fb;
-  --text:#111;           /* Texto más negro */
+  --text:#111;           
   --accent:#FFB800;      /* Amarillo Marca */
-  --accent-border:#e0a200;
+  --accent-dark:#e0a200;
   --card-border:#e5e5e5;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
-/* --- HEADER OFERTA (Ajustado) --- */
+/* HEADER "ENVÍOS A TODO BOLIVIA" */
 .header-oferta{
   width:100%; 
   background:var(--accent); 
-  color:#000; /* Texto negro sobre amarillo siempre */
-  border-bottom:2px solid var(--accent-border);
+  color:#000;
+  border-bottom:2px solid var(--accent-dark);
   box-shadow:0 2px 10px rgba(0,0,0,.08);
   overflow:hidden; position:sticky; top:0; z-index:50;
 }
 .header-track{
   display:flex; gap:40px; white-space:nowrap;
-  /* Velocidad ajustada: 20s es un ritmo medio cómodo */
   animation:marquee 20s linear infinite; 
   padding:12px 0;
   font-weight:900; font-size:1.1rem; letter-spacing:.5px; text-transform:uppercase;
 }
 .header-item{display:inline-flex;align-items:center;gap:10px;padding-left:20px}
-
-/* Animación infinita */
 @keyframes marquee{ 
   0% { transform: translateX(0); } 
   100% { transform: translateX(-50%); } 
 }
 
-/* Layout Principal */
+/* LAYOUT */
 .main{
   max-width:1600px; margin:0 auto;
   display:grid; grid-template-columns:260px 1fr; gap:20px; padding:20px;
 }
 @media (max-width:992px){ .main{grid-template-columns:1fr} }
 
-/* Sidebar Categorías */
+/* SIDEBAR */
 .sidebar{
   background:#fff; border:1px solid var(--card-border); border-radius:12px;
   padding:16px; position:sticky; top:70px; height:max-content;
@@ -63,11 +60,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
   font-size:.95rem; text-align:left; transition:.2s;
 }
 .btn-cat:hover, .btn-cat.active{
-  background:var(--accent); color:#000; border-color:var(--accent-border);
+  background:var(--accent); color:#000; border-color:var(--accent-dark);
   box-shadow:0 2px 8px rgba(255,184,0,.3);
 }
 
-/* Barra de Búsqueda */
+/* BUSCADOR */
 .toolbar{
   background:#fff; border:1px solid var(--card-border); border-radius:12px;
   padding:14px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
@@ -79,13 +76,13 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 }
 #searchBox:focus{ border-color:var(--accent); }
 
-/* Grid de Productos */
+/* GRID PRODUCTOS */
 .grid{display:grid; gap:20px; grid-template-columns:repeat(5,minmax(0,1fr))}
 @media (max-width:1400px){.grid{grid-template-columns:repeat(4,1fr)}}
 @media (max-width:992px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:576px){.grid{grid-template-columns:repeat(1,1fr)}}
 
-/* TARJETA DE PRODUCTO (Card) */
+/* TARJETA */
 .card{
   background:#fff; border:1px solid var(--card-border); border-radius:16px;
   overflow:hidden; position:relative;
@@ -93,15 +90,15 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 }
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
 
-/* Etiqueta MOQ */
+/* ETIQUETA DE CANTIDAD MÍNIMA */
 .moq{
   position:absolute; top:12px; right:12px; z-index:10;
   background:var(--accent); color:#000;
-  border-radius:6px; padding:4px 10px; font-weight:800; font-size:.8rem;
+  border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; /* Un poco más pequeño para que entre bien */
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-transform: uppercase;
 }
 
-/* Imagen */
 .img-box{
   background:#fff; padding:15px; 
   display:flex; align-items:center; justify-content:center; 
@@ -112,29 +109,24 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
 }
 
-/* Info del Producto */
 .info{padding:16px;}
-
-/* Título: Color Negro Fuerte para que no se cambie */
-.title{
-  font-size:1.05rem; font-weight:900; margin:0 0 6px; 
-  line-height:1.4; color:#000 !important; /* Forzamos negro */
-}
-
+.title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
 .ref{font-size:.85rem; color:#888; font-weight:600; margin-bottom:12px;}
 
 .prices{display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
 .price{font-weight:900; font-size:1.25rem; color:#111;}
 .old-price{font-size:0.9rem; color:#999; text-decoration:line-through; margin-bottom:3px;}
 
+/* BOTÓN NEGRO */
 .cta{
-  background:#000; color:#fff; border-radius:8px; padding:6px 12px;
-  font-weight:700; font-size:.85rem; display:inline-flex; align-items:center; gap:6px;
+  background:#000; color:#fff; 
+  border-radius:8px; padding:8px 12px;
+  font-weight:800; font-size:.85rem; display:inline-flex; align-items:center; gap:6px;
   width:100%; justify-content:center;
 }
 .cta i{color:var(--accent);}
 
-/* Botón WhatsApp Flotante */
+/* WHATSAPP */
 .whatsapp{
   position:fixed; right:20px; bottom:20px; z-index:100;
   background:#25D366; color:#fff; border-radius:50px; padding:12px 24px;
@@ -152,12 +144,9 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 </head>
 <body>
 
-<!-- ENCABEZADO: Solo envíos a Bolivia + Velocidad Media -->
+<!-- ENCABEZADO -->
 <div class="header-oferta">
   <div class="header-track">
-    <!-- Repetimos varias veces para el efecto infinito -->
-    <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div>
-    <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div>
     <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div>
     <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div>
     <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div>
@@ -168,7 +157,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 </div>
 
 <div class="main">
-  <!-- Sidebar -->
   <aside class="sidebar">
     <h2><i class="bi bi-grid-fill"></i> Categorías</h2>
     <div id="menu-cat">
@@ -176,7 +164,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     </div>
   </aside>
 
-  <!-- Contenido -->
   <section>
     <div class="toolbar">
       <i class="bi bi-search" style="font-size:1.2rem; color:#aaa"></i>
@@ -186,12 +173,10 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
   </section>
 </div>
 
-<!-- Botón Flotante -->
 <a class="whatsapp" href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido." target="_blank">
   <i class="bi bi-whatsapp" style="font-size:1.3rem"></i> Hacer Pedido
 </a>
 
-<!-- Lógica Appwrite -->
 <script type="module">
 import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
 
@@ -210,13 +195,12 @@ async function iniciar(){
   const grid = document.getElementById('productos');
 
   try {
-    // 1. Obtener productos
     const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [
       Query.limit(200),
       Query.orderDesc('$createdAt')
     ]);
     
-    // 2. FILTRAR: Ocultar los que estén "Apagados" (disponible=false)
+    // Filtro Stock
     todos = res.documents.filter(doc => doc.disponible !== false);
 
     renderCategorias();
@@ -225,45 +209,37 @@ async function iniciar(){
   } catch(e) {
     console.error(e);
     grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;">
-      <i class="bi bi-wifi-off" style="font-size:2rem; color:#ccc"></i>
-      <p style="color:#666; margin-top:10px">No se pudo cargar el catálogo.</p>
+      <p style="color:#666;">No se pudo cargar el catálogo.</p>
     </div>`;
   }
 }
 
 function renderCategorias(){
   const menu = document.getElementById('menu-cat');
-  // Obtener categorías únicas
   const cats = ['Todo', ...new Set(todos.map(p => p.categoria || 'Varios'))];
-  
   menu.innerHTML = cats.map(c => 
-    `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">
-      ${c}
-    </button>`
+    `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`
   ).join('');
 }
 
 function renderProductos(lista){
   const grid = document.getElementById('productos');
-  
   if(lista.length === 0){
-    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;">
-      <p style="color:#888; font-size:1.1rem">No encontramos productos disponibles con ese nombre.</p>
-    </div>`;
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#888;">Sin productos.</div>`;
     return;
   }
 
   grid.innerHTML = lista.map(p => {
-    // Lógica para mostrar precio
     const precio = parseFloat(p.preciopormayor).toFixed(2);
-    // Si tiene precio unidad, lo tachamos, si no, no mostramos nada
     const precioViejoHtml = p.precioUnidad 
       ? `<div class="old-price">Bs. ${parseFloat(p.precioUnidad).toFixed(2)}</div>` 
       : '';
 
     return `
     <div class="card">
-      <div class="moq">Min. ${p.moq || 6}</div>
+      <!-- CAMBIO: Texto MOQ más claro -->
+      <div class="moq">Mín. ${p.moq || 6} unid.</div>
+      
       <div class="img-box">
         <img src="${p.imagen}" loading="lazy" alt="${p.descripcion}" 
              onerror="this.src='https://via.placeholder.com/300x300?text=Sin+Foto'">
@@ -280,7 +256,7 @@ function renderProductos(lista){
         </div>
 
         <div class="cta">
-          <i class="bi bi-fire"></i> PRECIO MAYOR
+          <i class="bi bi-fire"></i> PRECIO POR MAYOR
         </div>
       </div>
     </div>`;
@@ -290,7 +266,6 @@ function renderProductos(lista){
 window.filtrar = function(cat, btn){
   document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  
   if(cat === 'Todo') renderProductos(todos);
   else renderProductos(todos.filter(p => (p.categoria || 'Varios') === cat));
 }
