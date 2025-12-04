@@ -18,26 +18,20 @@
 html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
-/* HEADER "ENVÍOS A TODO BOLIVIA" */
+/* HEADER */
 .header-oferta{
-  width:100%; 
-  background:var(--accent); 
-  color:#000;
+  width:100%; background:var(--accent); color:#000;
   border-bottom:2px solid var(--accent-dark);
   box-shadow:0 2px 10px rgba(0,0,0,.08);
   overflow:hidden; position:sticky; top:0; z-index:50;
 }
 .header-track{
   display:flex; gap:40px; white-space:nowrap;
-  animation:marquee 20s linear infinite; 
-  padding:12px 0;
+  animation:marquee 20s linear infinite; padding:12px 0;
   font-weight:900; font-size:1.1rem; letter-spacing:.5px; text-transform:uppercase;
 }
 .header-item{display:inline-flex;align-items:center;gap:10px;padding-left:20px}
-@keyframes marquee{ 
-  0% { transform: translateX(0); } 
-  100% { transform: translateX(-50%); } 
-}
+@keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 /* LAYOUT */
 .main{
@@ -90,24 +84,44 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 }
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
 
-/* ETIQUETA DE CANTIDAD MÍNIMA */
+/* ETIQUETA MOQ */
 .moq{
   position:absolute; top:12px; right:12px; z-index:10;
   background:var(--accent); color:#000;
-  border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; /* Un poco más pequeño para que entre bien */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  text-transform: uppercase;
+  border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-transform: uppercase;
 }
 
+/* --- LOGICA DE IMAGEN DOBLE (HOVER) --- */
 .img-box{
   background:#fff; padding:15px; 
   display:flex; align-items:center; justify-content:center; 
   height:220px; border-bottom:1px solid #f0f0f0;
+  position: relative; /* Necesario para que la foto 2 se monte encima */
 }
-.img-box img{
+
+/* Estilo base para las imágenes */
+.prod-img {
   max-width:100%; max-height:100%; object-fit:contain; 
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+  transition: opacity 0.3s ease-in-out;
 }
+
+/* Foto 1: Siempre visible, se oculta al hover SI hay foto 2 */
+.img-front { opacity: 1; }
+
+/* Foto 2: Absoluta (encima de la 1), invisible por defecto */
+.img-back {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  padding: 15px; /* Mismo padding que el container */
+  opacity: 0; 
+  background: #fff; /* Fondo blanco para tapar la de atrás */
+}
+
+/* AL PASAR EL MOUSE (HOVER) */
+/* Si la caja tiene la clase 'has-hover', mostramos la de atrás */
+.img-box.has-hover:hover .img-back { opacity: 1; }
+
 
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
@@ -117,7 +131,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .price{font-weight:900; font-size:1.25rem; color:#111;}
 .old-price{font-size:0.9rem; color:#999; text-decoration:line-through; margin-bottom:3px;}
 
-/* BOTÓN NEGRO */
 .cta{
   background:#000; color:#fff; 
   border-radius:8px; padding:8px 12px;
@@ -126,7 +139,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 }
 .cta i{color:var(--accent);}
 
-/* WHATSAPP */
 .whatsapp{
   position:fixed; right:20px; bottom:20px; z-index:100;
   background:#25D366; color:#fff; border-radius:50px; padding:12px 24px;
@@ -144,7 +156,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 </head>
 <body>
 
-<!-- ENCABEZADO -->
 <div class="header-oferta">
   <div class="header-track">
     <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO BOLIVIA</div>
@@ -187,10 +198,7 @@ const COLLECTION_ID = 'catalogo';
 let todos = [];
 
 async function iniciar(){
-  const client = new Client()
-    .setEndpoint('https://fra.cloud.appwrite.io/v1')
-    .setProject(PROJECT_ID);
-
+  const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject(PROJECT_ID);
   const db = new Databases(client);
   const grid = document.getElementById('productos');
 
@@ -200,7 +208,6 @@ async function iniciar(){
       Query.orderDesc('$createdAt')
     ]);
     
-    // Filtro Stock
     todos = res.documents.filter(doc => doc.disponible !== false);
 
     renderCategorias();
@@ -216,14 +223,8 @@ async function iniciar(){
 
 function renderCategorias(){
   const menu = document.getElementById('menu-cat');
-  
-  // 1. Obtenemos las categorías únicas
   let listadoCategorias = [...new Set(todos.map(p => p.categoria || 'Varios'))];
-  
-  // 2. MAGIA: Las ordenamos alfabéticamente (A-Z)
   listadoCategorias.sort();
-
-  // 3. Agregamos 'Todo' al principio
   const cats = ['Todo', ...listadoCategorias];
 
   menu.innerHTML = cats.map(c => 
@@ -244,29 +245,33 @@ function renderProductos(lista){
       ? `<div class="old-price">Bs. ${parseFloat(p.precioUnidad).toFixed(2)}</div>` 
       : '';
 
+    // --- LÓGICA DE FOTOS ---
+    // Verificamos si existe imagen2
+    const tieneFoto2 = p.imagen2 ? true : false;
+    
+    // Si tiene foto 2, agregamos la clase 'has-hover' al contenedor
+    // Y renderizamos AMBAS imágenes
+    const imagenesHtml = tieneFoto2 
+        ? `<img src="${p.imagen}" class="prod-img img-front" loading="lazy">
+           <img src="${p.imagen2}" class="prod-img img-back" loading="lazy">`
+        : `<img src="${p.imagen}" class="prod-img" loading="lazy">`;
+
     return `
     <div class="card">
-      <!-- CAMBIO: Texto MOQ más claro -->
       <div class="moq">Mín. ${p.moq || 6} unid.</div>
       
-      <div class="img-box">
-        <img src="${p.imagen}" loading="lazy" alt="${p.descripcion}" 
-             onerror="this.src='https://via.placeholder.com/300x300?text=Sin+Foto'">
+      <!-- Aquí aplicamos la clase si tiene 2 fotos -->
+      <div class="img-box ${tieneFoto2 ? 'has-hover' : ''}">
+        ${imagenesHtml}
       </div>
+
       <div class="info">
         <h3 class="title">${p.descripcion}</h3>
         <div class="ref">Ref: ${p.codigo}</div>
-        
         <div class="prices">
-          <div>
-            ${precioViejoHtml}
-            <div class="price">Bs. ${precio}</div>
-          </div>
+          <div>${precioViejoHtml}<div class="price">Bs. ${precio}</div></div>
         </div>
-
-        <div class="cta">
-          <i class="bi bi-fire"></i> PRECIO POR MAYOR
-        </div>
+        <div class="cta"><i class="bi bi-fire"></i> PRECIO POR MAYOR</div>
       </div>
     </div>`;
   }).join('');
