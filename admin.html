@@ -19,6 +19,7 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; min-height: 100vh; }
 
+    /* LOGIN */
     #loginScreen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: #000; z-index: 9999;
@@ -44,8 +45,9 @@
       margin-bottom: 20px; position: relative; background: #fafafa;
     }
     .photo-area img {
-      max-width: 100%; max-height: 250px; border-radius: 8px; display: none; margin: 10px auto;
+      max-width: 100%; max-height: 250px; border-radius: 8px; display: none; margin: 10px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+    .photo-area p { margin: 10px 0 0; color: #666; font-size: 0.85rem; }
 
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; margin-top: 10px; cursor: pointer; }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
@@ -56,12 +58,11 @@
     
     .product-item {
       display: flex; align-items: center; gap: 15px; padding: 15px;
-      background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; margin-bottom: 10px; position: relative;
-      transition: 0.3s;
+      background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; margin-bottom: 10px; position: relative; transition: 0.3s;
     }
     
-    /* ESTILOS DE ESTADO */
-    .product-item.agotado { background: #fef2f2; border-color: #fecaca; } /* Fondo rojizo suave */
+    /* ESTILOS DE ESTADO (AGOTADO) */
+    .product-item.agotado { background: #fef2f2; border-color: #fecaca; }
     .product-item.agotado .prod-img { filter: grayscale(100%); opacity: 0.6; }
     .product-item.agotado .prod-title { color: #991b1b; text-decoration: line-through; }
     
@@ -73,15 +74,12 @@
     .actions { display: flex; gap: 8px; }
     .btn-icon { width: 40px; height: 40px; border-radius: 10px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
     
-    .btn-edit { background: #eff6ff; color: #3b82f6; } /* Azul */
-    .btn-del { background: #fef2f2; color: #ef4444; }  /* Rojo claro */
+    .btn-edit { background: #eff6ff; color: #3b82f6; } 
+    .btn-del { background: #fef2f2; color: #ef4444; }  
     
-    /* CORRECCIÓN DE COLORES DE STOCK */
-    /* Stock (Encendido) -> Ahora es Azul Neutro (No verde) */
-    .btn-power { background: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; } 
-    
-    /* Agotado (Apagado) -> Rojo Intenso */
-    .btn-power.off { background: #fee2e2; color: #dc2626; border-color: #fca5a5; } 
+    /* BOTÓN POWER (STOCK RÁPIDO) */
+    .btn-power { background: #dcfce7; color: #166534; } /* Verde = En Stock */
+    .btn-power.off { background: #fee2e2; color: #dc2626; } /* Rojo = Agotado */
 
     #msg { text-align: center; margin-top: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 8px; }
     .success { background: #dcfce7; color: #166534; }
@@ -104,6 +102,7 @@
       <form id="productForm">
         <input type="hidden" id="editId">
         <input type="hidden" id="oldImg">
+        <!-- Por defecto al crear es true (En Stock) -->
         <input type="hidden" id="currentStockStatus" value="true">
 
         <label>Nombre</label>
@@ -123,7 +122,7 @@
         <div class="photo-area">
           <img id="previewImg" src="" alt="Vista previa">
           <input type="file" id="file" accept="image/*" onchange="previewFile()">
-          <p id="photoHelp" style="font-size:0.8rem; color:#888; margin-top:5px">Toca "Seleccionar archivo" para subir</p>
+          <p id="photoHelp">Toca "Seleccionar archivo" para subir</p>
         </div>
 
         <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
@@ -140,7 +139,7 @@
       </div>
       <div id="list"></div>
       <p style="text-align:center; color:#888; font-size:0.9rem;">
-        <i class="bi bi-power" style="color:#4b5563"></i> Stock | 
+        <i class="bi bi-power" style="color:#166534"></i> Stock | 
         <i class="bi bi-pencil-fill" style="color:#3b82f6"></i> Editar | 
         <i class="bi bi-trash-fill" style="color:#ef4444"></i> Borrar
       </p>
@@ -168,11 +167,17 @@
       } else { document.getElementById('loginError').style.display = 'block'; }
     }
 
+    // --- PREVIEW DE FOTO ---
     function previewFile() {
       const preview = document.getElementById('previewImg');
       const file = document.getElementById('file').files[0];
       const reader = new FileReader();
-      reader.onload = function(e) { preview.src = e.target.result; preview.style.display = 'block'; };
+      
+      reader.onload = function(e) { 
+        preview.src = e.target.result; 
+        preview.style.display = 'block'; 
+      };
+      
       if (file) reader.readAsDataURL(file);
     }
 
@@ -190,11 +195,10 @@
         list.innerHTML = hits.length ? '' : '<p style="text-align:center">Sin resultados</p>';
         
         hits.forEach(d => {
-          // Estado del stock (True por defecto)
+          // Estado del stock (True por defecto si no existe)
           const enStock = (d.disponible === undefined) ? true : d.disponible;
           
           const div = document.createElement('div');
-          // Añadimos clase 'agotado' si no hay stock para que se vea rojo/gris
           div.className = 'product-item' + (enStock ? '' : ' agotado');
           div.id = 'card-' + d.$id;
 
@@ -207,8 +211,6 @@
             <div class="actions">
               
               <!-- BOTÓN POWER (CAMBIO RÁPIDO) -->
-              <!-- Si enStock es true: Botón Gris (Normal) -->
-              <!-- Si enStock es false: Botón Rojo (Agotado) -->
               <button class="btn-icon btn-power ${enStock ? '' : 'off'}" onclick="toggleStock('${d.$id}', ${enStock}, this)">
                 <i class="bi bi-power"></i>
               </button>
@@ -230,13 +232,13 @@
       } catch(e) { alert("Error: " + e.message); }
     }
 
-    // --- TOGGLE STOCK ---
+    // --- TOGGLE STOCK (CAMBIO RÁPIDO) ---
     async function toggleStock(docId, currentState, btn) {
       const newState = !currentState;
       const card = document.getElementById('card-' + docId);
       
       const originalIcon = btn.innerHTML;
-      btn.innerHTML = '<span style="font-size:0.8rem">...</span>';
+      btn.innerHTML = '...'; 
       btn.disabled = true;
 
       try {
@@ -245,22 +247,15 @@
         });
 
         btn.innerHTML = '<i class="bi bi-power"></i>';
-        
-        // Aplicar clases de color según el estado
         btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`;
         
-        if(newState) {
-          card.classList.remove('agotado');
-        } else {
-          card.classList.add('agotado');
-        }
+        if(newState) card.classList.remove('agotado');
+        else card.classList.add('agotado');
         
-        // Actualizar onclick
         btn.onclick = function() { toggleStock(docId, newState, btn); };
 
       } catch (err) {
-        console.error(err);
-        alert("Error al actualizar: " + err.message);
+        alert("Error: " + err.message);
         btn.innerHTML = originalIcon;
       } finally {
         btn.disabled = false;
@@ -276,7 +271,7 @@
       document.getElementById('cat').value = d.categoria;
       document.getElementById('price').value = d.preciopormayor;
       document.getElementById('moq').value = d.moq;
-      // Guardar estado actual oculto
+      // Guardamos el estado del stock oculto para no perderlo al editar
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
 
       const preview = document.getElementById('previewImg');
@@ -314,9 +309,12 @@
           codigo: document.getElementById('code').value,
           categoria: document.getElementById('cat').value,
           preciopormayor: Number(document.getElementById('price').value),
-          moq: String(document.getElementById('moq').value),
+          
+          // 🛑 CORRECCIÓN CRÍTICA: Convertir MOQ a Número Entero
+          moq: parseInt(document.getElementById('moq').value, 10), 
+          
           imagen: imgUrl,
-          // Mantener estado de stock al editar
+          // Mantener el stock como estaba
           disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
 
