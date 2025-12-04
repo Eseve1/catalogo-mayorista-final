@@ -19,64 +19,66 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; min-height: 100vh; }
 
-    /* PANTALLA DE BLOQUEO */
     #loginScreen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: #000; z-index: 9999;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       color: #fff; padding: 20px;
     }
-    #loginScreen input {
-      padding: 15px; border-radius: 10px; border: none; font-size: 1.2rem; text-align: center; margin-top: 20px; width: 200px;
-    }
-    #loginScreen button {
-      margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer;
-    }
-    #appContent { display: none; } /* Oculto hasta desbloquear */
+    #loginScreen input { padding: 15px; border-radius: 10px; border: none; font-size: 1.2rem; text-align: center; margin-top: 20px; width: 200px; }
+    #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+    #appContent { display: none; }
 
-    /* CONTENEDOR PRINCIPAL */
-    .container {
-      max-width: 500px; margin: 0 auto 30px; background: var(--card);
-      padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    }
+    .container { max-width: 500px; margin: 0 auto 30px; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
     h2 { text-align: center; margin-top: 0; }
 
     /* FORMULARIO */
-    label { display: block; margin: 10px 0 5px; font-weight: 600; font-size: 0.9rem; }
-    input { width: 100%; padding: 12px; border: 2px solid #e4e4e7; border-radius: 10px; font-size: 1rem; }
+    label { display: block; margin: 12px 0 6px; font-weight: 700; font-size: 0.9rem; color: #444; }
+    input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 2px solid #e4e4e7; border-radius: 10px; font-size: 1rem; }
     input:focus { outline: none; border-color: var(--primary); }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    .btn-main {
-      width: 100%; padding: 15px; background: var(--primary); border: none;
-      border-radius: 10px; font-weight: 800; font-size: 1rem; margin-top: 20px;
-      cursor: pointer; transition: 0.2s;
+    /* PREVIEW FOTO */
+    .photo-area {
+      border: 2px dashed #ddd; border-radius: 12px; padding: 15px; text-align: center;
+      margin-bottom: 20px; position: relative; background: #fafafa;
     }
-    .btn-cancel {
-      width: 100%; padding: 10px; background: #e4e4e7; border: none;
-      border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none;
+    .photo-area img {
+      max-width: 100%; max-height: 250px; border-radius: 8px; display: none; margin: 10px auto;
     }
 
-    /* BUSCADOR Y LISTA */
+    .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; margin-top: 10px; cursor: pointer; }
+    .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
+
+    /* LISTA E INVENTARIO */
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 20px; }
     
     .product-item {
       display: flex; align-items: center; gap: 15px; padding: 15px;
-      background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; margin-bottom: 10px;
+      background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; margin-bottom: 10px; position: relative;
+      transition: 0.3s;
     }
+    
+    /* ESTILOS DE ESTADO */
+    .product-item.agotado { background: #f3f4f6; border-color: #ddd; }
+    .product-item.agotado .prod-img { filter: grayscale(100%); opacity: 0.6; }
+    .product-item.agotado .prod-title { color: #888; text-decoration: line-through; }
+    
     .prod-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #eee; }
     .prod-info { flex: 1; }
     .prod-title { font-weight: bold; margin: 0; font-size: 0.95rem; }
-    .prod-sub { font-size: 0.85rem; color: #666; }
-
-    .actions { display: flex; gap: 5px; }
-    .btn-icon {
-      width: 36px; height: 36px; border-radius: 50%; border: none;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .btn-edit { background: #dbeafe; color: #2563eb; }
-    .btn-del { background: #fee2e2; color: #dc2626; }
+    
+    /* BOTONES DE ACCIÓN */
+    .actions { display: flex; gap: 8px; }
+    .btn-icon { width: 40px; height: 40px; border-radius: 10px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
+    
+    .btn-edit { background: #eff6ff; color: #3b82f6; } /* Azul */
+    .btn-del { background: #fef2f2; color: #ef4444; }  /* Rojo claro */
+    
+    /* Botón de Stock Dinámico */
+    .btn-power { background: #dcfce7; color: #166534; } /* Verde (Encendido) */
+    .btn-power.off { background: #fee2e2; color: #991b1b; } /* Rojo (Apagado) */
 
     #msg { text-align: center; margin-top: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 8px; }
     .success { background: #dcfce7; color: #166534; }
@@ -85,7 +87,6 @@
 </head>
 <body>
 
-  <!-- PANTALLA DE LOGIN -->
   <div id="loginScreen">
     <i class="bi bi-shield-lock-fill" style="font-size: 3rem; color: var(--primary);"></i>
     <h3>Acceso Admin</h3>
@@ -94,15 +95,13 @@
     <p id="loginError" style="color: #ff6b6b; display: none;">Contraseña incorrecta</p>
   </div>
 
-  <!-- APP PRINCIPAL -->
   <div id="appContent">
-    
-    <!-- FORMULARIO -->
     <div class="container">
       <h2 id="formTitle">Nuevo Producto</h2>
       <form id="productForm">
         <input type="hidden" id="editId">
         <input type="hidden" id="oldImg">
+        <input type="hidden" id="currentStockStatus" value="true">
 
         <label>Nombre</label>
         <input type="text" id="name" placeholder="Ej: Foco LED" required>
@@ -118,16 +117,18 @@
         </div>
 
         <label id="lblFoto">Fotografía</label>
-        <input type="file" id="file" accept="image/*">
+        <div class="photo-area">
+          <img id="previewImg" src="" alt="Vista previa">
+          <input type="file" id="file" accept="image/*" onchange="previewFile()">
+          <p id="photoHelp" style="font-size:0.8rem; color:#888; margin-top:5px">Toca "Seleccionar archivo" para subir</p>
+        </div>
 
         <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
         <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Cancelar Edición</button>
-        
         <div id="msg"></div>
       </form>
     </div>
 
-    <!-- LISTA -->
     <div class="container">
       <h2>Inventario</h2>
       <div class="search-box">
@@ -135,15 +136,14 @@
         <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
       </div>
       <div id="list"></div>
-      <p style="text-align: center; color: #888; font-size: 0.9rem;">Busca para editar o borrar</p>
+      <p style="text-align:center; color:#888; font-size:0.9rem;">Usa el botón <i class="bi bi-power"></i> para activar/desactivar stock.</p>
     </div>
-
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script>
-    // --- CONFIGURACIÓN ---
-    const PASS = "eddy4242"; // 🔒 CONTRASEÑA ACTUALIZADA
+    // --- CREDENCIALES ---
+    const PASS = "eddy4242"; 
     
     const PROJECT_ID = "692ee6b70012153cd33c";
     const DATABASE_ID = "692ee774002e9a3c8601";
@@ -154,15 +154,19 @@
     const db = new Appwrite.Databases(client);
     const storage = new Appwrite.Storage(client);
 
-    // --- LOGIN ---
     function checkPass() {
-      const input = document.getElementById('passInput').value;
-      if(input === PASS) {
+      if(document.getElementById('passInput').value === PASS) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('appContent').style.display = 'block';
-      } else {
-        document.getElementById('loginError').style.display = 'block';
-      }
+      } else { document.getElementById('loginError').style.display = 'block'; }
+    }
+
+    function previewFile() {
+      const preview = document.getElementById('previewImg');
+      const file = document.getElementById('file').files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) { preview.src = e.target.result; preview.style.display = 'block'; };
+      if (file) reader.readAsDataURL(file);
     }
 
     // --- BUSCAR ---
@@ -179,8 +183,14 @@
         list.innerHTML = hits.length ? '' : '<p style="text-align:center">Sin resultados</p>';
         
         hits.forEach(d => {
+          // Estado del stock (True por defecto)
+          const enStock = (d.disponible === undefined) ? true : d.disponible;
+          
           const div = document.createElement('div');
-          div.className = 'product-item';
+          // Añadimos clase 'agotado' si no hay stock para que se vea gris
+          div.className = 'product-item' + (enStock ? '' : ' agotado');
+          div.id = 'card-' + d.$id; // ID para actualizar visualmente sin recargar
+
           div.innerHTML = `
             <img src="${d.imagen}" class="prod-img">
             <div class="prod-info">
@@ -188,8 +198,22 @@
               <div class="prod-sub">${d.codigo} | Bs. ${d.preciopormayor}</div>
             </div>
             <div class="actions">
-              <button class="btn-icon btn-edit" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button>
-              <button class="btn-icon btn-del" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
+              
+              <!-- BOTÓN POWER (CAMBIO RÁPIDO) -->
+              <button class="btn-icon btn-power ${enStock ? '' : 'off'}" onclick="toggleStock('${d.$id}', ${enStock}, this)">
+                <i class="bi bi-power"></i>
+              </button>
+
+              <!-- EDITAR (Lápiz) -->
+              <button class="btn-icon btn-edit" onclick='editItem(${JSON.stringify(d)})'>
+                <i class="bi bi-pencil-fill"></i>
+              </button>
+              
+              <!-- BORRAR (Basura) -->
+              <button class="btn-icon btn-del" onclick="delItem('${d.$id}')">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+
             </div>
           `;
           list.appendChild(div);
@@ -197,28 +221,70 @@
       } catch(e) { alert("Error: " + e.message); }
     }
 
+    // --- NUEVO: FUNCIÓN CAMBIO RÁPIDO DE STOCK ---
+    async function toggleStock(docId, currentState, btn) {
+      // Feedback visual inmediato (antes de confirmar con la DB para que se sienta rápido)
+      const newState = !currentState;
+      const card = document.getElementById('card-' + docId);
+      
+      // Cambiar icono a "cargando"
+      const originalIcon = btn.innerHTML;
+      btn.innerHTML = '<span style="font-size:0.8rem">...</span>';
+      btn.disabled = true;
+
+      try {
+        // Actualizar en Appwrite
+        await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, {
+          disponible: newState
+        });
+
+        // Actualizar botón y estado visual final
+        btn.innerHTML = '<i class="bi bi-power"></i>';
+        btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`;
+        
+        // Actualizar la tarjeta entera (Gris o Normal)
+        if(newState) {
+          card.classList.remove('agotado');
+        } else {
+          card.classList.add('agotado');
+        }
+        
+        // Actualizar el evento onclick para que la próxima vez funcione con el nuevo estado
+        btn.onclick = function() { toggleStock(docId, newState, btn); };
+
+      } catch (err) {
+        console.error(err);
+        alert("Error al actualizar: " + err.message);
+        btn.innerHTML = originalIcon; // Volver atrás si falló
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     // --- EDITAR ---
     window.editItem = function(d) {
       document.getElementById('editId').value = d.$id;
       document.getElementById('oldImg').value = d.imagen;
-      
       document.getElementById('name').value = d.descripcion;
       document.getElementById('code').value = d.codigo;
       document.getElementById('cat').value = d.categoria;
       document.getElementById('price').value = d.preciopormayor;
       document.getElementById('moq').value = d.moq;
+      // Guardar estado actual oculto por si guarda sin tocar stock
+      document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
 
-      // Cambiar estado visual
+      const preview = document.getElementById('previewImg');
+      preview.src = d.imagen; preview.style.display = 'block';
+
       document.getElementById('formTitle').innerText = "Editando: " + d.codigo;
       document.getElementById('btnSave').innerText = "Actualizar Producto";
-      document.getElementById('btnSave').style.background = "#2563eb"; // Azul
+      document.getElementById('btnSave').style.background = "#2563eb";
       document.getElementById('btnCancel').style.display = "block";
-      document.getElementById('lblFoto').innerText = "Foto (Opcional)";
-      
+      document.getElementById('photoHelp').innerText = "Subir nueva foto reemplaza la anterior.";
       window.scrollTo({top:0, behavior:'smooth'});
     }
 
-    // --- GUARDAR / ACTUALIZAR ---
+    // --- GUARDAR ---
     document.getElementById('productForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('editId').value;
@@ -232,7 +298,6 @@
         const fileInput = document.getElementById('file');
         let imgUrl = document.getElementById('oldImg').value;
 
-        // Subir foto nueva si existe
         if(fileInput.files.length > 0) {
           const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileInput.files[0]);
           imgUrl = `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
@@ -244,15 +309,15 @@
           categoria: document.getElementById('cat').value,
           preciopormayor: Number(document.getElementById('price').value),
           moq: String(document.getElementById('moq').value),
-          imagen: imgUrl
+          imagen: imgUrl,
+          // Si es nuevo: true. Si editas: mantiene lo que tenía.
+          disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
 
         if(id) {
-          // ACTUALIZAR (Requiere permiso Update)
           await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data);
           msg.innerText = "✅ Producto Actualizado";
         } else {
-          // CREAR
           if(!fileInput.files.length) throw new Error("Falta foto");
           await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data);
           msg.innerText = "✅ Producto Creado";
@@ -260,7 +325,7 @@
         
         msg.className = 'success'; msg.style.display = 'block';
         resetForm();
-        document.getElementById('list').innerHTML = ''; // Limpiar lista para refrescar
+        document.getElementById('list').innerHTML = ''; 
 
       } catch(err) {
         msg.innerText = "❌ Error: " + err.message;
@@ -271,14 +336,9 @@
       }
     });
 
-    // --- BORRAR ---
     window.delItem = async function(id) {
       if(!confirm("¿Borrar?")) return;
-      try {
-        await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id);
-        alert("Borrado");
-        doSearch(); // Refrescar
-      } catch(e) { alert(e.message); }
+      try { await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); document.getElementById('card-'+id).remove(); } catch(e) { alert(e.message); }
     }
 
     window.resetForm = function() {
@@ -288,7 +348,8 @@
       document.getElementById('btnSave').innerText = "Guardar Producto";
       document.getElementById('btnSave').style.background = "#FFB800";
       document.getElementById('btnCancel').style.display = "none";
-      document.getElementById('lblFoto').innerText = "Fotografía";
+      document.getElementById('previewImg').style.display = 'none';
+      document.getElementById('photoHelp').innerText = "Toca 'Seleccionar archivo' para subir";
     }
   </script>
 </body>
