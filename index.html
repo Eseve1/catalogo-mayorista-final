@@ -44,7 +44,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .sidebar{
   background:#fff; border:1px solid var(--card-border); border-radius:12px;
   padding:16px; position:sticky; top:70px; 
-  /* Altura máxima para que no sea infinito */
   max-height: calc(100vh - 100px); 
   display: flex; flex-direction: column;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
@@ -53,11 +52,9 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 #menu-cat{
   display:flex; flex-direction:column; gap:8px;
-  /* Scroll suave si hay muchas categorías */
   overflow-y: auto; 
   padding-right: 5px; 
 }
-/* Barra de scroll bonita y delgada */
 #menu-cat::-webkit-scrollbar { width: 4px; }
 #menu-cat::-webkit-scrollbar-track { background: transparent; }
 #menu-cat::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
@@ -67,7 +64,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
   background:#fff; color:#444; border:1px solid #ddd;
   font-weight:700; border-radius:10px; padding:10px 14px; cursor:pointer; 
   font-size:.95rem; text-align:left; transition:.2s;
-  flex-shrink: 0; /* Evita que los botones se aplasten */
+  flex-shrink: 0; 
 }
 .btn-cat:hover, .btn-cat.active{
   background:var(--accent); color:#000; border-color:var(--accent-dark);
@@ -108,7 +105,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
   box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-transform: uppercase;
 }
 
-/* --- LOGICA DE IMAGEN DOBLE (HOVER) --- */
+/* --- IMAGEN DOBLE (HOVER) --- */
 .img-box{
   background:#fff; padding:15px; 
   display:flex; align-items:center; justify-content:center; 
@@ -225,24 +222,38 @@ async function iniciar(){
   }
 }
 
-// --- FUNCIÓN MEJORADA: NORMALIZACIÓN DE CATEGORÍAS ---
-function normalizarTexto(txt) {
+// --- HERRAMIENTAS DE FORMATO INTELIGENTE ---
+
+// 1. Categoría: "ciNTuRoN" -> "Cinturon"
+function formatearCategoria(txt) {
     if(!txt) return 'Varios';
-    // Pone todo en minúscula y luego la primera en Mayúscula
-    // Ejemplo: "ciNTuRoN" -> "Cinturon"
     const lower = txt.toLowerCase().trim();
     return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+// 2. Título: "mochila de viaje" -> "Mochila De Viaje"
+function formatearTitulo(txt) {
+    if(!txt) return 'Sin Nombre';
+    const lower = txt.toLowerCase().trim();
+    // Separa por espacios y pone mayúscula a cada palabra
+    return lower.split(' ')
+                .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+                .join(' ');
+}
+
+// 3. Código: "ref-b12" -> "REF-B12"
+function formatearCodigo(txt) {
+    if(!txt) return '';
+    return txt.toUpperCase().trim();
 }
 
 function renderCategorias(){
   const menu = document.getElementById('menu-cat');
   
-  // 1. Obtenemos las categorías y las "limpiamos"
-  // Esto arregla el problema de "Cinturon" vs "cinturon"
-  let categoriasSucias = todos.map(p => normalizarTexto(p.categoria));
+  // Limpiamos y unificamos categorías
+  let categoriasLimpias = todos.map(p => formatearCategoria(p.categoria));
   
-  // 2. Quitamos duplicados y ordenamos
-  let listadoCategorias = [...new Set(categoriasSucias)];
+  let listadoCategorias = [...new Set(categoriasLimpias)];
   listadoCategorias.sort();
 
   const cats = ['Todo', ...listadoCategorias];
@@ -260,6 +271,10 @@ function renderProductos(lista){
   }
 
   grid.innerHTML = lista.map(p => {
+    // Aplicamos el FORMATO INTELIGENTE aquí
+    const tituloBonito = formatearTitulo(p.descripcion);
+    const codigoBonito = formatearCodigo(p.codigo);
+    
     const precio = parseFloat(p.preciopormayor).toFixed(2);
     const precioViejoHtml = p.precioUnidad 
       ? `<div class="old-price">Bs. ${parseFloat(p.precioUnidad).toFixed(2)}</div>` 
@@ -278,8 +293,10 @@ function renderProductos(lista){
         ${imagenesHtml}
       </div>
       <div class="info">
-        <h3 class="title">${p.descripcion}</h3>
-        <div class="ref">Ref: ${p.codigo}</div>
+        <!-- Usamos las variables bonitas -->
+        <h3 class="title">${tituloBonito}</h3>
+        <div class="ref">Ref: ${codigoBonito}</div>
+        
         <div class="prices">
           <div>${precioViejoHtml}<div class="price">Bs. ${precio}</div></div>
         </div>
@@ -296,8 +313,8 @@ window.filtrar = function(cat, btn){
   if(cat === 'Todo') {
       renderProductos(todos);
   } else {
-      // Al filtrar, también tenemos que normalizar para comparar bien
-      renderProductos(todos.filter(p => normalizarTexto(p.categoria) === cat));
+      // Comparamos usando la versión limpia
+      renderProductos(todos.filter(p => formatearCategoria(p.categoria) === cat));
   }
 }
 
