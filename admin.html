@@ -143,9 +143,10 @@
           </div>
         </div>
 
+        <!-- CAMBIO AQUÍ: input type="number" en lugar de "text" -->
         <div class="form-group">
           <label>MOQ (Mínimo de Compra)</label>
-          <input type="text" id="moq" placeholder="Ej: 6 UNID" required>
+          <input type="number" id="moq" placeholder="Ej: 6" required>
         </div>
 
         <label style="margin-top:10px; display:block;">Fotografía</label>
@@ -251,19 +252,14 @@
       try {
         let imgUrl = document.getElementById('oldImg').value;
 
-        // === CORRECCIÓN DEL ERROR AQUÍ ===
+        // Corrección del archivo Blob -> File para Appwrite
         if(fileInput.files && fileInput.files.length > 0) {
           const originalFile = fileInput.files[0];
           
-          // 1. Comprimimos
           let compressedBlob = await compressImage(originalFile);
           
-          // 2. CORRECCIÓN CRÍTICA:
-          // Appwrite da error si 'compressedBlob' es un Blob en vez de un File.
-          // Lo forzamos a ser un File con el nombre original.
           const fileToSend = new File([compressedBlob], originalFile.name, { type: originalFile.type });
           
-          // 3. Subimos el archivo "reconvertido"
           const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileToSend);
           
           imgUrl = `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
@@ -281,7 +277,8 @@
           categoria: document.getElementById('cat').value,
           preciopormayor: Number(document.getElementById('price').value),
           precioUnidad: finalUnitPrice, 
-          moq: document.getElementById('moq').value, 
+          // CAMBIO AQUÍ: Convertir el valor a Number para que sea un entero válido
+          moq: Number(document.getElementById('moq').value), 
           imagen: imgUrl,
           disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
@@ -378,7 +375,8 @@
       document.getElementById('price').value = d.preciopormayor; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; 
       
-      document.getElementById('moq').value = d.moq || "6 UNID";
+      // CAMBIO AQUÍ: Asegurar valor numérico al editar, default 6
+      document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
 
       if(d.imagen) {
