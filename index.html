@@ -12,7 +12,7 @@
 html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
-/* --- HEADER Y MARQUESINA --- */
+/* --- HEADER ROJO Y MARQUESINA --- */
 .header-oferta{ 
     width:100%; 
     background:#CC0000; /* ROJO INTENSO BASE */
@@ -23,7 +23,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     position:sticky; 
     top:0; 
     z-index:50; 
-    animation: header-pulse 1.5s infinite alternate; /* VELOCIDAD Y COLOR PULSE */
+    animation: header-pulse 1.5s infinite alternate; /* EFECTO PULSE EN EL FONDO */
 }
 .header-track{ 
     display:flex; 
@@ -50,13 +50,13 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* DEFINICIÓN DE ANIMACIONES */
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* PULSO EN EL FONDO DE LA BARRA (MÁS INTENSO) */
+/* PULSO EN EL FONDO DE LA BARRA */
 @keyframes header-pulse {
-    from { background-color: #CC0000; } /* Rojo fuerte */
-    to { background-color: #E00000; } /* Rojo más brillante para el "latido" */
+    from { background-color: #CC0000; } 
+    to { background-color: #E00000; } 
 }
 
-/* PULSO EN EL TEXTO (SIMULA PARPADEO DE OFERTA) */
+/* PULSO EN EL TEXTO */
 @keyframes text-pulse {
     0% { text-shadow: 0 0 5px rgba(255,255,255,0.4); }
     100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
@@ -129,10 +129,10 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div class="header-oferta">
     <div class="header-track">
-        <div class="header-item"><i class="bi bi-fire"></i> ¡OFERTA OFERTA! ¡GRANDES DESCUENTOS!</div>
-        <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO FIN DE AÑO EN TODA LA TIENDA!</div>
-        <div class="header-item"><i class="bi bi-fire"></i> ¡OFERTA OFERTA! ¡GRANDES DESCUENTOS!</div>
-        <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO FIN DE AÑO EN TODA LA TIENDA!</div>
+        <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN OFERTA! ¡APROVECHA AHORA!</div>
+        <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO TOTAL!</div>
+        <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN OFERTA! ¡APROVECHA AHORA!</div>
+        <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO TOTAL!</div>
     </div>
 </div>
 
