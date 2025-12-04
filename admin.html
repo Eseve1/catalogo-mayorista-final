@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - 2 Fotos</title>
+  <title>Admin Panel - Migración</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -71,6 +71,15 @@
     .photo-area p { margin: 0; color: #888; font-size: 0.75rem; }
     .photo-label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; text-align: center; color: #666; }
 
+    /* ZONA DE MIGRACION */
+    .migration-zone {
+        margin-top: 60px; padding: 25px; background: #fff5f5; 
+        border: 2px dashed #ff9b9b; border-radius: 12px; text-align: center;
+    }
+    .migration-title { color: #c53030; font-weight: 800; margin-bottom: 10px; }
+    .btn-backup { background: #3182ce; color: white; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; border:none; margin-bottom: 10px; cursor: pointer; }
+    .btn-restore { background: #38a169; color: white; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; border:none; cursor: pointer; }
+
     /* LISTA */
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
@@ -116,7 +125,6 @@
       <h2 id="formTitle">Nuevo Producto</h2>
       <form id="productForm">
         <input type="hidden" id="editId">
-        <!-- Campos ocultos para URLs viejas -->
         <input type="hidden" id="oldImg1">
         <input type="hidden" id="oldImg2">
         <input type="hidden" id="currentStockStatus" value="true">
@@ -153,9 +161,8 @@
           <input type="number" id="moq" placeholder="Ej: 6" required>
         </div>
 
-        <!-- SECCIÓN DE FOTOS DUAL -->
+        <!-- FOTOS DUAL -->
         <div class="photos-grid">
-            <!-- FOTO 1 -->
             <div>
                 <div class="photo-label">Foto Principal</div>
                 <div class="photo-area" id="dropZone1">
@@ -165,8 +172,6 @@
                     <p id="help1">Principal</p>
                 </div>
             </div>
-            
-            <!-- FOTO 2 -->
             <div>
                 <div class="photo-label">Foto 2 (Opcional)</div>
                 <div class="photo-area" id="dropZone2">
@@ -195,14 +200,28 @@
         <i class="bi bi-power"></i> Stock | <i class="bi bi-pencil-fill"></i> Editar | <i class="bi bi-trash-fill"></i> Borrar
       </p>
     </div>
+
+    <!-- ZONA DE MIGRACIÓN DE PRECIOS -->
+    <div class="container migration-zone">
+        <h3 class="migration-title">⚠️ ZONA DE MIGRACIÓN ⚠️</h3>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Usa esto SOLO para cambiar los precios a Decimales.</p>
+        
+        <button onclick="descargarRespaldo()" class="btn-backup">
+            <i class="bi bi-download"></i> 1. DESCARGAR RESPALDO
+        </button>
+        
+        <button onclick="document.getElementById('restoreInput').click()" class="btn-restore">
+            <i class="bi bi-upload"></i> 2. RESTAURAR PRECIOS
+        </button>
+        <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restaurarPrecios(this)">
+    </div>
+
   </div>
 
-  <!-- LIBRERÍAS -->
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 
   <script>
-    // --- CREDENCIALES ---
     const PASS = "eddy4242"; 
     const PROJECT_ID = "692ee6b70012153cd33c";
     const DATABASE_ID = "692ee774002e9a3c8601";
@@ -213,24 +232,71 @@
     const db = new Appwrite.Databases(client);
     const storage = new Appwrite.Storage(client);
 
-    // --- CONFIG DRAG & DROP PARA AMBAS ZONAS ---
+    // --- FUNCIONES DE MIGRACIÓN (NUEVAS) ---
+    async function descargarRespaldo() {
+        if(!confirm("¿Descargar copia de seguridad de todos los precios?")) return;
+        
+        try {
+            // Traemos todo
+            let res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100)]);
+            let todos = res.documents;
+            if(todos.length >= 100) {
+                let res2 = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.offset(100)]);
+                todos = todos.concat(res2.documents);
+            }
+
+            const backupData = todos.map(d => ({ id: d.$id, precio: d.preciopormayor }));
+            
+            const blob = new Blob([JSON.stringify(backupData)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "copia_precios.json";
+            a.click();
+            alert("✅ Copia descargada. Revisa tu carpeta de Descargas.");
+        } catch(e) { alert("Error: " + e.message); }
+    }
+
+    async function restaurarPrecios(input) {
+        const file = input.files[0];
+        if(!file) return;
+        
+        if(!confirm("¿Ya cambiaste la columna a Float en Appwrite? Esto iniciará la restauración.")) return;
+
+        const text = await file.text();
+        const lista = JSON.parse(text);
+        
+        alert(`Iniciando restauración de ${lista.length} productos. NO CIERRES ESTA PÁGINA.`);
+
+        let count = 0;
+        for(const item of lista) {
+            try {
+                await db.updateDocument(DATABASE_ID, COLLECTION_ID, item.id, {
+                    preciopormayor: Number(item.precio)
+                });
+                count++;
+                console.log(`Restaurado ${count}/${lista.length}`);
+            } catch(err) { console.error(err); }
+        }
+        alert("✅ ¡Misión Cumplida! Todos los precios actualizados a Decimales.");
+        input.value = ""; // Limpiar input
+    }
+
+    // --- DRAG & DROP Y EL RESTO IGUAL ---
     function setupDragDrop(zoneId, inputId, previewNum) {
         const zone = document.getElementById(zoneId);
         const input = document.getElementById(inputId);
-        
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
             zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false);
         });
         ['dragenter', 'dragover'].forEach(evt => zone.classList.add('dragover'));
         ['dragleave', 'drop'].forEach(evt => zone.classList.remove('dragover'));
-
         zone.addEventListener('drop', e => {
             input.files = e.dataTransfer.files;
             previewFile(previewNum);
         });
         zone.addEventListener('click', () => input.click());
     }
-
     setupDragDrop('dropZone1', 'file1', 1);
     setupDragDrop('dropZone2', 'file2', 2);
 
@@ -246,91 +312,69 @@
       const img = document.getElementById('previewImg' + num);
       const icon = document.getElementById('dropZone' + num).querySelector('i');
       const txt = document.getElementById('dropZone' + num).querySelector('p');
-
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) { 
-            img.src = e.target.result; 
-            img.style.display = 'block'; 
-            icon.style.display = 'none';
-            txt.style.display = 'none';
+            img.src = e.target.result; img.style.display = 'block'; 
+            icon.style.display = 'none'; txt.style.display = 'none';
         };
         reader.readAsDataURL(file);
       }
     }
 
-    // --- FUNCIÓN HELPER PARA SUBIR FOTO ---
     async function uploadPhoto(fileInput) {
         if(fileInput.files && fileInput.files.length > 0) {
             const originalFile = fileInput.files[0];
             const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
-            
-            // 1. Comprimir
             let compressedBlob = await imageCompression(originalFile, options);
-            
-            // 2. Convertir Blob a File para Appwrite
             const fileToSend = new File([compressedBlob], originalFile.name, { type: originalFile.type });
-            
-            // 3. Subir
             const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileToSend);
             return `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
         }
         return null;
     }
 
-    // --- GUARDAR ---
     document.getElementById('productForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('editId').value;
       const btn = document.getElementById('btnSave');
       const msg = document.getElementById('msg');
-      
-      btn.disabled = true; btn.innerText = "Subiendo fotos...";
+      btn.disabled = true; btn.innerText = "Procesando...";
       msg.style.display = 'none';
 
       try {
-        // URLs iniciales (viejas o vacías)
         let finalUrl1 = document.getElementById('oldImg1').value;
         let finalUrl2 = document.getElementById('oldImg2').value;
-
-        // Subir Foto 1 si hay nueva
         const newUrl1 = await uploadPhoto(document.getElementById('file1'));
         if(newUrl1) finalUrl1 = newUrl1;
-
-        // Subir Foto 2 si hay nueva
         const newUrl2 = await uploadPhoto(document.getElementById('file2'));
         if(newUrl2) finalUrl2 = newUrl2;
 
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
-
-        const unitPriceValue = document.getElementById('priceUnit').value;
-        const finalUnitPrice = (unitPriceValue !== "" && unitPriceValue !== null) ? Number(unitPriceValue) : 0;
 
         const data = {
           descripcion: document.getElementById('name').value,
           codigo: document.getElementById('code').value,
           categoria: document.getElementById('cat').value,
           preciopormayor: Number(document.getElementById('price').value),
-          precioUnidad: finalUnitPrice, 
+          precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value), 
           imagen: finalUrl1,
-          imagen2: finalUrl2, // <--- AQUÍ SE GUARDA LA FOTO 2
+          imagen2: finalUrl2,
           disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
 
         if(id) {
           await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data);
-          msg.innerText = "✅ Actualizado con fotos";
+          msg.innerText = "✅ Actualizado";
         } else {
           await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data);
           msg.innerText = "✅ Guardado";
         }
-        
         msg.className = 'success'; msg.style.display = 'block';
         setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm();
         document.getElementById('list').innerHTML = ''; 
-
       } catch(err) {
         console.error(err);
         msg.innerText = "Error: " + err.message;
@@ -341,28 +385,20 @@
       }
     });
 
-    // --- BUSCAR Y LISTAR ---
     async function doSearch() {
       const q = document.getElementById('search').value.toLowerCase();
       const list = document.getElementById('list');
       if(!q) return;
-      
       list.innerHTML = '<p style="text-align:center; color:#999">Buscando...</p>';
       try {
         const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
-        const hits = res.documents.filter(d => 
-            (d.descripcion && d.descripcion.toLowerCase().includes(q)) || 
-            (d.codigo && d.codigo.toLowerCase().includes(q))
-        );
-        
+        const hits = res.documents.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)));
         list.innerHTML = hits.length ? '' : '<p style="text-align:center; color:#999">Sin resultados</p>';
-        
         hits.forEach(d => {
           const enStock = (d.disponible === undefined) ? true : d.disponible;
           const div = document.createElement('div');
           div.className = 'product-item' + (enStock ? '' : ' agotado');
           div.id = 'card-' + d.$id;
-
           div.innerHTML = `
             <img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
             <div class="prod-info">
@@ -370,17 +406,10 @@
               <div class="prod-sub">${d.codigo} | Bs. ${d.preciopormayor}</div>
             </div>
             <div class="actions">
-              <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)">
-                <i class="bi bi-power"></i>
-              </button>
-              <button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'>
-                <i class="bi bi-pencil-fill"></i>
-              </button>
-              <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')">
-                <i class="bi bi-trash-fill"></i>
-              </button>
-            </div>
-          `;
+              <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
+              <button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button>
+              <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
+            </div>`;
           list.appendChild(div);
         });
       } catch(e) { alert(e.message); }
@@ -408,8 +437,6 @@
       document.getElementById('priceUnit').value = d.precioUnidad || ''; 
       document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
-
-      // FOTO 1
       document.getElementById('oldImg1').value = d.imagen || "";
       if(d.imagen) {
           const img1 = document.getElementById('previewImg1');
@@ -417,8 +444,6 @@
           document.getElementById('dropZone1').querySelector('i').style.display = 'none';
           document.getElementById('dropZone1').querySelector('p').style.display = 'none';
       }
-
-      // FOTO 2
       document.getElementById('oldImg2').value = d.imagen2 || "";
       const img2 = document.getElementById('previewImg2');
       const icon2 = document.getElementById('dropZone2').querySelector('i');
@@ -427,11 +452,9 @@
           img2.src = d.imagen2; img2.style.display = 'block'; 
           icon2.style.display = 'none'; txt2.style.display = 'none';
       } else {
-          // Limpiar visualmente si no tiene foto 2
           img2.style.display = 'none'; img2.src = "";
           icon2.style.display = 'block'; txt2.style.display = 'block';
       }
-      
       document.getElementById('formTitle').innerText = "Editando: " + d.codigo;
       document.getElementById('btnSave').innerText = "Actualizar";
       document.getElementById('btnSave').style.background = "#2563eb";
@@ -451,15 +474,12 @@
       document.getElementById('oldImg2').value = "";
       document.getElementById('file1').value = ""; 
       document.getElementById('file2').value = ""; 
-      
-      // Resetear visuales de fotos
       ['1','2'].forEach(n => {
           document.getElementById('previewImg'+n).style.display = 'none';
           document.getElementById('previewImg'+n).src = "";
           document.getElementById('dropZone'+n).querySelector('i').style.display = 'block';
           document.getElementById('dropZone'+n).querySelector('p').style.display = 'block';
       });
-
       document.getElementById('formTitle').innerText = "Nuevo Producto";
       document.getElementById('btnSave').innerText = "Guardar Producto";
       document.getElementById('btnSave').style.background = "#FFB800";
