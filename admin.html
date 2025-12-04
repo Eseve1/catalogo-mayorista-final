@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Corrector</title>
+  <title>Admin Panel - Turbo</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -36,16 +36,8 @@
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
     
-    /* ESTILOS DE LA LISTA */
     .product-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; margin-bottom: 10px; position: relative; transition: 0.3s; }
-    
-    /* 🔴 ESTILO PARA ERRORES */
-    .product-item.sin-precio { 
-        border: 2px solid #ef4444; 
-        background: #fef2f2; 
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
-    }
-    
+    .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     .product-item.agotado .prod-title { color: #9ca3af; text-decoration: line-through; }
     .product-item.agotado .prod-img { filter: grayscale(100%); opacity: 0.5; }
@@ -105,12 +97,9 @@
 
     <div class="container">
       <h2>Inventario</h2>
-      <!-- INSTRUCCIÓN DE BÚSQUEDA -->
-      <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:5px;">
-        💡 Tip: Escribe <b>"error"</b> para ver los productos sin precio.
-      </p>
+      <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:5px;">💡 Escribe <b>"error"</b> para ver solo los que faltan precio.</p>
       <div class="search-box">
-        <input type="text" id="search" placeholder="Buscar por nombre, código o escribe 'error'">
+        <input type="text" id="search" placeholder="Buscar por nombre, código o 'error'">
         <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
       </div>
       <div id="list"></div>
@@ -164,75 +153,53 @@
           preciopormayor: Number(document.getElementById('price').value), precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value), imagen: finalUrl1, imagen2: finalUrl2, disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
-        if(id) { await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); msg.innerText = "✅ Actualizado"; } 
+        if(id) { 
+            await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); 
+            msg.innerText = "✅ Actualizado";
+            
+            // --- MAGIA: SI ESTAMOS EN MODO ERROR, ELIMINAR DE LA VISTA AL INSTANTE ---
+            const q = document.getElementById('search').value.toLowerCase().trim();
+            if(q === "error" || q === "sin precio") {
+                const card = document.getElementById('card-' + id);
+                if(card) {
+                    card.style.transition = "all 0.5s";
+                    card.style.opacity = "0";
+                    card.style.transform = "translateX(100px)";
+                    setTimeout(() => card.remove(), 500); // Adiós visualmente
+                }
+            }
+        } 
         else { await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); msg.innerText = "✅ Guardado"; }
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
-        resetForm(); doSearch(); // Recargar lista al guardar
+        resetForm(); 
+        if(document.getElementById('search').value.toLowerCase().trim() !== "error") doSearch(); // Solo recargar si NO estamos en modo error para no perder el foco
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
 
-    // --- BÚSQUEDA INTELIGENTE CON DETECTOR DE ERRORES ---
     async function doSearch() {
-      const q = document.getElementById('search').value.toLowerCase().trim(); 
-      const list = document.getElementById('list'); 
-      
-      list.innerHTML = '<p style="text-align:center; color:#999">Cargando inventario...</p>';
-      
+      const q = document.getElementById('search').value.toLowerCase().trim(); const list = document.getElementById('list'); 
+      list.innerHTML = '<p style="text-align:center; color:#999">Cargando...</p>';
       try {
-        // Traemos más productos (200) para asegurar ver todo
         const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
         let docs = res.documents;
-
-        // FILTRO MÁGICO
         let hits = [];
         if (q === "error" || q === "sin precio") {
-            // MOSTRAR SOLO LOS ROTOS
             hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
-            if(hits.length === 0) list.innerHTML = '<p style="text-align:center; color:#166534">✅ ¡Felicidades! Todos los productos tienen precio.</p>';
+            if(hits.length === 0) list.innerHTML = '<p style="text-align:center; color:#166534">✅ ¡Limpio! No hay errores.</p>';
         } else if (q) {
-            // BÚSQUEDA NORMAL
             hits = docs.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)));
-        } else {
-            // MOSTRAR TODO (Por defecto)
-            hits = docs;
-        }
+        } else { hits = docs; }
 
-        if(hits.length > 0) list.innerHTML = '';
-        else if(q !== "error") list.innerHTML = '<p style="text-align:center; color:#999">Sin resultados</p>';
+        if(hits.length > 0) list.innerHTML = ''; else if(q !== "error") list.innerHTML = '<p style="text-align:center; color:#999">Sin resultados</p>';
 
         hits.forEach(d => {
           const enStock = (d.disponible === undefined) ? true : d.disponible;
-          
-          // DETECTOR DE ERROR EN CADA FILA
           const tieneError = !d.preciopormayor || d.preciopormayor === 0;
-          let claseExtra = "";
-          let alertaHtml = "";
-          
-          if(tieneError) {
-              claseExtra = " sin-precio"; // Se pone ROJO
-              alertaHtml = '<span style="color:#ef4444; font-weight:800; font-size:0.8rem; display:block;">⚠️ SIN PRECIO</span>';
-          } else if(!enStock) {
-              claseExtra = " agotado";
-          }
-
-          const div = document.createElement('div');
-          div.className = 'product-item' + claseExtra;
-          div.id = 'card-' + d.$id;
-          
-          // Mostramos "NaN" o "0" si está mal para que sepas qué corregir
+          let claseExtra = ""; let alertaHtml = "";
+          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span style="color:#ef4444; font-weight:800; font-size:0.8rem; display:block;">⚠️ SIN PRECIO</span>'; } else if(!enStock) { claseExtra = " agotado"; }
+          const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
           const precioMostrar = tieneError ? "0.00" : d.preciopormayor;
-
-          div.innerHTML = `<img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
-            <div class="prod-info">
-              <div class="prod-title">${d.descripcion}</div>
-              <div class="prod-sub">${d.codigo} | Bs. ${precioMostrar}</div>
-              ${alertaHtml}
-            </div>
-            <div class="actions">
-                <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
-                <button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button>
-                <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
-            </div>`;
+          div.innerHTML = `<img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img"><div class="prod-info"><div class="prod-title">${d.descripcion}</div><div class="prod-sub">${d.codigo} | Bs. ${precioMostrar}</div>${alertaHtml}</div><div class="actions"><button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button><button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button><button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button></div>`;
           list.appendChild(div);
         });
       } catch(e) { alert(e.message); }
@@ -244,7 +211,6 @@
     }
     window.editItem = function(d) {
       document.getElementById('editId').value = d.$id; document.getElementById('name').value = d.descripcion; document.getElementById('code').value = d.codigo; document.getElementById('cat').value = d.categoria;
-      // IMPORTANTE: Si es 0 o null, dejar vacío para que te obligue a ponerlo
       document.getElementById('price').value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
@@ -259,9 +225,6 @@
       ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; document.getElementById('dropZone'+n).querySelector('p').style.display = 'block'; });
       document.getElementById('formTitle').innerText = "Nuevo Producto"; document.getElementById('btnSave').innerText = "Guardar Producto"; document.getElementById('btnSave').style.background = "#FFB800"; document.getElementById('btnCancel').style.display = "none";
     }
-    
-    // Cargar al inicio para ver errores rápido
-    // doSearch(); // Ya se llama en checkPass
   </script>
 </body>
 </html>
