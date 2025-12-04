@@ -78,10 +78,10 @@
     .btn-del { background: #fef2f2; color: #ef4444; }  
     
     /* BOTÓN POWER (STOCK RÁPIDO) */
-    .btn-power { background: #dcfce7; color: #166534; } /* Verde = En Stock */
-    .btn-power.off { background: #fee2e2; color: #dc2626; } /* Rojo = Agotado */
+    .btn-power { background: #dcfce7; color: #166534; } 
+    .btn-power.off { background: #fee2e2; color: #dc2626; } 
 
-    #msg { text-align: center; margin-top: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 8px; }
+    #msg { text-align: center; margin-top: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 8px; transition: opacity 0.5s; }
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2e2; color: #991b1b; }
   </style>
@@ -102,7 +102,6 @@
       <form id="productForm">
         <input type="hidden" id="editId">
         <input type="hidden" id="oldImg">
-        <!-- Por defecto al crear es true (En Stock) -->
         <input type="hidden" id="currentStockStatus" value="true">
 
         <label>Nombre</label>
@@ -167,7 +166,6 @@
       } else { document.getElementById('loginError').style.display = 'block'; }
     }
 
-    // --- PREVIEW DE FOTO ---
     function previewFile() {
       const preview = document.getElementById('previewImg');
       const file = document.getElementById('file').files[0];
@@ -195,9 +193,7 @@
         list.innerHTML = hits.length ? '' : '<p style="text-align:center">Sin resultados</p>';
         
         hits.forEach(d => {
-          // Estado del stock (True por defecto si no existe)
           const enStock = (d.disponible === undefined) ? true : d.disponible;
-          
           const div = document.createElement('div');
           div.className = 'product-item' + (enStock ? '' : ' agotado');
           div.id = 'card-' + d.$id;
@@ -209,22 +205,15 @@
               <div class="prod-sub">${d.codigo} | Bs. ${d.preciopormayor}</div>
             </div>
             <div class="actions">
-              
-              <!-- BOTÓN POWER (CAMBIO RÁPIDO) -->
               <button class="btn-icon btn-power ${enStock ? '' : 'off'}" onclick="toggleStock('${d.$id}', ${enStock}, this)">
                 <i class="bi bi-power"></i>
               </button>
-
-              <!-- EDITAR -->
               <button class="btn-icon btn-edit" onclick='editItem(${JSON.stringify(d)})'>
                 <i class="bi bi-pencil-fill"></i>
               </button>
-              
-              <!-- BORRAR -->
               <button class="btn-icon btn-del" onclick="delItem('${d.$id}')">
                 <i class="bi bi-trash-fill"></i>
               </button>
-
             </div>
           `;
           list.appendChild(div);
@@ -232,20 +221,15 @@
       } catch(e) { alert("Error: " + e.message); }
     }
 
-    // --- TOGGLE STOCK (CAMBIO RÁPIDO) ---
+    // --- TOGGLE STOCK ---
     async function toggleStock(docId, currentState, btn) {
       const newState = !currentState;
       const card = document.getElementById('card-' + docId);
-      
       const originalIcon = btn.innerHTML;
-      btn.innerHTML = '...'; 
-      btn.disabled = true;
+      btn.innerHTML = '...'; btn.disabled = true;
 
       try {
-        await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, {
-          disponible: newState
-        });
-
+        await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState });
         btn.innerHTML = '<i class="bi bi-power"></i>';
         btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`;
         
@@ -253,13 +237,8 @@
         else card.classList.add('agotado');
         
         btn.onclick = function() { toggleStock(docId, newState, btn); };
-
-      } catch (err) {
-        alert("Error: " + err.message);
-        btn.innerHTML = originalIcon;
-      } finally {
-        btn.disabled = false;
-      }
+      } catch (err) { alert("Error: " + err.message); btn.innerHTML = originalIcon; } 
+      finally { btn.disabled = false; }
     }
 
     // --- EDITAR ---
@@ -271,7 +250,6 @@
       document.getElementById('cat').value = d.categoria;
       document.getElementById('price').value = d.preciopormayor;
       document.getElementById('moq').value = d.moq;
-      // Guardamos el estado del stock oculto para no perderlo al editar
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
 
       const preview = document.getElementById('previewImg');
@@ -309,12 +287,8 @@
           codigo: document.getElementById('code').value,
           categoria: document.getElementById('cat').value,
           preciopormayor: Number(document.getElementById('price').value),
-          
-          // 🛑 CORRECCIÓN CRÍTICA: Convertir MOQ a Número Entero
           moq: parseInt(document.getElementById('moq').value, 10), 
-          
           imagen: imgUrl,
-          // Mantener el stock como estaba
           disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
 
@@ -328,6 +302,13 @@
         }
         
         msg.className = 'success'; msg.style.display = 'block';
+        
+        // --- TEMPORIZADOR PARA BORRAR MENSAJE ---
+        setTimeout(() => {
+          msg.style.opacity = '0'; // Desvanecer
+          setTimeout(() => { msg.style.display = 'none'; msg.style.opacity = '1'; }, 500); // Ocultar
+        }, 3000); // 3 segundos
+
         resetForm();
         document.getElementById('list').innerHTML = ''; 
 
