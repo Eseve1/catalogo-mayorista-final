@@ -5,18 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Admin Stock</title>
   
-  <!-- Fuente y Iconos -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
     :root {
       --primary: #FFB800;
-      --primary-dark: #e0a200;
       --bg: #f0f2f5;
       --card: #ffffff;
       --text: #1f2937;
-      --border: #e5e7eb;
+      --danger: #ef4444;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -28,7 +26,8 @@
       margin: 0;
       padding: 20px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
     }
 
@@ -36,287 +35,218 @@
       background: var(--card);
       width: 100%;
       max-width: 550px;
-      padding: 30px;
+      padding: 25px;
       border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-      position: relative;
-    }
-
-    header {
-      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
       margin-bottom: 30px;
-      border-bottom: 2px solid #f3f4f6;
-      padding-bottom: 20px;
     }
+
+    h2 { margin-top: 0; text-align: center; font-size: 1.4rem; color: #111; }
+
+    /* Estilos Formulario (Mismos de antes) */
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
+    input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; }
+    input:focus { outline: none; border-color: var(--primary); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     
-    header h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: #111;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    
-    .form-group { margin-bottom: 20px; }
-    
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #374151;
+    .btn-submit {
+      width: 100%; padding: 14px; background: var(--primary); color: #000;
+      border: none; border-radius: 10px; font-size: 1rem; font-weight: 800;
+      cursor: pointer; margin-top: 10px;
     }
 
-    .input-wrapper { position: relative; }
-
-    .input-wrapper i {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #9ca3af; /* Color gris suave para los iconos */
+    /* --- NUEVO: LISTA DE PRODUCTOS --- */
+    .product-list {
+      display: flex; flex-direction: column; gap: 15px; margin-top: 10px;
     }
 
-    input, select {
-      width: 100%;
-      padding: 14px 14px 14px 40px;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      font-size: 1rem;
-      font-family: inherit;
-      transition: all 0.2s;
-      background: #f9fafb;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
+    .product-item {
+      display: flex; align-items: center; gap: 15px;
+      padding: 15px; border: 1px solid #eee; border-radius: 12px;
       background: #fff;
     }
 
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-    /* Estilo de subida de foto */
-    .file-upload {
-      border: 2px dashed #cbd5e1;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      background: #f8fafc;
-      position: relative;
-    }
-    .file-upload:hover { border-color: var(--primary); }
-
-    .file-upload input {
-      position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer;
-    }
-    .upload-icon { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
-
-    /* Preview */
-    #preview-container { display: none; margin-top: 15px; text-align: center; }
-    #preview-img {
-      max-width: 100%; max-height: 200px; border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid var(--primary);
+    .prod-img {
+      width: 60px; height: 60px; border-radius: 8px; object-fit: cover;
+      background: #f3f4f6;
     }
 
-    /* Botón */
-    .btn-submit {
-      width: 100%; padding: 16px; background: var(--primary); color: #000;
-      border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-      box-shadow: 0 4px 15px rgba(255, 184, 0, 0.3);
-    }
-    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+    .prod-info { flex: 1; }
+    .prod-title { font-weight: 700; font-size: 1rem; margin: 0 0 4px; }
+    .prod-price { color: #666; font-size: 0.9rem; }
 
-    /* Mensajes */
-    #msg {
-      margin-top: 20px; padding: 15px; border-radius: 10px; text-align: center;
-      font-weight: 600; display: none;
+    .btn-delete {
+      background: #fee2e2; color: var(--danger); border: none;
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.2rem; transition: 0.2s;
     }
+    .btn-delete:active { transform: scale(0.9); background: #fecaca; }
+
+    #msg { display: none; padding: 10px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: bold; }
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2e2; color: #991b1b; }
   </style>
 </head>
 <body>
 
+  <!-- SECCIÓN 1: SUBIR -->
   <div class="container">
-    <header>
-      <h2><i class="bi bi-box-seam-fill"></i> Nuevo Producto</h2>
-    </header>
-
+    <h2><i class="bi bi-cloud-plus-fill"></i> Nuevo Producto</h2>
     <form id="productForm">
-      
-      <!-- Nombre -->
       <div class="form-group">
-        <label>Nombre / Descripción</label>
-        <div class="input-wrapper">
-          <i class="bi bi-tag-fill"></i>
-          <input type="text" name="descripcion" placeholder="Ej: Foco LED" required>
-        </div>
+        <label>Nombre</label>
+        <input type="text" name="descripcion" placeholder="Ej: Foco LED" required>
       </div>
-
       <div class="row">
-        <!-- Código -->
         <div class="form-group">
           <label>Código</label>
-          <div class="input-wrapper">
-            <i class="bi bi-upc-scan"></i>
-            <input type="text" name="codigo" placeholder="Ej: A-01" required>
-          </div>
+          <input type="text" name="codigo" placeholder="Ej: A-01" required>
         </div>
-        
-        <!-- Categoría (TEXTO LIBRE) -->
         <div class="form-group">
           <label>Categoría</label>
-          <div class="input-wrapper">
-            <i class="bi bi-grid-fill"></i>
-            <input type="text" name="categoria" placeholder="Ej: Iluminación" required>
-          </div>
+          <input type="text" name="categoria" placeholder="Ej: Iluminación" required>
         </div>
       </div>
-
       <div class="row">
-        <!-- Precio Mayor -->
         <div class="form-group">
-          <label>Precio Mayor (Bs)</label>
-          <div class="input-wrapper">
-            <!-- CAMBIO: Icono de billete genérico sin símbolo de $ -->
-            <i class="bi bi-cash"></i>
-            <input type="number" name="preciopormayor" placeholder="0.00" step="0.01" required>
-          </div>
+          <label>Mayor (Bs)</label>
+          <input type="number" name="preciopormayor" placeholder="0.00" step="0.01" required>
         </div>
-        <!-- Precio Unidad -->
         <div class="form-group">
-          <label>P. Unidad (Opc)</label>
-          <div class="input-wrapper">
-            <i class="bi bi-bag"></i>
-            <input type="number" name="precioUnidad" placeholder="0.00" step="0.01">
-          </div>
-        </div>
-      </div>
-
-      <!-- MOQ -->
-      <div class="form-group">
-        <label>Cantidad Mínima (MOQ)</label>
-        <div class="input-wrapper">
-          <i class="bi bi-layers-fill"></i>
+          <label>MOQ</label>
           <input type="number" name="moq" value="6" required>
         </div>
       </div>
-
-      <!-- Foto -->
       <div class="form-group">
-        <label>Fotografía</label>
-        <div class="file-upload" id="drop-area">
-          <div class="upload-icon"><i class="bi bi-camera-fill"></i></div>
-          <div id="file-text">Toca para subir foto</div>
-          <input type="file" name="foto" id="fotoInput" accept="image/*" required>
-        </div>
-        
-        <div id="preview-container">
-          <img id="preview-img" src="" alt="Vista previa">
-        </div>
+        <label>Foto</label>
+        <input type="file" name="foto" id="fotoInput" accept="image/*" required>
       </div>
-
-      <button type="submit" class="btn-submit">
-        <i class="bi bi-cloud-arrow-up-fill"></i> Guardar Producto
-      </button>
+      <button type="submit" class="btn-submit">Guardar Producto</button>
+      <div id="msg"></div>
     </form>
-
-    <div id="msg"></div>
   </div>
 
-  <!-- Appwrite SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <!-- SECCIÓN 2: LISTA PARA BORRAR -->
+  <div class="container">
+    <h2><i class="bi bi-list-check"></i> Gestionar Inventario</h2>
+    <p style="text-align:center; color:#666; font-size:0.9rem; margin-top:-10px;">Últimos productos agregados</p>
+    <div id="loadingList" style="text-align:center; padding:20px;">Cargando lista...</div>
+    <div id="inventoryList" class="product-list"></div>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script>
-    // CREDENCIALES
     const PROJECT_ID = "692ee6b70012153cd33c";
     const DATABASE_ID = "692ee774002e9a3c8601";
     const COLLECTION_ID = "catalogo";
     const BUCKET_ID = "692ef19e001ffa75d062"; 
 
     const client = new Appwrite.Client()
-      .setEndpoint("https://fra.cloud.appwrite.io/v1") 
+      .setEndpoint("https://fra.cloud.appwrite.io/v1")
       .setProject(PROJECT_ID);
 
     const storage = new Appwrite.Storage(client);
     const databases = new Appwrite.Databases(client);
 
+    // --- LÓGICA DE GESTIÓN (Leer y Borrar) ---
+    async function loadProducts() {
+      const listContainer = document.getElementById('inventoryList');
+      const loader = document.getElementById('loadingList');
+      
+      try {
+        // Traemos los últimos 20 productos (ordenados por creación si fuera posible, por ahora default)
+        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
+           // Si quieres orden inverso añade: Appwrite.Query.orderDesc('$createdAt')
+        ]);
+        
+        loader.style.display = 'none';
+        listContainer.innerHTML = '';
+
+        if (response.documents.length === 0) {
+          listContainer.innerHTML = '<p style="text-align:center">No hay productos aún.</p>';
+          return;
+        }
+
+        response.documents.forEach(doc => {
+          // Crear tarjeta de producto
+          const item = document.createElement('div');
+          item.className = 'product-item';
+          item.innerHTML = `
+            <img src="${doc.imagen}" class="prod-img" onerror="this.src='https://via.placeholder.com/60'">
+            <div class="prod-info">
+              <h4 class="prod-title">${doc.descripcion}</h4>
+              <div class="prod-price">Bs. ${doc.preciopormayor} | Ref: ${doc.codigo}</div>
+            </div>
+            <button class="btn-delete" onclick="deleteProduct('${doc.$id}')">
+              <i class="bi bi-trash"></i>
+            </button>
+          `;
+          listContainer.appendChild(item);
+        });
+
+      } catch (error) {
+        console.error(error);
+        loader.textContent = 'Error cargando lista.';
+      }
+    }
+
+    // Función global para borrar
+    window.deleteProduct = async function(docId) {
+      if (!confirm('¿Seguro que quieres borrar este producto?')) return;
+
+      const btn = event.target.closest('button');
+      btn.innerHTML = '...'; 
+      
+      try {
+        await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, docId);
+        // Recargar lista
+        loadProducts();
+        alert('Producto eliminado');
+      } catch (error) {
+        alert('Error al borrar: ' + error.message + '\n(Recuerda activar el permiso DELETE en Appwrite)');
+        btn.innerHTML = '<i class="bi bi-trash"></i>';
+      }
+    }
+
+    // --- LÓGICA DE SUBIDA (Igual que antes) ---
     const form = document.getElementById("productForm");
     const msg = document.getElementById("msg");
-    const fotoInput = document.getElementById("fotoInput");
-    const previewContainer = document.getElementById("preview-container");
-    const previewImg = document.getElementById("preview-img");
-    const fileText = document.getElementById("file-text");
 
-    // Vista previa
-    fotoInput.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          previewImg.src = e.target.result;
-          previewContainer.style.display = 'block';
-          fileText.textContent = "Foto seleccionada";
-        }
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Subida
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      
       const btn = form.querySelector('.btn-submit');
-      const originalText = btn.innerHTML;
-      
-      btn.innerHTML = '⌛ Subiendo...';
-      btn.disabled = true;
-      msg.style.display = "none";
+      const originalText = btn.textContent;
+      btn.textContent = 'Subiendo...'; btn.disabled = true; msg.style.display = 'none';
 
       try {
-        const file = fotoInput.files[0];
-        if (!file) throw new Error("Falta la imagen");
-
-        // 1. Subir imagen
+        const file = form.foto.files[0];
         const uploaded = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), file);
-
-        // 2. URL
         const fileUrl = `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${uploaded.$id}/view?project=${PROJECT_ID}`;
 
-        // 3. Guardar datos
         await databases.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), {
           descripcion: form.descripcion.value,
           codigo: form.codigo.value,
-          categoria: form.categoria.value, 
-          precioUnidad: form.precioUnidad.value ? Number(form.precioUnidad.value) : null,
+          categoria: form.categoria.value,
           preciopormayor: Number(form.preciopormayor.value),
           moq: String(form.moq.value),
           imagen: fileUrl
         });
 
-        msg.innerHTML = '✅ ¡Guardado!';
-        msg.className = "success";
-        msg.style.display = "block";
+        msg.textContent = '✅ Producto Agregado'; msg.className = 'success'; msg.style.display = 'block';
         form.reset();
-        previewContainer.style.display = 'none';
-        fileText.textContent = "Toca para subir foto";
-        
+        loadProducts(); // Recargar la lista de abajo automáticamente
+
       } catch (err) {
-        console.error(err);
-        msg.innerHTML = '❌ Error: ' + err.message;
-        msg.className = "error";
-        msg.style.display = "block";
+        msg.textContent = '❌ Error: ' + err.message; msg.className = 'error'; msg.style.display = 'block';
       } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+        btn.textContent = originalText; btn.disabled = false;
       }
     });
+
+    // Cargar productos al abrir
+    loadProducts();
   </script>
 </body>
 </html>
