@@ -18,7 +18,29 @@
     #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     #appContent { display: none; }
 
+    /* ESTILO NUEVO PARA LAYOUT DE ESCRITORIO */
+    .admin-layout {
+        max-width: 1200px; /* Ancho máximo para el área de trabajo */
+        margin: 0 auto;
+        display: block;
+    }
+    @media (min-width: 900px) { 
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* DOS COLUMNAS */
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+    }
+    
     .container { max-width: 600px; margin: 0 auto 30px; background: var(--card); padding: 30px; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    @media (min-width: 900px) { 
+        .container { 
+            max-width: none; /* Permite que el contenedor llene su columna */
+            margin: 0; 
+        } 
+    }
+    
     h2 { margin-top: 0; text-align: center; font-size: 1.4rem; color: #111; font-weight: 800; margin-bottom: 25px; }
 
     .form-group { margin-bottom: 15px; }
@@ -82,66 +104,70 @@
   </div>
 
   <div id="appContent">
-    <div class="container">
-      <h2 id="formTitle">Nuevo Producto</h2>
-      <form id="productForm">
-        <input type="hidden" id="editId">
-        <input type="hidden" id="oldImg1">
-        <input type="hidden" id="oldImg2">
-        <input type="hidden" id="currentStockStatus" value="true">
+    
+    <div class="admin-layout">
         
-        <div class="form-group">
-            <label>Nombre / Descripción</label>
-            <input type="text" id="name" required>
+        <div class="container">
+          <h2 id="formTitle">Nuevo Producto</h2>
+          <form id="productForm">
+            <input type="hidden" id="editId">
+            <input type="hidden" id="oldImg1">
+            <input type="hidden" id="oldImg2">
+            <input type="hidden" id="currentStockStatus" value="true">
+            
+            <div class="form-group">
+                <label>Nombre / Descripción</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                  <label>Categoría (Grande)</label>
+                  <input type="text" id="cat" list="listaCategorias" required>
+              </div>
+              <div class="form-group">
+                  <label>Tipo (Detalle)</label>
+                  <input type="text" id="type">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group"><label>Código</label><input type="text" id="code" required></div>
+              <div class="form-group"><label>MOQ</label><input type="number" id="moq" required></div>
+            </div>
+            
+            <div class="row">
+              <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01"></div>
+              <div class="form-group"><label>Precio Mayor (Bs)</label><input type="number" id="price" step="0.01" required></div>
+            </div>
+            
+            <div class="photos-grid">
+                <div><div class="photo-label">Foto Principal</div><div class="photo-area" id="dropZone1"><img id="previewImg1"><i class="bi bi-camera-fill" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)"><p>Principal</p></div></div>
+                <div><div class="photo-label">Foto 2 (Opcional)</div><div class="photo-area" id="dropZone2"><img id="previewImg2"><i class="bi bi-camera" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)"><p>Secundaria</p></div></div>
+            </div>
+            
+            <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
+            <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Cancelar Edición</button>
+            <div id="msg"></div>
+          </form>
         </div>
 
-        <div class="row">
-          <div class="form-group">
-              <label>Categoría (Grande)</label>
-              <input type="text" id="cat" list="listaCategorias" required>
+        <div class="container">
+          <h2>Buscador</h2>
+          <div class="search-box">
+            <input type="text" id="search">
+            <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
           </div>
-          <div class="form-group">
-              <label>Tipo (Detalle)</label>
-              <input type="text" id="type">
+          <div id="list">
+              <div class="empty-state">
+                  <i class="bi bi-search"></i>
+                  <p>La lista está vacía.</p>
+                  <p style="font-size:0.9rem">Usa el buscador.</p>
+              </div>
           </div>
-        </div>
-
-        <div class="row">
-          <div class="form-group"><label>Código</label><input type="text" id="code" required></div>
-          <div class="form-group"><label>MOQ</label><input type="number" id="moq" required></div>
         </div>
         
-        <div class="row">
-          <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01"></div>
-          <div class="form-group"><label>Precio Mayor (Bs)</label><input type="number" id="price" step="0.01" required></div>
-        </div>
-        
-        <div class="photos-grid">
-            <div><div class="photo-label">Foto Principal</div><div class="photo-area" id="dropZone1"><img id="previewImg1"><i class="bi bi-camera-fill" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)"><p>Principal</p></div></div>
-            <div><div class="photo-label">Foto 2 (Opcional)</div><div class="photo-area" id="dropZone2"><img id="previewImg2"><i class="bi bi-camera" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)"><p>Secundaria</p></div></div>
-        </div>
-        
-        <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
-        <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Cancelar Edición</button>
-        <div id="msg"></div>
-      </form>
-    </div>
-
-    <div class="container">
-      <h2>Buscador</h2>
-      <div class="search-box">
-        <input type="text" id="search">
-        <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
-      </div>
-      <div id="list">
-          <div class="empty-state">
-              <i class="bi bi-search"></i>
-              <p>La lista está vacía.</p>
-              <p style="font-size:0.9rem">Usa el buscador.</p>
-          </div>
-      </div>
-    </div>
-  </div>
+    </div> </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
@@ -283,15 +309,12 @@
       document.getElementById('formTitle').innerText = "Nuevo Producto"; document.getElementById('btnSave').innerText = "Guardar Producto"; document.getElementById('btnSave').style.background = "#FFB800"; document.getElementById('btnCancel').style.display = "none";
     }
 
-    // --- AUTO-LLENADO MÁGICO ---
     document.getElementById('name').addEventListener('blur', function(e) {
         const nombre = e.target.value.trim();
         const campoTipo = document.getElementById('type');
-        // Si el tipo está vacío, intentar adivinar con la primera palabra del nombre
         if(nombre.length > 0 && campoTipo.value === '') {
             const primeraPalabra = nombre.split(' ')[0];
             if(primeraPalabra.length > 2) {
-                // Pone la primera letra en mayúscula
                 campoTipo.value = primeraPalabra.charAt(0).toUpperCase() + primeraPalabra.slice(1).toLowerCase();
             }
         }
