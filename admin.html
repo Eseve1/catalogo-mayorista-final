@@ -251,23 +251,25 @@
       try {
         let imgUrl = document.getElementById('oldImg').value;
 
-        // === CORRECCIÓN DEL ERROR ===
-        // Verificamos si hay archivo seleccionado
+        // === CORRECCIÓN DEL ERROR AQUÍ ===
         if(fileInput.files && fileInput.files.length > 0) {
-          const originalFile = fileInput.files[0]; // Aquí tomamos el archivo REAL
-          const compressedFile = await compressImage(originalFile);
+          const originalFile = fileInput.files[0];
           
-          // Subimos el archivo a Appwrite
-          const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), compressedFile);
+          // 1. Comprimimos
+          let compressedBlob = await compressImage(originalFile);
           
-          // Construimos la URL de la imagen
+          // 2. CORRECCIÓN CRÍTICA:
+          // Appwrite da error si 'compressedBlob' es un Blob en vez de un File.
+          // Lo forzamos a ser un File con el nombre original.
+          const fileToSend = new File([compressedBlob], originalFile.name, { type: originalFile.type });
+          
+          // 3. Subimos el archivo "reconvertido"
+          const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileToSend);
+          
           imgUrl = `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
         } 
-        // Si no hay archivo nuevo y tampoco hay URL vieja (producto nuevo sin foto)
         else if (!imgUrl) {
-            // Opcional: Usar imagen por defecto o lanzar error
-            // throw new Error("Debes seleccionar una imagen");
-            imgUrl = ""; // Guardar sin foto
+            imgUrl = ""; 
         }
 
         const unitPriceValue = document.getElementById('priceUnit').value;
@@ -317,7 +319,6 @@
       list.innerHTML = '<p style="text-align:center; color:#999">Buscando...</p>';
       try {
         const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
-        // Filtro simple en cliente
         const hits = res.documents.filter(d => 
             (d.descripcion && d.descripcion.toLowerCase().includes(q)) || 
             (d.codigo && d.codigo.toLowerCase().includes(q))
@@ -363,10 +364,7 @@
         btn.innerHTML = '<i class="bi bi-power"></i>';
         btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`;
         if(newState) card.classList.remove('agotado'); else card.classList.add('agotado');
-        
-        // Actualizar onclick para el nuevo estado
         btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`);
-        
       } catch (err) { alert(err.message); btn.innerHTML = originalIcon; } finally { btn.disabled = false; }
     }
 
@@ -409,7 +407,7 @@
       document.getElementById('productForm').reset();
       document.getElementById('editId').value = "";
       document.getElementById('oldImg').value = "";
-      fileInput.value = ""; // Limpiar input file
+      fileInput.value = ""; 
       
       document.getElementById('formTitle').innerText = "Nuevo Producto";
       document.getElementById('btnSave').innerText = "Guardar Producto";
