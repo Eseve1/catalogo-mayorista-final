@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Turbo</title>
+  <title>Admin Panel - Buscador</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -36,8 +36,9 @@
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
     
+    /* ESTILOS LISTA */
     .product-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; margin-bottom: 10px; position: relative; transition: 0.3s; }
-    .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
+    .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15); }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     .product-item.agotado .prod-title { color: #9ca3af; text-decoration: line-through; }
     .product-item.agotado .prod-img { filter: grayscale(100%); opacity: 0.5; }
@@ -55,6 +56,10 @@
     #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2f2; color: #991b1b; }
+    
+    /* ESTADO VACIO */
+    .empty-state { text-align: center; padding: 40px 20px; color: #9ca3af; }
+    .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5; }
   </style>
 </head>
 <body>
@@ -96,14 +101,19 @@
     </div>
 
     <div class="container">
-      <h2>Inventario</h2>
-      <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:5px;">💡 Escribe <b>"error"</b> para ver solo los que faltan precio.</p>
+      <h2>Buscador</h2>
       <div class="search-box">
-        <input type="text" id="search" placeholder="Buscar por nombre, código o 'error'">
+        <input type="text" id="search" placeholder="Escribe nombre, código o 'error'...">
         <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
       </div>
-      <div id="list"></div>
-      <p style="text-align:center; color:#999; font-size:0.85rem; margin-top:20px;">Stock | Editar | Borrar</p>
+      <div id="list">
+          <!-- LISTA VACÍA INICIAL -->
+          <div class="empty-state">
+              <i class="bi bi-search"></i>
+              <p>La lista está vacía.</p>
+              <p style="font-size:0.9rem">Escribe arriba para encontrar productos.</p>
+          </div>
+      </div>
     </div>
   </div>
 
@@ -124,7 +134,7 @@
     }
     setupDragDrop('dropZone1', 'file1', 1); setupDragDrop('dropZone2', 'file2', 2);
 
-    function checkPass() { if(document.getElementById('passInput').value === PASS) { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appContent').style.display = 'block'; doSearch(); } else { document.getElementById('loginError').style.display = 'block'; } }
+    function checkPass() { if(document.getElementById('passInput').value === PASS) { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appContent').style.display = 'block'; } else { document.getElementById('loginError').style.display = 'block'; } }
     
     function previewFile(num) {
       const file = document.getElementById('file' + num).files[0]; const img = document.getElementById('previewImg' + num);
@@ -156,47 +166,60 @@
         if(id) { 
             await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); 
             msg.innerText = "✅ Actualizado";
-            
-            // --- MAGIA: SI ESTAMOS EN MODO ERROR, ELIMINAR DE LA VISTA AL INSTANTE ---
             const q = document.getElementById('search').value.toLowerCase().trim();
-            if(q === "error" || q === "sin precio") {
+            if(q) { // Si hay búsqueda activa, quitamos el editado
                 const card = document.getElementById('card-' + id);
-                if(card) {
-                    card.style.transition = "all 0.5s";
-                    card.style.opacity = "0";
-                    card.style.transform = "translateX(100px)";
-                    setTimeout(() => card.remove(), 500); // Adiós visualmente
-                }
+                if(card) { card.style.opacity = "0"; setTimeout(() => card.remove(), 500); }
             }
         } 
         else { await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); msg.innerText = "✅ Guardado"; }
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        if(document.getElementById('search').value.toLowerCase().trim() !== "error") doSearch(); // Solo recargar si NO estamos en modo error para no perder el foco
+        if(document.getElementById('search').value) doSearch(); // Solo recargar si hay búsqueda
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
 
     async function doSearch() {
-      const q = document.getElementById('search').value.toLowerCase().trim(); const list = document.getElementById('list'); 
-      list.innerHTML = '<p style="text-align:center; color:#999">Cargando...</p>';
+      const q = document.getElementById('search').value.toLowerCase().trim(); 
+      const list = document.getElementById('list'); 
+      
+      // MODO FANTASMA: Si no escribes nada, se borra todo
+      if(!q) {
+          list.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>La lista está vacía.</p><p style="font-size:0.9rem">Escribe arriba para encontrar productos.</p></div>';
+          return;
+      }
+
+      list.innerHTML = '<p style="text-align:center; color:#999">Buscando...</p>';
+      
       try {
         const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
         let docs = res.documents;
         let hits = [];
+        
         if (q === "error" || q === "sin precio") {
+            // MODO DETECTIVE: Mostrar SOLO los errores
             hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
             if(hits.length === 0) list.innerHTML = '<p style="text-align:center; color:#166534">✅ ¡Limpio! No hay errores.</p>';
-        } else if (q) {
+        } else { 
+            // BUSQUEDA NORMAL: Muestra lo que coincida (con o sin error)
             hits = docs.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)));
-        } else { hits = docs; }
+        }
 
-        if(hits.length > 0) list.innerHTML = ''; else if(q !== "error") list.innerHTML = '<p style="text-align:center; color:#999">Sin resultados</p>';
+        if(hits.length > 0) list.innerHTML = ''; 
+        else if(q !== "error") list.innerHTML = '<p style="text-align:center; color:#999">Sin resultados para "'+q+'"</p>';
 
         hits.forEach(d => {
           const enStock = (d.disponible === undefined) ? true : d.disponible;
           const tieneError = !d.preciopormayor || d.preciopormayor === 0;
           let claseExtra = ""; let alertaHtml = "";
-          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span style="color:#ef4444; font-weight:800; font-size:0.8rem; display:block;">⚠️ SIN PRECIO</span>'; } else if(!enStock) { claseExtra = " agotado"; }
+          
+          if(tieneError) { 
+              claseExtra = " sin-precio"; 
+              alertaHtml = '<span style="color:#ef4444; font-weight:800; font-size:0.8rem; display:block;">⚠️ SIN PRECIO</span>'; 
+          } else if(!enStock) { 
+              claseExtra = " agotado"; 
+          }
+          
           const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
           const precioMostrar = tieneError ? "0.00" : d.preciopormayor;
           div.innerHTML = `<img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img"><div class="prod-info"><div class="prod-title">${d.descripcion}</div><div class="prod-sub">${d.codigo} | Bs. ${precioMostrar}</div>${alertaHtml}</div><div class="actions"><button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button><button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button><button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button></div>`;
