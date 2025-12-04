@@ -15,26 +15,51 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* --- HEADER Y MARQUESINA --- */
 .header-oferta{ 
     width:100%; 
-    background:#ef4444; /* ROJO BASE */
+    background:#CC0000; /* ROJO INTENSO BASE */
     color:#fff; 
-    border-bottom:2px solid #b93737; 
-    box-shadow:0 2px 10px rgba(0,0,0,.08); 
+    border-bottom:2px solid #8e0000; 
+    box-shadow:0 2px 10px rgba(0,0,0,.15); 
     overflow:hidden; 
     position:sticky; 
     top:0; 
     z-index:50; 
-    animation: header-pulse 2s infinite alternate; /* ¡NUEVO EFECTO PULSO! */
+    animation: header-pulse 1.5s infinite alternate; /* VELOCIDAD Y COLOR PULSE */
 }
-.header-track{ display:flex; gap:40px; white-space:nowrap; animation:marquee 18s linear infinite; /* VELOCIDAD ACELERADA A 18s */ padding:12px 0; font-weight:900; font-size:1.1rem; letter-spacing:.5px; text-transform:uppercase; color: #fff; }
-.header-item{display:inline-flex;align-items:center;gap:10px;padding-left:20px}
+.header-track{ 
+    display:flex; 
+    gap:40px; 
+    white-space:nowrap; 
+    animation:marquee 18s linear infinite; /* VELOCIDAD ACELERADA */ 
+    padding:12px 0; 
+    font-weight:900; 
+    font-size:1.1rem; 
+    letter-spacing:.5px; 
+    text-transform:uppercase; 
+    color: #fff;
+}
+.header-item{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding-left:20px;
+    /* EFECTO PULSE EN TEXTO */
+    animation: text-pulse 1s infinite alternate;
+}
 .header-item i { color: var(--accent); } 
 
 /* DEFINICIÓN DE ANIMACIONES */
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
+/* PULSO EN EL FONDO DE LA BARRA (MÁS INTENSO) */
 @keyframes header-pulse {
-    from { background-color: #ef4444; } /* Rojo fuerte */
-    to { background-color: #ff6666; } /* Rojo más claro para el "latido" */
+    from { background-color: #CC0000; } /* Rojo fuerte */
+    to { background-color: #E00000; } /* Rojo más brillante para el "latido" */
+}
+
+/* PULSO EN EL TEXTO (SIMULA PARPADEO DE OFERTA) */
+@keyframes text-pulse {
+    0% { text-shadow: 0 0 5px rgba(255,255,255,0.4); }
+    100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
 }
 
 /* --- TURBO PARA CELULARES --- */
@@ -104,10 +129,10 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div class="header-oferta">
     <div class="header-track">
+        <div class="header-item"><i class="bi bi-fire"></i> ¡OFERTA OFERTA! ¡GRANDES DESCUENTOS!</div>
         <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO FIN DE AÑO EN TODA LA TIENDA!</div>
-        <div class="header-item"><i class="bi bi-fire"></i> ¡35% DESCUENTO FIN DE AÑO EN TODA LA TIENDA!</div>
+        <div class="header-item"><i class="bi bi-fire"></i> ¡OFERTA OFERTA! ¡GRANDES DESCUENTOS!</div>
         <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO FIN DE AÑO EN TODA LA TIENDA!</div>
-        <div class="header-item"><i class="bi bi-fire"></i> ¡35% DESCUENTO FIN DE AÑO EN TODA LA TIENDA!</div>
     </div>
 </div>
 
