@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Buscador</title>
+  <title>Admin Panel - Ale Importadora</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -57,12 +57,21 @@
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2f2; color: #991b1b; }
     
-    /* ESTADO VACIO */
     .empty-state { text-align: center; padding: 40px 20px; color: #9ca3af; }
     .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5; }
   </style>
 </head>
 <body>
+
+  <datalist id="listaCategorias">
+      <option value="Hogar y Cocina">
+      <option value="Moda y Equipaje">
+      <option value="Belleza y Salud">
+      <option value="Tecnología">
+      <option value="Herramientas">
+      <option value="Oficina y Escolar">
+      <option value="Infantil">
+  </datalist>
 
   <div id="loginScreen">
     <i class="bi bi-shield-lock-fill" style="font-size: 3rem; color: var(--primary);"></i>
@@ -80,20 +89,38 @@
         <input type="hidden" id="oldImg1">
         <input type="hidden" id="oldImg2">
         <input type="hidden" id="currentStockStatus" value="true">
-        <div class="form-group"><label>Nombre / Descripción</label><input type="text" id="name" placeholder="Ej: Reloj Casio Vintage" required></div>
+        
+        <div class="form-group">
+            <label>Nombre / Descripción</label>
+            <input type="text" id="name" placeholder="Ej: Reloj Casio Vintage" required>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+              <label>Categoría (Grande)</label>
+              <input type="text" id="cat" list="listaCategorias" placeholder="Ej: Moda y Equipaje" required>
+          </div>
+          <div class="form-group">
+              <label>Tipo (Detalle)</label>
+              <input type="text" id="type" placeholder="Ej: Reloj / Pechera">
+          </div>
+        </div>
+
         <div class="row">
           <div class="form-group"><label>Código</label><input type="text" id="code" placeholder="A-01" required></div>
-          <div class="form-group"><label>Categoría</label><input type="text" id="cat" placeholder="Relojes" required></div>
+          <div class="form-group"><label>MOQ</label><input type="number" id="moq" placeholder="6" required></div>
         </div>
+        
         <div class="row">
           <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01" placeholder="0.00"></div>
           <div class="form-group"><label>Precio Mayor (Bs)</label><input type="number" id="price" step="0.01" placeholder="0.00" required></div>
         </div>
-        <div class="form-group"><label>MOQ (Mínimo de Compra)</label><input type="number" id="moq" placeholder="Ej: 6" required></div>
+        
         <div class="photos-grid">
             <div><div class="photo-label">Foto Principal</div><div class="photo-area" id="dropZone1"><img id="previewImg1"><i class="bi bi-camera-fill" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)"><p>Principal</p></div></div>
             <div><div class="photo-label">Foto 2 (Opcional)</div><div class="photo-area" id="dropZone2"><img id="previewImg2"><i class="bi bi-camera" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)"><p>Secundaria</p></div></div>
         </div>
+        
         <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
         <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Cancelar Edición</button>
         <div id="msg"></div>
@@ -107,7 +134,6 @@
         <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
       </div>
       <div id="list">
-          <!-- LISTA VACÍA INICIAL -->
           <div class="empty-state">
               <i class="bi bi-search"></i>
               <p>La lista está vacía.</p>
@@ -140,6 +166,7 @@
       const file = document.getElementById('file' + num).files[0]; const img = document.getElementById('previewImg' + num);
       if (file) { const reader = new FileReader(); reader.onload = function(e) { img.src = e.target.result; img.style.display = 'block'; document.getElementById('dropZone' + num).querySelector('i').style.display = 'none'; document.getElementById('dropZone' + num).querySelector('p').style.display = 'none'; }; reader.readAsDataURL(file); }
     }
+
     async function uploadPhoto(fileInput) {
         if(fileInput.files && fileInput.files.length > 0) {
             const originalFile = fileInput.files[0]; const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
@@ -158,16 +185,24 @@
         const newUrl1 = await uploadPhoto(document.getElementById('file1')); if(newUrl1) finalUrl1 = newUrl1;
         const newUrl2 = await uploadPhoto(document.getElementById('file2')); if(newUrl2) finalUrl2 = newUrl2;
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
+        
         const data = {
-          descripcion: document.getElementById('name').value, codigo: document.getElementById('code').value, categoria: document.getElementById('cat').value,
-          preciopormayor: Number(document.getElementById('price').value), precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
-          moq: Number(document.getElementById('moq').value), imagen: finalUrl1, imagen2: finalUrl2, disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
+          descripcion: document.getElementById('name').value, 
+          codigo: document.getElementById('code').value, 
+          categoria: document.getElementById('cat').value,
+          tipo: document.getElementById('type').value, // <--- NUEVO CAMPO
+          preciopormayor: Number(document.getElementById('price').value), 
+          precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
+          moq: Number(document.getElementById('moq').value), 
+          imagen: finalUrl1, imagen2: finalUrl2, 
+          disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
+
         if(id) { 
             await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); 
             msg.innerText = "✅ Actualizado";
             const q = document.getElementById('search').value.toLowerCase().trim();
-            if(q) { // Si hay búsqueda activa, quitamos el editado
+            if(q) { 
                 const card = document.getElementById('card-' + id);
                 if(card) { card.style.opacity = "0"; setTimeout(() => card.remove(), 500); }
             }
@@ -175,34 +210,24 @@
         else { await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); msg.innerText = "✅ Guardado"; }
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        if(document.getElementById('search').value) doSearch(); // Solo recargar si hay búsqueda
+        if(document.getElementById('search').value) doSearch(); 
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
 
     async function doSearch() {
       const q = document.getElementById('search').value.toLowerCase().trim(); 
       const list = document.getElementById('list'); 
-      
-      // MODO FANTASMA: Si no escribes nada, se borra todo
-      if(!q) {
-          list.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>La lista está vacía.</p><p style="font-size:0.9rem">Escribe arriba para encontrar productos.</p></div>';
-          return;
-      }
-
+      if(!q) { list.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>La lista está vacía.</p><p style="font-size:0.9rem">Escribe arriba para encontrar productos.</p></div>'; return; }
       list.innerHTML = '<p style="text-align:center; color:#999">Buscando...</p>';
-      
       try {
         const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
-        let docs = res.documents;
-        let hits = [];
+        let docs = res.documents; let hits = [];
         
         if (q === "error" || q === "sin precio") {
-            // MODO DETECTIVE: Mostrar SOLO los errores
             hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
             if(hits.length === 0) list.innerHTML = '<p style="text-align:center; color:#166534">✅ ¡Limpio! No hay errores.</p>';
         } else { 
-            // BUSQUEDA NORMAL: Muestra lo que coincida (con o sin error)
-            hits = docs.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)));
+            hits = docs.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)) || (d.tipo && d.tipo.toLowerCase().includes(q)));
         }
 
         if(hits.length > 0) list.innerHTML = ''; 
@@ -212,17 +237,13 @@
           const enStock = (d.disponible === undefined) ? true : d.disponible;
           const tieneError = !d.preciopormayor || d.preciopormayor === 0;
           let claseExtra = ""; let alertaHtml = "";
-          
-          if(tieneError) { 
-              claseExtra = " sin-precio"; 
-              alertaHtml = '<span style="color:#ef4444; font-weight:800; font-size:0.8rem; display:block;">⚠️ SIN PRECIO</span>'; 
-          } else if(!enStock) { 
-              claseExtra = " agotado"; 
-          }
+          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span style="color:#ef4444; font-weight:800; font-size:0.8rem; display:block;">⚠️ SIN PRECIO</span>'; } else if(!enStock) { claseExtra = " agotado"; }
           
           const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
           const precioMostrar = tieneError ? "0.00" : d.preciopormayor;
-          div.innerHTML = `<img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img"><div class="prod-info"><div class="prod-title">${d.descripcion}</div><div class="prod-sub">${d.codigo} | Bs. ${precioMostrar}</div>${alertaHtml}</div><div class="actions"><button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button><button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button><button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button></div>`;
+          const tipoMostrar = d.tipo ? `<span style="background:#eee; padding:2px 6px; border-radius:4px; font-size:0.75rem">${d.tipo}</span>` : '';
+
+          div.innerHTML = `<img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img"><div class="prod-info"><div class="prod-title">${d.descripcion}</div><div class="prod-sub">${d.codigo} | Bs. ${precioMostrar} ${tipoMostrar}</div>${alertaHtml}</div><div class="actions"><button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button><button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button><button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button></div>`;
           list.appendChild(div);
         });
       } catch(e) { alert(e.message); }
@@ -232,17 +253,30 @@
       const newState = !currentState; const card = document.getElementById('card-' + docId); const originalIcon = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true;
       try { await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState }); btn.innerHTML = '<i class="bi bi-power"></i>'; btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; if(newState) card.classList.remove('agotado'); else card.classList.add('agotado'); btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); } catch (err) { alert(err.message); btn.innerHTML = originalIcon; } finally { btn.disabled = false; }
     }
+    
     window.editItem = function(d) {
-      document.getElementById('editId').value = d.$id; document.getElementById('name').value = d.descripcion; document.getElementById('code').value = d.codigo; document.getElementById('cat').value = d.categoria;
+      document.getElementById('editId').value = d.$id; 
+      document.getElementById('name').value = d.descripcion; 
+      document.getElementById('code').value = d.codigo; 
+      document.getElementById('cat').value = d.categoria;
+      document.getElementById('type').value = d.tipo || ''; // <--- CARGAR TIPO
+      
       document.getElementById('price').value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
-      document.getElementById('priceUnit').value = d.precioUnidad || ''; document.getElementById('moq').value = d.moq || 6;
+      document.getElementById('priceUnit').value = d.precioUnidad || ''; 
+      document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
-      document.getElementById('oldImg1').value = d.imagen || ""; if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; document.getElementById('dropZone1').querySelector('p').style.display = 'none'; }
+      
+      document.getElementById('oldImg1').value = d.imagen || ""; 
+      if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; document.getElementById('dropZone1').querySelector('p').style.display = 'none'; }
+      
       document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i'); const txt2 = document.getElementById('dropZone2').querySelector('p');
       if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; icon2.style.display = 'none'; txt2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; icon2.style.display = 'block'; txt2.style.display = 'block'; }
+      
       document.getElementById('formTitle').innerText = "Editando: " + d.codigo; document.getElementById('btnSave').innerText = "Actualizar"; document.getElementById('btnSave').style.background = "#2563eb"; document.getElementById('btnCancel').style.display = "block"; window.scrollTo({top:0, behavior:'smooth'});
     }
+    
     window.delItem = async function(id) { if(!confirm("¿Borrar?")) return; try { await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); document.getElementById('card-'+id).remove(); } catch(e) { alert(e.message); } }
+    
     window.resetForm = function() {
       document.getElementById('productForm').reset(); document.getElementById('editId').value = ""; document.getElementById('oldImg1').value = ""; document.getElementById('oldImg2').value = ""; document.getElementById('file1').value = ""; document.getElementById('file2').value = ""; 
       ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; document.getElementById('dropZone'+n).querySelector('p').style.display = 'block'; });
