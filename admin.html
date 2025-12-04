@@ -43,7 +43,7 @@
 
     h2 { margin-top: 0; text-align: center; font-size: 1.4rem; color: #111; }
 
-    /* Estilos Formulario (Mismos de antes) */
+    /* Estilos Formulario */
     .form-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
     input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; }
@@ -56,7 +56,19 @@
       cursor: pointer; margin-top: 10px;
     }
 
-    /* --- NUEVO: LISTA DE PRODUCTOS --- */
+    /* --- NUEVO: ESTILOS DEL BUSCADOR --- */
+    .search-box {
+      display: flex; gap: 10px; margin-bottom: 20px;
+    }
+    .search-box input {
+      margin-bottom: 0; /* Quitar margen del input genérico */
+    }
+    .btn-search {
+      background: #111; color: #fff; border: none; border-radius: 10px;
+      padding: 0 20px; cursor: pointer; font-size: 1.2rem;
+    }
+    .btn-search:active { transform: scale(0.95); }
+
     .product-list {
       display: flex; flex-direction: column; gap: 15px; margin-top: 10px;
     }
@@ -87,6 +99,8 @@
     #msg { display: none; padding: 10px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: bold; }
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2e2; color: #991b1b; }
+    
+    #searchMsg { text-align:center; color:#888; margin-top:20px; font-size:0.9rem; }
   </style>
 </head>
 <body>
@@ -128,12 +142,17 @@
     </form>
   </div>
 
-  <!-- SECCIÓN 2: LISTA PARA BORRAR -->
+  <!-- SECCIÓN 2: BUSCADOR -->
   <div class="container">
-    <h2><i class="bi bi-list-check"></i> Gestionar Inventario</h2>
-    <p style="text-align:center; color:#666; font-size:0.9rem; margin-top:-10px;">Últimos productos agregados</p>
-    <div id="loadingList" style="text-align:center; padding:20px;">Cargando lista...</div>
+    <h2><i class="bi bi-search"></i> Buscar y Editar</h2>
+    
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Nombre o código...">
+      <button class="btn-search" onclick="searchProducts()"><i class="bi bi-search"></i></button>
+    </div>
+
     <div id="inventoryList" class="product-list"></div>
+    <div id="searchMsg">Usa el buscador para encontrar productos.</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
@@ -150,27 +169,43 @@
     const storage = new Appwrite.Storage(client);
     const databases = new Appwrite.Databases(client);
 
-    // --- LÓGICA DE GESTIÓN (Leer y Borrar) ---
-    async function loadProducts() {
+    // --- LÓGICA DE BÚSQUEDA ---
+    async function searchProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
       const listContainer = document.getElementById('inventoryList');
-      const loader = document.getElementById('loadingList');
+      const msgLabel = document.getElementById('searchMsg');
       
+      if (!query) {
+        alert("Por favor escribe algo para buscar");
+        return;
+      }
+
+      msgLabel.textContent = "Buscando...";
+      listContainer.innerHTML = ''; // Limpiar lista anterior
+
       try {
-        // Traemos los últimos 20 productos (ordenados por creación si fuera posible, por ahora default)
+        // Traemos un lote de productos (últimos 100) para filtrar
+        // Esta es la forma segura sin tener que configurar índices complejos en Appwrite
         const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
-           // Si quieres orden inverso añade: Appwrite.Query.orderDesc('$createdAt')
+           Appwrite.Query.limit(100),
+           Appwrite.Query.orderDesc('$createdAt')
         ]);
         
-        loader.style.display = 'none';
-        listContainer.innerHTML = '';
+        // Filtramos en tu navegador (más rápido y fácil)
+        const resultados = response.documents.filter(doc => {
+          const nombre = (doc.descripcion || '').toLowerCase();
+          const codigo = (doc.codigo || '').toLowerCase();
+          return nombre.includes(query) || codigo.includes(query);
+        });
 
-        if (response.documents.length === 0) {
-          listContainer.innerHTML = '<p style="text-align:center">No hay productos aún.</p>';
+        if (resultados.length === 0) {
+          msgLabel.textContent = "No se encontraron productos con ese nombre.";
           return;
         }
 
-        response.documents.forEach(doc => {
-          // Crear tarjeta de producto
+        msgLabel.textContent = ""; // Borrar mensaje de estado
+
+        resultados.forEach(doc => {
           const item = document.createElement('div');
           item.className = 'product-item';
           item.innerHTML = `
@@ -188,29 +223,29 @@
 
       } catch (error) {
         console.error(error);
-        loader.textContent = 'Error cargando lista.';
+        msgLabel.textContent = "Error al buscar. Verifica tu conexión.";
       }
     }
 
-    // Función global para borrar
+    // Función borrar (igual que antes)
     window.deleteProduct = async function(docId) {
-      if (!confirm('¿Seguro que quieres borrar este producto?')) return;
-
+      if (!confirm('¿Borrar este producto del catálogo?')) return;
+      
       const btn = event.target.closest('button');
+      const original = btn.innerHTML;
       btn.innerHTML = '...'; 
       
       try {
         await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, docId);
-        // Recargar lista
-        loadProducts();
-        alert('Producto eliminado');
+        btn.parentElement.remove(); // Lo quitamos visualmente de la lista
+        alert('Producto eliminado correctamente');
       } catch (error) {
-        alert('Error al borrar: ' + error.message + '\n(Recuerda activar el permiso DELETE en Appwrite)');
-        btn.innerHTML = '<i class="bi bi-trash"></i>';
+        alert('Error: ' + error.message);
+        btn.innerHTML = original;
       }
     }
 
-    // --- LÓGICA DE SUBIDA (Igual que antes) ---
+    // --- LÓGICA DE SUBIDA (Formulario de arriba) ---
     const form = document.getElementById("productForm");
     const msg = document.getElementById("msg");
 
@@ -236,17 +271,13 @@
 
         msg.textContent = '✅ Producto Agregado'; msg.className = 'success'; msg.style.display = 'block';
         form.reset();
-        loadProducts(); // Recargar la lista de abajo automáticamente
-
+        
       } catch (err) {
         msg.textContent = '❌ Error: ' + err.message; msg.className = 'error'; msg.style.display = 'block';
       } finally {
         btn.textContent = originalText; btn.disabled = false;
       }
     });
-
-    // Cargar productos al abrir
-    loadProducts();
   </script>
 </body>
 </html>
