@@ -141,8 +141,27 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); 
 }
 
-/* ELIMINAMOS EL INDICADOR (FLECHA) CSS */
-/* Se mantiene el cursor: pointer en .img-box para indicar interactividad */
+/* --- INDICADORES DE PUNTOS --- */
+.dot-container {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 15;
+}
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+.dot.active {
+    background-color: var(--accent);
+    box-shadow: 0 0 5px var(--accent);
+}
 
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
@@ -206,18 +225,24 @@ window.flipCard = function(cardId) {
     if (!cardElement) return;
 
     const innerCard = cardElement.querySelector('.flip-card-inner');
+    const dots = cardElement.querySelectorAll('.dot');
     
-    // NOTA: EL INDICADOR DE IMAGEN (FLECHA) FUE ELIMINADO SEGÚN SOLICITUD DEL USUARIO.
-    // Solo permitir flip si la imagen 2 existe (p.imagen2)
+    // Solo permitir flip si la imagen 2 existe
     const imgBack = cardElement.querySelector('.flip-card-back img');
-    
-    // Si la imagen trasera no tiene src (es decir, p.imagen2 no existe), no hacemos nada
     if (!imgBack || !imgBack.src || imgBack.src.includes('undefined') || imgBack.src.includes('null')) {
         return;
     }
 
     // Alternar la clase 'flipped'
     innerCard.classList.toggle('flipped');
+    
+    // Actualizar el estado de los puntos
+    const isFlipped = innerCard.classList.contains('flipped');
+    if (dots.length > 0) {
+        dots[0].classList.remove('active');
+        dots[1].classList.remove('active');
+        dots[isFlipped ? 1 : 0].classList.add('active');
+    }
 }
 
 // --- LÓGICA DE INICIO Y FILTRADO ---
@@ -301,11 +326,16 @@ function renderProductos(lista){
     const tieneFoto2 = p.imagen2 ? true : false;
     const cardId = `card-${p.$id}`;
     
-    // NO HAY INDICADOR VISUAL. SOLO SE USA EL CURSOR POINTER DEL CSS EN .img-box
     let imgBoxClick = '';
+    let dotHtml = '';
 
     if (tieneFoto2) {
         imgBoxClick = `onclick="flipCard('${cardId}')"`;
+        dotHtml = `
+            <div class="dot-container">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+            </div>`;
     } 
     
     return `
@@ -322,7 +352,7 @@ function renderProductos(lista){
                   <img src="${p.imagen2 || p.imagen}" class="prod-img" loading="lazy">
               </div>
           </div>
-          
+          ${dotHtml}
       </div>
       <div class="info">
         <h3 class="title">${tituloBonito}</h3>
