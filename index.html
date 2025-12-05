@@ -103,7 +103,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* --- CARRUSEL DE IMAGENES --- */
 .img-box{ 
     background:#fff; padding:15px; display:flex; 
-    align-items:center; justify-content:flex-start; /* Alineamos a la izquierda para el carrusel */
+    align-items:center; justify-content:flex-start; /* Alineamos a la izquierda */
     height:220px; 
     border-bottom:1px solid #f0f0f0; position: relative; 
     overflow: hidden; 
@@ -111,13 +111,13 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 }
 .img-container {
     display: flex;
-    width: 200%; 
+    /* Ancho se define en JS (100% o 200%) */
     height: 100%;
     transition: transform 0.3s ease-in-out; 
 }
 .prod-img { 
-    min-width: 50%; /* OBLIGA A CADA IMAGEN A OCUPAR SOLO EL ESPACIO DE LA VISTA (50% de 200% = 100% de la caja) */
-    max-width: 50%;
+    min-width: 100%; /* CORRECCIÓN CLAVE: La imagen individual siempre ocupa el 100% del VIEWPORT DE DESLIZAMIENTO */
+    max-width: 100%;
     max-height:100%; 
     object-fit:contain; 
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); 
@@ -207,7 +207,7 @@ window.nextSlide = function(cardId) {
     // Si no hay flecha, no hacemos nada (solo 1 foto)
     if (!indicator) return;
 
-    // Obtener el estado actual del transform
+    // Obtener el estado actual del transform (0% o -50%)
     const currentTransform = imgContainer.style.transform;
     let newTransform = '';
     let isSecondImage = false;
@@ -227,9 +227,9 @@ window.nextSlide = function(cardId) {
     
     // Cambiar la flecha para indicar la dirección
     if (isSecondImage) {
-        indicator.className = 'indicator-arrow bi bi-chevron-left';
+        indicator.className = 'indicator-arrow bi bi-chevron-left'; // Flecha izquierda
     } else {
-        indicator.className = 'indicator-arrow bi bi-chevron-right';
+        indicator.className = 'indicator-arrow bi bi-chevron-right'; // Flecha derecha
     }
 }
 
@@ -324,10 +324,7 @@ function renderProductos(lista){
         indicatorHtml = `<i class="indicator-arrow bi bi-chevron-right"></i>`;
         imgBoxClick = `onclick="nextSlide('${cardId}')"`;
         containerWidth = '200%';
-    } else {
-        // Si solo hay una foto, el único elemento img es el contenedor de imágenes.
-        // No hay necesidad de dos imágenes, y el CSS lo centra correctamente.
-    }
+    } 
     
     return `
     <div class="card" id="${cardId}">
