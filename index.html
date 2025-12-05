@@ -99,7 +99,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* Tarjetas */
 .card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
-.moq{ position:absolute; top:12px; right:12px; z-index:10; background:var(--accent); color:#000; border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-transform: uppercase; }
+.moq{ position:absolute; top:12px; right:12px; z-index:10; background:var(--accent); color:#000; border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; text-transform: uppercase; }
 
 /* --- CARRUSEL DE IMAGENES --- */
 .img-box{ 
@@ -116,7 +116,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     transition: transform 0.3s ease-in-out; /* Animación de deslizamiento */
 }
 .prod-img { 
-    min-width: 50%; /* Cada imagen ocupa exactamente la mitad del ancho del contenedor interno */
+    min-width: 50%; /* CADA IMAGEN OCUPA LA MITAD DEL CONTENEDOR DE DESLIZAMIENTO */
     max-width: 50%;
     max-height:100%; 
     object-fit:contain; 
@@ -394,13 +394,16 @@ function renderProductos(lista){
         navButtons = `
             <button class="nav-button prev" onclick="prevSlide('${cardId}'); event.stopPropagation();"><i class="bi bi-chevron-left"></i></button>
             <button class="nav-button next" onclick="nextSlide('${cardId}'); event.stopPropagation();"><i class="bi bi-chevron-right"></i></button>`;
+    } else {
+        // Si no hay foto 2, la imagen ocupa el 100% del contenedor visible, no el 50%
+        imagenesHtml = `<img src="${p.imagen}" class="prod-img" loading="lazy" style="min-width: 100%; max-width: 100%;">`;
     }
     
     return `
     <div class="card" id="${cardId}">
       <div class="moq">Mín. ${p.moq || 6} unid.</div>
       <div class="img-box" ${imgBoxClick}>
-          <div class="img-container" style="transform: translateX(0%);">
+          <div class="img-container" style="transform: translateX(0%); width: ${tieneFoto2 ? '200%' : '100%'};">
               ${imagenesHtml}
           </div>
           ${dotHtml}
