@@ -141,21 +141,8 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); 
 }
 
-/* INDICADOR DE FOTO EXTRA (La flecha) */
-.indicator-arrow {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    color: rgba(0, 0, 0, 0.5); 
-    font-size: 1.5rem;
-    z-index: 30;
-    pointer-events: none;
-    transition: color 0.3s;
-}
-.img-box:hover .indicator-arrow {
-    color: var(--accent); 
-}
+/* ELIMINAMOS EL INDICADOR (FLECHA) CSS */
+/* Se mantiene el cursor: pointer en .img-box para indicar interactividad */
 
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
@@ -203,7 +190,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
   </section>
 </div>
 
-<a class="whatsapp" href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido." target="_blank"><i class="bi bi-whatsapp" style="font-size:1.3rem"></i> Hacer Pedido</a>
+<a class="whatsapp" href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%a1logo%20web%20y%20quiero%20hacer%20un%20pedido." target="_blank"><i class="bi bi-whatsapp" style="font-size:1.3rem"></i> Hacer Pedido</a>
 
 
 <script type="module">
@@ -219,20 +206,18 @@ window.flipCard = function(cardId) {
     if (!cardElement) return;
 
     const innerCard = cardElement.querySelector('.flip-card-inner');
-    const indicator = cardElement.querySelector('.indicator-arrow');
     
-    // Solo permitir flip si hay indicador (es decir, si hay imagen2)
-    if (!indicator) return;
+    // NOTA: EL INDICADOR DE IMAGEN (FLECHA) FUE ELIMINADO SEGÚN SOLICITUD DEL USUARIO.
+    // Solo permitir flip si la imagen 2 existe (p.imagen2)
+    const imgBack = cardElement.querySelector('.flip-card-back img');
+    
+    // Si la imagen trasera no tiene src (es decir, p.imagen2 no existe), no hacemos nada
+    if (!imgBack || !imgBack.src || imgBack.src.includes('undefined') || imgBack.src.includes('null')) {
+        return;
+    }
 
     // Alternar la clase 'flipped'
     innerCard.classList.toggle('flipped');
-    
-    // Cambiar el indicador
-    if (innerCard.classList.contains('flipped')) {
-        indicator.className = 'indicator-arrow bi bi-arrow-return-left'; // Icono para regresar
-    } else {
-        indicator.className = 'indicator-arrow bi bi-chevron-right'; // Icono para avanzar
-    }
 }
 
 // --- LÓGICA DE INICIO Y FILTRADO ---
@@ -316,11 +301,10 @@ function renderProductos(lista){
     const tieneFoto2 = p.imagen2 ? true : false;
     const cardId = `card-${p.$id}`;
     
-    let indicatorHtml = '';
+    // NO HAY INDICADOR VISUAL. SOLO SE USA EL CURSOR POINTER DEL CSS EN .img-box
     let imgBoxClick = '';
 
     if (tieneFoto2) {
-        indicatorHtml = `<i class="indicator-arrow bi bi-chevron-right"></i>`;
         imgBoxClick = `onclick="flipCard('${cardId}')"`;
     } 
     
@@ -338,7 +322,7 @@ function renderProductos(lista){
                   <img src="${p.imagen2 || p.imagen}" class="prod-img" loading="lazy">
               </div>
           </div>
-          ${indicatorHtml}
+          
       </div>
       <div class="info">
         <h3 class="title">${tituloBonito}</h3>
