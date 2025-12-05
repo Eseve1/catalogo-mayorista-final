@@ -74,7 +74,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .sidebar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:16px; position:sticky; top:70px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 .sidebar h2{ margin:0 0 12px; font-size:1.1rem; font-weight:900; flex-shrink: 0; }
 #menu-cat{ display:flex; flex-direction:column; gap:8px; overflow-y: auto; padding-right: 5px; }
-#menu-cat::-webkit-scrollbar { width: 4px; } #menu-cat::-webkit-scrollbar-track { background: transparent; } #menu-cat::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; } 
 .btn-cat{ background:#fff; color:#444; border:1px solid #ddd; font-weight:700; border-radius:10px; padding:10px 14px; cursor:pointer; font-size:.95rem; text-align:left; transition:.2s; flex-shrink: 0; }
 .btn-cat:hover, .btn-cat.active{ background:var(--accent); color:#000; border-color:var(--accent-dark); box-shadow:0 2px 8px rgba(255,184,0,.3); }
 
@@ -104,70 +103,42 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* --- CARRUSEL DE IMAGENES --- */
 .img-box{ 
     background:#fff; padding:15px; display:flex; 
-    align-items:center; justify-content:center; height:220px; 
+    align-items:center; justify-content:flex-start; /* Alineamos a la izquierda para el carrusel */
+    height:220px; 
     border-bottom:1px solid #f0f0f0; position: relative; 
     overflow: hidden; 
-    cursor: pointer; /* Cursor de puntero para indicar interactividad */
+    cursor: pointer; 
 }
 .img-container {
     display: flex;
-    width: 200%; /* Suficiente espacio para 2 imágenes */
+    width: 200%; 
     height: 100%;
-    transition: transform 0.3s ease-in-out; /* Animación de deslizamiento */
+    transition: transform 0.3s ease-in-out; 
 }
 .prod-img { 
-    min-width: 50%; /* CADA IMAGEN OCUPA LA MITAD DEL CONTENEDOR DE DESLIZAMIENTO */
+    min-width: 50%; /* OBLIGA A CADA IMAGEN A OCUPAR SOLO EL ESPACIO DE LA VISTA (50% de 200% = 100% de la caja) */
     max-width: 50%;
     max-height:100%; 
     object-fit:contain; 
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); 
 }
-.dot-container {
-    position: absolute;
-    bottom: 5px;
-    display: flex;
-    gap: 5px;
-    z-index: 20;
-}
-.dot {
-    width: 6px;
-    height: 6px;
-    background-color: rgba(0, 0, 0, 0.4);
-    border-radius: 50%;
-    transition: background-color 0.3s;
-}
-.dot.active {
-    background-color: var(--accent);
-}
 
-.nav-button {
+/* INDICADOR DE FOTO EXTRA (La flecha) */
+.indicator-arrow {
     position: absolute;
     top: 50%;
+    right: 10px;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    cursor: pointer;
+    color: rgba(0, 0, 0, 0.5); /* Color oscuro semi-transparente */
+    font-size: 1.5rem;
     z-index: 30;
-    font-size: 1.2rem;
-    line-height: 1;
-    border-radius: 5px;
-    opacity: 0;
-    transition: opacity 0.3s;
+    pointer-events: none; /* Ignora clics, el clic va al img-box */
+    transition: color 0.3s;
+}
+.img-box:hover .indicator-arrow {
+    color: var(--accent); /* Se ilumina al pasar el mouse */
 }
 
-.img-box:hover .nav-button {
-    opacity: 1; /* Mostrar botones solo al pasar el ratón en PC */
-}
-
-.nav-button.prev { left: 10px; }
-.nav-button.next { right: 10px; }
-
-/* Ocultar botones de navegación en móvil, donde usamos el click/tap completo */
-@media (max-width: 992px) {
-    .nav-button { display: none !important; }
-}
 
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
@@ -225,72 +196,41 @@ const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c
 let todos = [];
 let catActual = 'Todo';
 
-// --- FUNCIONES DE CARRUSEL ---
-
-// Función para deslizar el carrusel (funciona con botones en PC y toque en móvil)
+// --- FUNCIÓN DE SLIDE (Se activa al hacer click o tap) ---
 window.nextSlide = function(cardId) {
     const cardElement = document.getElementById(cardId);
     if (!cardElement) return;
 
     const imgContainer = cardElement.querySelector('.img-container');
-    const dots = cardElement.querySelectorAll('.dot');
+    const indicator = cardElement.querySelector('.indicator-arrow');
     
-    // Si solo hay 1 imagen (no hay imagen2), no hacemos nada
-    if (imgContainer.children.length <= 1) return;
+    // Si no hay flecha, no hacemos nada (solo 1 foto)
+    if (!indicator) return;
 
-    // Obtener la posición actual (transform: translateX(X%))
+    // Obtener el estado actual del transform
     const currentTransform = imgContainer.style.transform;
-    let currentImageIndex = 0;
+    let newTransform = '';
+    let isSecondImage = false;
+
     if (currentTransform === 'translateX(-50%)') {
-        currentImageIndex = 1;
+        // Estamos en la foto 2, volvemos a la 1 (transform: translateX(0%))
+        newTransform = 'translateX(0%)';
+        isSecondImage = false;
+    } else {
+        // Estamos en la foto 1, pasamos a la 2 (transform: translateX(-50%))
+        newTransform = 'translateX(-50%)';
+        isSecondImage = true;
     }
 
-    // Calcular la nueva imagen y transform
-    let newImageIndex = (currentImageIndex + 1) % 2; // Solo hay 2 imágenes (0 y 1)
-    let newTransform = `translateX(-${newImageIndex * 50}%)`;
-
-    // Aplicar los cambios
+    // Aplicar el cambio
     imgContainer.style.transform = newTransform;
     
-    // Actualizar los puntos (dots)
-    dots.forEach((dot, index) => {
-        dot.classList.remove('active');
-        if (index === newImageIndex) {
-            dot.classList.add('active');
-        }
-    });
-}
-
-// Para retroceder, simplemente llamamos al siguiente slide, ya que solo hay 2
-window.prevSlide = function(cardId) {
-    // Si estamos en la imagen 1, vamos a la 0. Si estamos en la 0, vamos a la 1.
-    const cardElement = document.getElementById(cardId);
-    if (!cardElement) return;
-
-    const imgContainer = cardElement.querySelector('.img-container');
-    const dots = cardElement.querySelectorAll('.dot');
-    
-    if (imgContainer.children.length <= 1) return;
-
-    const currentTransform = imgContainer.style.transform;
-    let currentImageIndex = 0;
-    if (currentTransform === 'translateX(-50%)') {
-        currentImageIndex = 1;
+    // Cambiar la flecha para indicar la dirección
+    if (isSecondImage) {
+        indicator.className = 'indicator-arrow bi bi-chevron-left';
+    } else {
+        indicator.className = 'indicator-arrow bi bi-chevron-right';
     }
-
-    // Calcular la nueva imagen (Regresar es ir a la opuesta)
-    let newImageIndex = (currentImageIndex === 0) ? 1 : 0; 
-    let newTransform = `translateX(-${newImageIndex * 50}%)`;
-
-    imgContainer.style.transform = newTransform;
-    
-    // Actualizar los puntos (dots)
-    dots.forEach((dot, index) => {
-        dot.classList.remove('active');
-        if (index === newImageIndex) {
-            dot.classList.add('active');
-        }
-    });
 }
 
 // --- LÓGICA DE INICIO Y FILTRADO ---
@@ -375,39 +315,28 @@ function renderProductos(lista){
     const cardId = `card-${p.$id}`;
     
     let imagenesHtml = `<img src="${p.imagen}" class="prod-img" loading="lazy">`;
-    let dotHtml = '';
-    let navButtons = '';
+    let indicatorHtml = '';
     let imgBoxClick = '';
+    let containerWidth = '100%';
 
     if (tieneFoto2) {
         imagenesHtml += `<img src="${p.imagen2}" class="prod-img" loading="lazy">`;
-        dotHtml = `
-            <div class="dot-container">
-                <div class="dot active"></div>
-                <div class="dot"></div>
-            </div>`;
-        
-        // Clic para deslizar en móvil/táctil
+        indicatorHtml = `<i class="indicator-arrow bi bi-chevron-right"></i>`;
         imgBoxClick = `onclick="nextSlide('${cardId}')"`;
-        
-        // Botones de navegación para PC (solo si hay 2 fotos)
-        navButtons = `
-            <button class="nav-button prev" onclick="prevSlide('${cardId}'); event.stopPropagation();"><i class="bi bi-chevron-left"></i></button>
-            <button class="nav-button next" onclick="nextSlide('${cardId}'); event.stopPropagation();"><i class="bi bi-chevron-right"></i></button>`;
+        containerWidth = '200%';
     } else {
-        // Si no hay foto 2, la imagen ocupa el 100% del contenedor visible, no el 50%
-        imagenesHtml = `<img src="${p.imagen}" class="prod-img" loading="lazy" style="min-width: 100%; max-width: 100%;">`;
+        // Si solo hay una foto, el único elemento img es el contenedor de imágenes.
+        // No hay necesidad de dos imágenes, y el CSS lo centra correctamente.
     }
     
     return `
     <div class="card" id="${cardId}">
       <div class="moq">Mín. ${p.moq || 6} unid.</div>
       <div class="img-box" ${imgBoxClick}>
-          <div class="img-container" style="transform: translateX(0%); width: ${tieneFoto2 ? '200%' : '100%'};">
+          <div class="img-container" style="transform: translateX(0%); width: ${containerWidth};">
               ${imagenesHtml}
           </div>
-          ${dotHtml}
-          ${navButtons}
+          ${indicatorHtml}
       </div>
       <div class="info">
         <h3 class="title">${tituloBonito}</h3>
