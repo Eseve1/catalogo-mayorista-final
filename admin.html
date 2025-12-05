@@ -11,7 +11,14 @@
   <style>
     :root { --primary: #FFB800; --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --border-radius: 12px; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; min-height: 100vh; }
+    body { 
+        font-family: 'Poppins', sans-serif; 
+        background: var(--bg); 
+        color: var(--text); 
+        margin: 0; 
+        padding: 20px; 
+        min-height: 100vh; 
+    }
 
     #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; padding: 20px; }
     #loginScreen input { padding: 15px; border-radius: 10px; border: none; font-size: 1.2rem; text-align: center; margin-top: 20px; width: 200px; }
@@ -33,12 +40,24 @@
         }
     }
     
-    .container { max-width: 600px; margin: 0 auto 30px; background: var(--card); padding: 30px; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .container { 
+        max-width: 600px; margin: 0 auto 30px; 
+        background: var(--card); padding: 30px; 
+        border-radius: var(--border-radius); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+    }
     @media (min-width: 900px) { 
         .container { 
             max-width: none; 
             margin: 0; 
         } 
+        /* HACEMOS EL FORMULARIO FIJO EN LA COLUMNA DE LA IZQUIERDA */
+        .container:first-child {
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px); /* Altura máxima para que quepa en la ventana */
+            overflow-y: auto; /* Permite scroll solo en el formulario si es muy largo */
+        }
     }
     
     h2 { margin-top: 0; text-align: center; font-size: 1.4rem; color: #111; font-weight: 800; margin-bottom: 25px; }
@@ -63,7 +82,6 @@
         display: flex; align-items: center; gap: 15px; padding: 12px; 
         background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; 
         margin-bottom: 10px; position: relative; transition: 0.3s;
-        /* IMPORTANTE: Necesario para posicionar el popup */
     }
     .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15); }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
@@ -96,18 +114,15 @@
         display: none;
         position: absolute;
         top: 0;
-        /* Se coloca a la derecha del contenedor del producto */
         left: 100%; 
         z-index: 50; 
-        padding-left: 10px; /* Espacio entre el producto y la imagen */
-        pointer-events: none; /* Permite hacer click a través de él si está sobre el botón de editar */
-
-        /* Transición suave para aparecer */
+        padding-left: 10px; 
+        pointer-events: none; 
         opacity: 0;
         transition: opacity 0.2s ease-in-out;
     }
     .magnifier-popup img {
-        width: 250px; /* Tamaño fijo para la vista previa */
+        width: 250px; 
         height: auto;
         border-radius: 12px;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
@@ -115,27 +130,11 @@
         padding: 5px;
     }
 
-    /* Mostrar solo en escritorio y al hacer hover */
     .product-item:hover .magnifier-popup {
         display: block;
         opacity: 1;
     }
     
-    /* Si el popup se sale de la pantalla por la derecha, lo ponemos a la izquierda */
-    .container { overflow: visible !important; }
-
-    /* Asegurar que la imagen del popup no se salga de la ventana (para evitar scroll horizontal) */
-    @media (min-width: 900px) {
-        .magnifier-popup {
-            right: auto;
-            left: 100%;
-        }
-        /* Si la imagen está demasiado a la derecha, ajústala */
-        .product-item:hover .magnifier-popup {
-             /* Esto es difícil de calcular solo con CSS, lo mantendremos simple para evitar romper el layout */
-        }
-    }
-    /* Ocultar en móvil para mantener el rendimiento */
     @media (max-width: 900px) {
         .magnifier-popup { display: none !important; }
     }
@@ -167,7 +166,7 @@
     <!-- WRAPPER DE LAYOUT -->
     <div class="admin-layout">
         
-        <!-- COLUMNA 1: FORMULARIO -->
+        <!-- COLUMNA 1: FORMULARIO (AHORA FIJO EN PC) -->
         <div class="container">
           <h2 id="formTitle">Nuevo Producto</h2>
           <form id="productForm">
@@ -216,7 +215,7 @@
           </form>
         </div>
 
-        <!-- COLUMNA 2: BUSCADOR Y LISTA -->
+        <!-- COLUMNA 2: BUSCADOR Y LISTA (SCROLLABLE) -->
         <div class="container">
           <h2>Buscador</h2>
           <div class="search-box">
@@ -235,7 +234,6 @@
     </div> 
   </div>
 
-  <!-- ELIMINAMOS EL MODAL GLOBAL Y LA LOGICA JS QUE NO ES NECESARIA -->
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
@@ -244,9 +242,6 @@
     const PASS = "eddy4242"; const PROJECT_ID = "692ee6b70012153cd33c"; const DATABASE_ID = "692ee774002e9a3c8601"; const COLLECTION_ID = "catalogo"; const BUCKET_ID = "692ef19e001ffa75d062";
     const client = new Appwrite.Client().setEndpoint("https://fra.cloud.appwrite.io/v1").setProject(PROJECT_ID);
     const db = new Appwrite.Databases(client); const storage = new Appwrite.Storage(client);
-
-    // Las funciones showMagnifiedPreview y hideMagnifiedPreview ya no son necesarias.
-    // El efecto se logra con CSS: hover en .product-item muestra .magnifier-popup.
 
     function setupDragDrop(zoneId, inputId, previewNum) {
         const zone = document.getElementById(zoneId); const input = document.getElementById(inputId);
@@ -322,7 +317,7 @@
         
         if (q === "error" || q === "sin precio") {
             hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
-            if(hits.length === 0) list.innerHTML = '<p style="text-align:center; color:#166534">✅ ¡Limpio! No hay errores.</p>';
+            if(hits.length === 0) list.innerHTML = '<p style="text-align:center; color:#166534">✅ ¡Limpio! No hay errores!</p>';
         } else { 
             hits = docs.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)) || (d.tipo && d.tipo.toLowerCase().includes(q)));
         }
@@ -342,7 +337,7 @@
           const precioMostrar = tieneError ? "0.00" : d.preciopormayor;
           const tipoMostrar = d.tipo ? `<span style="background:#eee; padding:2px 6px; border-radius:4px; font-size:0.75rem">${d.tipo}</span>` : '';
 
-          // INYECTAMOS EL HTML DE LA IMAGEN Y EL POPUP
+          // INYECTAMOS EL HTML DE LA IMAGEN Y EL POPUP FLOTANTE (TOOLTIP)
           const itemHtml = `
             <img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
             <div class="magnifier-popup">
@@ -398,7 +393,14 @@
       document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i'); const txt2 = document.getElementById('dropZone2').querySelector('p');
       if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; icon2.style.display = 'none'; txt2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; icon2.style.display = 'block'; txt2.style.display = 'block'; }
       
-      document.getElementById('formTitle').innerText = "Editando: " + d.codigo; document.getElementById('btnSave').innerText = "Actualizar"; document.getElementById('btnSave').style.background = "#2563eb"; document.getElementById('btnCancel').style.display = "block"; window.scrollTo({top:0, behavior:'smooth'});
+      // La solución de posición fija hace innecesario este scroll
+      // document.getElementById('formTitle').innerText = "Editando: " + d.codigo; 
+      // window.scrollTo({top:0, behavior:'smooth'}); 
+
+      document.getElementById('formTitle').innerText = "Editando: " + d.codigo; 
+      document.getElementById('btnSave').innerText = "Actualizar"; 
+      document.getElementById('btnSave').style.background = "#2563eb"; 
+      document.getElementById('btnCancel').style.display = "block";
     }
     
     window.resetForm = function() {
