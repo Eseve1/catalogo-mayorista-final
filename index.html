@@ -15,7 +15,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* --- HEADER ROJO Y MARQUESINA --- */
 .header-oferta{ 
     width:100%; 
-    background:#CC0000; /* ROJO INTENSO BASE */
+    background:#CC0000; 
     color:#fff; 
     border-bottom:2px solid #8e0000; 
     box-shadow:0 2px 10px rgba(0,0,0,.15); 
@@ -23,13 +23,13 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     position:sticky; 
     top:0; 
     z-index:50; 
-    animation: header-pulse 1.5s infinite alternate; /* EFECTO PULSE EN EL FONDO */
+    animation: header-pulse 1.5s infinite alternate; 
 }
 .header-track{ 
     display:flex; 
     gap:40px; 
     white-space:nowrap; 
-    animation:marquee 18s linear infinite; /* VELOCIDAD ACELERADA */ 
+    animation:marquee 18s linear infinite; 
     padding:12px 0; 
     font-weight:900; 
     font-size:1.1rem; 
@@ -42,21 +42,16 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     align-items:center;
     gap:10px;
     padding-left:20px;
-    /* EFECTO PULSE EN TEXTO */
     animation: text-pulse 1s infinite alternate;
 }
 .header-item i { color: var(--accent); } 
 
 /* DEFINICIÓN DE ANIMACIONES */
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-/* PULSO EN EL FONDO DE LA BARRA */
 @keyframes header-pulse {
     from { background-color: #CC0000; } 
     to { background-color: #E00000; } 
 }
-
-/* PULSO EN EL TEXTO */
 @keyframes text-pulse {
     0% { text-shadow: 0 0 5px rgba(255,255,255,0.4); }
     100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
@@ -65,8 +60,8 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* --- TURBO PARA CELULARES --- */
 @media (max-width: 768px) {
     .header-track {
-        animation-duration: 12s; /* Más rápido en celular */
-        font-size: 0.9rem;       /* Letra ajustada */
+        animation-duration: 12s; 
+        font-size: 0.9rem;       
         gap: 20px;
     }
 }
@@ -105,11 +100,44 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
 .moq{ position:absolute; top:12px; right:12px; z-index:10; background:var(--accent); color:#000; border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-transform: uppercase; }
-.img-box{ background:#fff; padding:15px; display:flex; align-items:center; justify-content:center; height:220px; border-bottom:1px solid #f0f0f0; position: relative; }
-.prod-img { max-width:100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); transition: opacity 0.3s ease-in-out; }
-.img-front { opacity: 1; }
-.img-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px; opacity: 0; background: #fff; }
-.img-box.has-hover:hover .img-back { opacity: 1; }
+
+/* --- CARRUSEL DE IMAGENES --- */
+.img-box{ 
+    background:#fff; padding:15px; display:flex; 
+    align-items:center; justify-content:center; height:220px; 
+    border-bottom:1px solid #f0f0f0; position: relative; 
+    overflow: hidden; /* Oculta las imágenes que no se ven */
+}
+.img-container {
+    display: flex;
+    width: 200%; /* Suficiente espacio para 2 imágenes */
+    height: 100%;
+    transition: transform 0.3s ease-in-out; /* Animación de deslizamiento */
+}
+.prod-img { 
+    max-width: 50%; /* Cada imagen ocupa la mitad del ancho del contenedor interno */
+    max-height:100%; 
+    object-fit:contain; 
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); 
+}
+.dot-container {
+    position: absolute;
+    bottom: 5px;
+    display: flex;
+    gap: 5px;
+    z-index: 20;
+}
+.dot {
+    width: 6px;
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+.dot.active {
+    background-color: var(--accent);
+}
+
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
 .ref{font-size:.85rem; color:#888; font-weight:600; margin-bottom:12px;}
@@ -129,6 +157,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div class="header-oferta">
     <div class="header-track">
+        <!-- MENSAJE DINÁMICO FINAL -->
         <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN OFERTA! ¡APROVECHA AHORA!</div>
         <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO TOTAL!</div>
         <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN OFERTA! ¡APROVECHA AHORA!</div>
@@ -164,6 +193,36 @@ const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c
 
 let todos = [];
 let catActual = 'Todo';
+
+// Función para cambiar la imagen al hacer clic
+window.toggleImage = function(cardElement, totalImages) {
+    const imgContainer = cardElement.querySelector('.img-container');
+    const dots = cardElement.querySelectorAll('.dot');
+    
+    // Obtener el estado actual (posición del transform)
+    const currentTransform = imgContainer.style.transform;
+    
+    // Determinar la imagen actual
+    let currentImageIndex = 0;
+    if (currentTransform === 'translateX(-50%)') {
+        currentImageIndex = 1;
+    }
+
+    // Calcular la nueva imagen y transform
+    let newImageIndex = (currentImageIndex + 1) % totalImages;
+    let newTransform = `translateX(-${newImageIndex * 50}%)`;
+
+    // Aplicar los cambios
+    imgContainer.style.transform = newTransform;
+    
+    // Actualizar los puntos (dots)
+    dots.forEach((dot, index) => {
+        dot.classList.remove('active');
+        if (index === newImageIndex) {
+            dot.classList.add('active');
+        }
+    });
+}
 
 async function iniciar(){
   const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject(PROJECT_ID);
@@ -242,12 +301,34 @@ function renderProductos(lista){
     if(p.precioUnidad) { let valUnidad = parseFloat(p.precioUnidad); if(!isNaN(valUnidad)) precioViejoHtml = `<div class="old-price">Bs. ${valUnidad.toFixed(2)}</div>`; }
 
     const tieneFoto2 = p.imagen2 ? true : false;
-    const imagenesHtml = tieneFoto2 ? `<img src="${p.imagen}" class="prod-img img-front" loading="lazy"><img src="${p.imagen2}" class="prod-img img-back" loading="lazy">` : `<img src="${p.imagen}" class="prod-img" loading="lazy">`;
+    
+    let imagenesHtml = `<img src="${p.imagen}" class="prod-img" loading="lazy">`;
+    let dotHtml = '';
+    let totalImages = 1;
+
+    if (tieneFoto2) {
+        imagenesHtml += `<img src="${p.imagen2}" class="prod-img" loading="lazy">`;
+        dotHtml = `
+            <div class="dot-container">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+            </div>`;
+        totalImages = 2;
+    }
+    
+    // Al hacer clic en el img-box, llama a toggleImage
+    const imgBoxClick = tieneFoto2 ? `onclick="toggleImage(this.closest('.card'), ${totalImages})"` : '';
+
 
     return `
     <div class="card">
       <div class="moq">Mín. ${p.moq || 6} unid.</div>
-      <div class="img-box ${tieneFoto2 ? 'has-hover' : ''}">${imagenesHtml}</div>
+      <div class="img-box" ${imgBoxClick}>
+          <div class="img-container" style="transform: translateX(0%);">
+              ${imagenesHtml}
+          </div>
+          ${dotHtml}
+      </div>
       <div class="info">
         <h3 class="title">${tituloBonito}</h3>
         <div class="ref">Ref: ${codigoBonito}</div>
