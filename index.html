@@ -100,23 +100,41 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
 .moq{ position:absolute; top:12px; right:12px; z-index:10; background:var(--accent); color:#000; border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; text-transform: uppercase; }
 
-/* --- CARRUSEL DE IMAGENES --- */
+/* --- EFECTO FLIP 3D --- */
 .img-box{ 
-    background:#fff; padding:15px; display:flex; 
-    align-items:center; justify-content:flex-start; /* Alineamos a la izquierda */
+    background:#fff; padding:15px; 
     height:220px; 
-    border-bottom:1px solid #f0f0f0; position: relative; 
-    overflow: hidden; 
+    border-bottom:1px solid #f0f0f0; 
+    position: relative; 
+    perspective: 1000px; /* Para la animación 3D */
     cursor: pointer; 
 }
-.img-container {
-    display: flex;
-    /* Ancho se define en JS (100% o 200%) */
+.flip-card-inner {
+    position: relative;
+    width: 100%;
     height: 100%;
-    transition: transform 0.3s ease-in-out; 
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
 }
+.flip-card-inner.flipped {
+    transform: rotateY(180deg);
+}
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Oculta la parte trasera por defecto */
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
 .prod-img { 
-    min-width: 100%; /* CORRECCIÓN CLAVE: La imagen individual siempre ocupa el 100% del VIEWPORT DE DESLIZAMIENTO */
     max-width: 100%;
     max-height:100%; 
     object-fit:contain; 
@@ -129,16 +147,15 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     top: 50%;
     right: 10px;
     transform: translateY(-50%);
-    color: rgba(0, 0, 0, 0.5); /* Color oscuro semi-transparente */
+    color: rgba(0, 0, 0, 0.5); 
     font-size: 1.5rem;
     z-index: 30;
-    pointer-events: none; /* Ignora clics, el clic va al img-box */
+    pointer-events: none;
     transition: color 0.3s;
 }
 .img-box:hover .indicator-arrow {
-    color: var(--accent); /* Se ilumina al pasar el mouse */
+    color: var(--accent); 
 }
-
 
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
@@ -196,40 +213,25 @@ const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c
 let todos = [];
 let catActual = 'Todo';
 
-// --- FUNCIÓN DE SLIDE (Se activa al hacer click o tap) ---
-window.nextSlide = function(cardId) {
+// --- FUNCIÓN DE FLIP CARD (Se activa al hacer click o tap) ---
+window.flipCard = function(cardId) {
     const cardElement = document.getElementById(cardId);
     if (!cardElement) return;
 
-    const imgContainer = cardElement.querySelector('.img-container');
+    const innerCard = cardElement.querySelector('.flip-card-inner');
     const indicator = cardElement.querySelector('.indicator-arrow');
     
-    // Si no hay flecha, no hacemos nada (solo 1 foto)
+    // Solo permitir flip si hay indicador (es decir, si hay imagen2)
     if (!indicator) return;
 
-    // Obtener el estado actual del transform (0% o -50%)
-    const currentTransform = imgContainer.style.transform;
-    let newTransform = '';
-    let isSecondImage = false;
-
-    if (currentTransform === 'translateX(-50%)') {
-        // Estamos en la foto 2, volvemos a la 1 (transform: translateX(0%))
-        newTransform = 'translateX(0%)';
-        isSecondImage = false;
-    } else {
-        // Estamos en la foto 1, pasamos a la 2 (transform: translateX(-50%))
-        newTransform = 'translateX(-50%)';
-        isSecondImage = true;
-    }
-
-    // Aplicar el cambio
-    imgContainer.style.transform = newTransform;
+    // Alternar la clase 'flipped'
+    innerCard.classList.toggle('flipped');
     
-    // Cambiar la flecha para indicar la dirección
-    if (isSecondImage) {
-        indicator.className = 'indicator-arrow bi bi-chevron-left'; // Flecha izquierda
+    // Cambiar el indicador
+    if (innerCard.classList.contains('flipped')) {
+        indicator.className = 'indicator-arrow bi bi-arrow-return-left'; // Icono para regresar
     } else {
-        indicator.className = 'indicator-arrow bi bi-chevron-right'; // Flecha derecha
+        indicator.className = 'indicator-arrow bi bi-chevron-right'; // Icono para avanzar
     }
 }
 
@@ -314,24 +316,27 @@ function renderProductos(lista){
     const tieneFoto2 = p.imagen2 ? true : false;
     const cardId = `card-${p.$id}`;
     
-    let imagenesHtml = `<img src="${p.imagen}" class="prod-img" loading="lazy">`;
     let indicatorHtml = '';
     let imgBoxClick = '';
-    let containerWidth = '100%';
 
     if (tieneFoto2) {
-        imagenesHtml += `<img src="${p.imagen2}" class="prod-img" loading="lazy">`;
         indicatorHtml = `<i class="indicator-arrow bi bi-chevron-right"></i>`;
-        imgBoxClick = `onclick="nextSlide('${cardId}')"`;
-        containerWidth = '200%';
+        imgBoxClick = `onclick="flipCard('${cardId}')"`;
     } 
     
     return `
     <div class="card" id="${cardId}">
       <div class="moq">Mín. ${p.moq || 6} unid.</div>
       <div class="img-box" ${imgBoxClick}>
-          <div class="img-container" style="transform: translateX(0%); width: ${containerWidth};">
-              ${imagenesHtml}
+          <div class="flip-card-inner">
+              <!-- Imagen Frontal -->
+              <div class="flip-card-front">
+                  <img src="${p.imagen}" class="prod-img" loading="lazy">
+              </div>
+              <!-- Imagen Trasera (Solo si existe p.imagen2) -->
+              <div class="flip-card-back">
+                  <img src="${p.imagen2 || p.imagen}" class="prod-img" loading="lazy">
+              </div>
           </div>
           ${indicatorHtml}
       </div>
