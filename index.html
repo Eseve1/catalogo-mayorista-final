@@ -56,7 +56,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     0% { text-shadow: 0 0 5px rgba(255,255,255,0.4); }
     100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
 }
-@keyframes dot-blink { /* NUEVA ANIMACIÓN PARA PUNTOS */
+@keyframes dot-blink { 
     0% { opacity: 1; }
     50% { opacity: 0.7; }
     100% { opacity: 1; }
@@ -66,7 +66,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 @media (max-width: 768px) {
     .header-track {
         animation-duration: 12s; 
-        font-size: 0.9rem;       
+        font-size: 0.9rem;        
         gap: 20px;
     }
 }
@@ -111,9 +111,8 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     height:220px; 
     border-bottom:1px solid #f0f0f0; 
     position: relative; 
-    perspective: 1000px; /* Para la animación 3D */
+    perspective: 1000px; 
     cursor: pointer; 
-    /* EFECTO DE ELEVACIÓN EN HOVER (PC) */
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 @media (min-width: 993px) {
@@ -138,7 +137,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     position: absolute;
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden; /* Oculta la parte trasera por defecto */
+    -webkit-backface-visibility: hidden; 
     backface-visibility: hidden;
     display: flex;
     justify-content: center;
@@ -164,7 +163,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     display: flex;
     gap: 6px;
     z-index: 15;
-    animation: dot-blink 3s infinite; /* AÑADIMOS EL PULSO A LOS PUNTOS */
+    animation: dot-blink 3s infinite; 
 }
 .dot {
     width: 8px;
@@ -186,9 +185,31 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .old-price{font-size:0.9rem; color:#999; text-decoration:line-through; margin-bottom:3px;}
 .cta{ background:#000; color:#fff; border-radius:8px; padding:8px 12px; font-weight:800; font-size:.85rem; display:inline-flex; align-items:center; gap:6px; width:100%; justify-content:center; }
 
-/* Botón WhatsApp */
+/* Botón WhatsApp Principal */
 .whatsapp{ position:fixed; right:20px; bottom:20px; z-index:100; background:#25D366; color:#fff; border-radius:50px; padding:12px 24px; font-weight:800; text-decoration:none; box-shadow:0 4px 20px rgba(37,211,102,0.4); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:1rem; }
 .whatsapp:hover{transform:scale(1.05);}
+
+/* NUEVO: Botón Grupo WhatsApp (Estilo Secundario) */
+.whatsapp-group{ 
+    position:fixed; 
+    right:20px; 
+    bottom:85px; /* Posicionado ARRIBA del botón principal */
+    z-index:100; 
+    background:#fff; 
+    color:#25D366; 
+    border:2px solid #25D366;
+    border-radius:50px; 
+    padding:8px 20px; 
+    font-weight:700; 
+    text-decoration:none; 
+    box-shadow:0 4px 10px rgba(0,0,0,0.1); 
+    display:flex; 
+    align-items:center; 
+    gap:8px; 
+    transition:transform 0.2s; 
+    font-size:0.9rem; 
+}
+.whatsapp-group:hover{transform:scale(1.05); background:#f0fff4;}
 
 @media (max-width:992px){ .sidebar{position:static; margin-bottom:20px; max-height:none;} #menu-cat{flex-direction:row; flex-wrap:wrap; overflow-y:visible;} .btn-cat{flex:1; text-align:center; white-space:nowrap;} }
 </style>
@@ -197,7 +218,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div class="header-oferta">
     <div class="header-track">
-        <!-- MENSAJE DINÁMICO FINAL -->
         <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN OFERTA! ¡APROVECHA AHORA!</div>
         <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO TOTAL!</div>
         <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN OFERTA! ¡APROVECHA AHORA!</div>
@@ -224,6 +244,12 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
   </section>
 </div>
 
+<!-- NUEVO BOTÓN PARA EL GRUPO (Enlace al chat grupal) -->
+<a class="whatsapp-group" href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank">
+    <i class="bi bi-people-fill"></i> Grupo Mayorista
+</a>
+
+<!-- Botón Original para Pedidos -->
 <a class="whatsapp" href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%a1logo%20web%20y%20quiero%20hacer%20un%20pedido." target="_blank"><i class="bi bi-whatsapp" style="font-size:1.3rem"></i> Hacer Pedido</a>
 
 
@@ -234,7 +260,7 @@ const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c
 let todos = [];
 let catActual = 'Todo';
 
-// --- FUNCIÓN DE FLIP CARD (Se activa al hacer click o tap) ---
+// --- FUNCIÓN DE FLIP CARD ---
 window.flipCard = function(cardId) {
     const cardElement = document.getElementById(cardId);
     if (!cardElement) return;
@@ -242,16 +268,13 @@ window.flipCard = function(cardId) {
     const innerCard = cardElement.querySelector('.flip-card-inner');
     const dots = cardElement.querySelectorAll('.dot');
     
-    // Solo permitir flip si la imagen 2 existe
     const imgBack = cardElement.querySelector('.flip-card-back img');
     if (!imgBack || !imgBack.src || imgBack.src.includes('undefined') || imgBack.src.includes('null')) {
         return;
     }
 
-    // Alternar la clase 'flipped'
     innerCard.classList.toggle('flipped');
     
-    // Actualizar el estado de los puntos
     const isFlipped = innerCard.classList.contains('flipped');
     if (dots.length > 0) {
         dots[0].classList.remove('active');
@@ -358,11 +381,9 @@ function renderProductos(lista){
       <div class="moq">Mín. ${p.moq || 6} unid.</div>
       <div class="img-box" ${imgBoxClick}>
           <div class="flip-card-inner">
-              <!-- Imagen Frontal -->
               <div class="flip-card-front">
                   <img src="${p.imagen}" class="prod-img" loading="lazy">
               </div>
-              <!-- Imagen Trasera (Solo si existe p.imagen2) -->
               <div class="flip-card-back">
                   <img src="${p.imagen2 || p.imagen}" class="prod-img" loading="lazy">
               </div>
