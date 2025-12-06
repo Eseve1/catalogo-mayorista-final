@@ -1,424 +1,359 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Ale Importadora</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Admin Panel - Ale Importadora</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<style>
+:root{ --bg:#f6f8fb; --text:#111; --accent:#FFB800; --accent-dark:#e0a200; --danger:#ff4d4d; }
+*{box-sizing:border-box}
+body{background:var(--bg);font-family:Inter,sans-serif;color:var(--text);margin:0;padding:20px;}
 
-  <style>
-    :root { --primary: #FFB800; --bg: #f4f4f5; --card: #ffffff; --text: #18181b; --border-radius: 12px; }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { 
-        font-family: 'Poppins', sans-serif; 
-        background: var(--bg); 
-        color: var(--text); 
-        margin: 0; 
-        padding: 20px; 
-        min-height: 100vh; 
-    }
+.container{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+@media (max-width:900px){ .container{grid-template-columns:1fr} }
 
-    #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; padding: 20px; }
-    #loginScreen input { padding: 15px; border-radius: 10px; border: none; font-size: 1.2rem; text-align: center; margin-top: 20px; width: 200px; }
-    #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
-    #appContent { display: none; }
+.card{ background:#fff; padding:30px; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+h2{ margin-top:0; text-align:center; font-weight:900; }
 
-    /* ESTILO PARA LAYOUT DE ESCRITORIO */
-    .admin-layout {
-        max-width: 1200px; 
-        margin: 0 auto;
-        display: block;
-    }
-    @media (min-width: 900px) { 
-        .admin-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr; 
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-    }
-    
-    .container { 
-        max-width: 600px; margin: 0 auto 30px; 
-        background: var(--card); padding: 30px; 
-        border-radius: var(--border-radius); 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-    }
-    @media (min-width: 900px) { 
-        .container { 
-            max-width: none; 
-            margin: 0; 
-        } 
-        /* HACEMOS EL FORMULARIO FIJO EN LA COLUMNA DE LA IZQUIERDA */
-        .container:first-child {
-            position: sticky;
-            top: 20px;
-            max-height: calc(100vh - 40px); /* Altura máxima para que quepa en la ventana */
-            overflow-y: auto; /* Permite scroll solo en el formulario si es muy largo */
-        }
-    }
-    
-    h2 { margin-top: 0; text-align: center; font-size: 1.4rem; color: #111; font-weight: 800; margin-bottom: 25px; }
+/* FORMULARIO */
+.form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+.full{ grid-column:1/-1; }
+label{ display:block; margin-bottom:5px; font-weight:700; font-size:0.9rem; color:#555; }
+input{ width:100%; padding:10px; border:2px solid #eee; border-radius:8px; font-size:1rem; transition:0.2s; outline:none; }
+input:focus{ border-color:var(--accent); }
 
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin: 0 0 6px; font-weight: 600; font-size: 0.85rem; color: #555; }
-    input[type="text"], input[type="number"] { width: 100%; padding: 12px 15px; border: 2px solid #f0f0f0; border-radius: 10px; font-size: 0.95rem; transition: 0.2s; background: #fafafa; }
-    input:focus { outline: none; border-color: var(--primary); background: #fff; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
-    .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
-    .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
+/* FOTOS */
+.photo-area{ display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px; }
+.photo-box{ 
+    border:2px dashed #ddd; border-radius:10px; height:150px; 
+    display:flex; flex-direction:column; align-items:center; justify-content:center; 
+    cursor:pointer; color:#aaa; transition:0.2s; position:relative; overflow:hidden;
+}
+.photo-box:hover{ border-color:var(--accent); color:var(--accent-dark); background:#fffdf5; }
+.photo-box img{ width:100%; height:100%; object-fit:contain; position:absolute; top:0; left:0; }
+.photo-box.has-img i, .photo-box.has-img span { display:none; } /* Ocultar icono si hay foto */
 
-    .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-    .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 15px; text-align: center; position: relative; background: #fafafa; height: 180px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-    .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
-    
-    .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-    .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
-    
-    /* ESTILOS LISTA */
-    .product-item { 
-        display: flex; align-items: center; gap: 15px; padding: 12px; 
-        background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; 
-        margin-bottom: 10px; position: relative; transition: 0.3s;
-    }
-    .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15); }
-    .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
-    .product-item.agotado .prod-title { color: #9ca3af; text-decoration: line-through; }
-    .product-item.agotado .prod-img { filter: grayscale(100%); opacity: 0.5; }
-    
-    .prod-img { 
-        width: 50px; height: 50px; border-radius: 8px; 
-        object-fit: cover; background: #eee; 
-        cursor: pointer; 
-    }
-    .prod-info { flex: 1; }
-    .prod-title { font-weight: 700; margin: 0 0 2px; font-size: 0.95rem; }
-    .prod-sub { font-size: 0.8rem; color: #666; }
-    .actions { display: flex; gap: 6px; }
-    .btn-icon { width: 38px; height: 38px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
-    .btn-edit { background: #eff6ff; color: #3b82f6; } 
-    .btn-del { background: #fff5f5; color: #ef4444; }  
-    .btn-power { background: #f0fdf4; color: #166534; } 
-    .btn-power.off { background: #f3f4f6; color: #9ca3af; } 
-    #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
-    .success { background: #dcfce7; color: #166534; }
-    .error { background: #fee2f2; color: #991b1b; }
-    
-    .empty-state { text-align: center; padding: 40px 20px; color: #9ca3af; }
-    .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5; }
+.btn-save{ 
+    background:var(--accent); color:#000; border:none; padding:15px; 
+    width:100%; border-radius:10px; font-weight:900; font-size:1.1rem; 
+    cursor:pointer; margin-top:20px; transition:0.2s; 
+}
+.btn-save:hover{ background:var(--accent-dark); transform:translateY(-2px); }
 
-    /* --- VISTA PREVIA FLOTANTE (TOOLTIP) --- */
-    .magnifier-popup {
-        display: none;
-        position: absolute;
-        top: 0;
-        left: 100%; 
-        z-index: 50; 
-        padding-left: 10px; 
-        pointer-events: none; 
-        opacity: 0;
-        transition: opacity 0.2s ease-in-out;
-    }
-    .magnifier-popup img {
-        width: 250px; 
-        height: auto;
-        border-radius: 12px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        background: #fff;
-        padding: 5px;
-    }
+/* LISTA Y BUSCADOR */
+.search-box{ display:flex; gap:10px; margin-bottom:20px; }
+.search-box input{ border-radius:8px; }
+.btn-search{ background:#000; color:#fff; border:none; border-radius:8px; width:50px; cursor:pointer; }
 
-    .product-item:hover .magnifier-popup {
-        display: block;
-        opacity: 1;
-    }
-    
-    @media (max-width: 900px) {
-        .magnifier-popup { display: none !important; }
-    }
+.item-list{ display:flex; flex-direction:column; gap:10px; max-height:600px; overflow-y:auto; }
+.item{ display:flex; gap:12px; background:#fff; border:1px solid #eee; padding:10px; border-radius:10px; align-items:center; }
+.item img{ width:50px; height:50px; object-fit:cover; border-radius:6px; background:#f0f0f0; }
+.item-info{ flex:1; }
+.item-title{ font-weight:700; font-size:0.95rem; }
+.item-sub{ font-size:0.8rem; color:#888; }
+.actions{ display:flex; gap:8px; }
+.btn-act{ border:none; width:32px; height:32px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.edit{ background:#eef2ff; color:#4f46e5; }
+.del{ background:#fff1f2; color:#e11d48; }
 
-  </style>
+/* LOADING */
+#loadingOverlay {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(255,255,255,0.8); z-index:999;
+    display:none; justify-content:center; align-items:center;
+    font-weight:bold; font-size:1.5rem;
+}
+</style>
 </head>
 <body>
 
-  <datalist id="listaCategorias">
-      <option value="Hogar y Cocina">
-      <option value="Moda y Equipaje">
-      <option value="Belleza y Salud">
-      <option value="Tecnología">
-      <option value="Herramientas">
-      <option value="Oficina y Escolar">
-      <option value="Infantil">
-  </datalist>
+<div id="loadingOverlay">Procesando...</div>
 
-  <div id="loginScreen">
-    <i class="bi bi-shield-lock-fill" style="font-size: 3rem; color: var(--primary);"></i>
-    <h3>Acceso Admin</h3>
-    <input type="password" id="passInput">
-    <button onclick="checkPass()">Entrar</button>
-    <p id="loginError" style="color: #ff6b6b; display: none;">Contraseña incorrecta</p>
-  </div>
-
-  <div id="appContent">
-    
-    <!-- WRAPPER DE LAYOUT -->
-    <div class="admin-layout">
-        
-        <!-- COLUMNA 1: FORMULARIO (AHORA FIJO EN PC) -->
-        <div class="container">
-          <h2 id="formTitle">Nuevo Producto</h2>
-          <form id="productForm">
+<div class="container">
+    <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+    <div class="card">
+        <h2>Nuevo Producto</h2>
+        <form id="prodForm" onsubmit="event.preventDefault(); guardar();">
             <input type="hidden" id="editId">
-            <input type="hidden" id="oldImg1">
-            <input type="hidden" id="oldImg2">
-            <input type="hidden" id="currentStockStatus" value="true">
             
-            <div class="form-group">
-                <label>Nombre / Descripción</label>
-                <input type="text" id="name" required>
+            <div class="form-grid">
+                <div class="full">
+                    <label>Nombre / Descripción</label>
+                    <input id="desc" required placeholder="Ej: Plancha de Cabello Nano Titanium">
+                </div>
+                
+                <div>
+                    <label>Categoría (Grande)</label>
+                    <input id="cat" required placeholder="Ej: Belleza y salud">
+                </div>
+                <div>
+                    <label>Tipo (Detalle)</label>
+                    <input id="tipo" placeholder="Ej: Planchas">
+                </div>
+                
+                <div>
+                    <label>Código</label>
+                    <input id="code" required placeholder="Ej: JH05">
+                </div>
+                <div>
+                    <label>MOQ</label>
+                    <input id="moq" type="number" value="6" placeholder="Mínimo">
+                </div>
+                
+                <div>
+                    <label>P. Unidad (Opcional)</label>
+                    <input id="punit" type="number" step="0.01">
+                </div>
+                <div>
+                    <label>Precio Mayor (Bs)</label>
+                    <input id="pmayor" required type="number" step="0.01">
+                </div>
             </div>
 
-            <div class="row">
-              <div class="form-group">
-                  <label>Categoría (Grande)</label>
-                  <input type="text" id="cat" list="listaCategorias" required>
-              </div>
-              <div class="form-group">
-                  <label>Tipo (Detalle)</label>
-                  <input type="text" id="type">
-              </div>
+            <div class="photo-area">
+                <!-- Foto 1 -->
+                <div class="photo-box" id="box1" onclick="document.getElementById('file1').click()">
+                    <i class="bi bi-camera-fill" style="font-size:2rem; margin-bottom:5px;"></i>
+                    <span>Principal</span>
+                    <img id="preview1" style="display:none">
+                </div>
+                <input type="file" id="file1" hidden accept="image/*" onchange="preview(this, 'preview1', 'box1')">
+
+                <!-- Foto 2 -->
+                <div class="photo-box" id="box2" onclick="document.getElementById('file2').click()">
+                    <i class="bi bi-camera-fill" style="font-size:2rem; margin-bottom:5px;"></i>
+                    <span>Secundaria</span>
+                    <img id="preview2" style="display:none">
+                </div>
+                <input type="file" id="file2" hidden accept="image/*" onchange="preview(this, 'preview2', 'box2')">
             </div>
 
-            <div class="row">
-              <div class="form-group"><label>Código</label><input type="text" id="code" required></div>
-              <div class="form-group"><label>MOQ</label><input type="number" id="moq" required></div>
-            </div>
-            
-            <div class="row">
-              <div class="form-group">
-                  <label>P. Unidad (Opcional)</label>
-                  <input type="number" id="priceUnit" step="0.01">
-              </div>
-              <div class="form-group"><label>Precio Mayor (Bs)</label><input type="number" id="price" step="0.01" required></div>
-            </div>
-            
-            <div class="photos-grid">
-                <div><div class="photo-label">Foto Principal</div><div class="photo-area" id="dropZone1"><img id="previewImg1"><i class="bi bi-camera-fill" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)"><p>Principal</p></div></div>
-                <div><div class="photo-label">Foto 2 (Opcional)</div><div class="photo-area" id="dropZone2"><img id="previewImg2"><i class="bi bi-camera" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)"><p>Secundaria</p></div></div>
-            </div>
-            
-            <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
-            <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Cancelar Edición</button>
-            <div id="msg"></div>
-          </form>
+            <button class="btn-save" type="submit">Guardar Producto</button>
+            <button type="button" onclick="limpiar()" style="background:transparent; border:none; width:100%; color:#888; margin-top:10px; cursor:pointer;">Cancelar / Limpiar</button>
+        </form>
+    </div>
+
+    <!-- COLUMNA DERECHA: LISTADO -->
+    <div class="card">
+        <h2>Buscador</h2>
+        <div class="search-box">
+            <input id="searcher" placeholder="Buscar por nombre o código..." style="flex:1">
+            <button class="btn-search"><i class="bi bi-search"></i></button>
         </div>
-
-        <!-- COLUMNA 2: BUSCADOR Y LISTA (SCROLLABLE) -->
-        <div class="container">
-          <h2>Buscador</h2>
-          <div class="search-box">
-            <input type="text" id="search">
-            <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
-          </div>
-          <div id="list">
-              <div class="empty-state">
-                  <i class="bi bi-search"></i>
-                  <p>La lista está vacía.</p>
-                  <p style="font-size:0.9rem">Usa el buscador.</p>
-              </div>
-          </div>
+        
+        <div id="listado" class="item-list">
+            <div style="text-align:center; color:#999; padding:20px;">Cargando productos...</div>
         </div>
-        
-    </div> 
-  </div>
+    </div>
+</div>
 
+<script type="module">
+import { Client, Databases, Storage, ID, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
 
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+// CREDENCIALES
+const PROJECT_ID = '692ee6b70012153cd33c'; 
+const DATABASE_ID = '692ee774002e9a3c8601'; 
+const COLLECTION_ID = 'catalogo';
+const BUCKET_ID = '67a284690020d202d088'; // Asumiendo que usas un bucket de storage, si no tienes el ID a mano, avísame. Si usas URLs externas, esto cambia.
 
-  <script>
-    const PASS = "eddy4242"; const PROJECT_ID = "692ee6b70012153cd33c"; const DATABASE_ID = "692ee774002e9a3c8601"; const COLLECTION_ID = "catalogo"; const BUCKET_ID = "692ef19e001ffa75d062";
-    const client = new Appwrite.Client().setEndpoint("https://fra.cloud.appwrite.io/v1").setProject(PROJECT_ID);
-    const db = new Appwrite.Databases(client); const storage = new Appwrite.Storage(client);
+// INICIALIZAR
+const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject(PROJECT_ID);
+const db = new Databases(client);
+const storage = new Storage(client);
 
-    function setupDragDrop(zoneId, inputId, previewNum) {
-        const zone = document.getElementById(zoneId); const input = document.getElementById(inputId);
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false));
-        ['dragenter', 'dragover'].forEach(evt => zone.classList.add('dragover')); ['dragleave', 'drop'].forEach(evt => zone.classList.remove('dragover'));
-        zone.addEventListener('drop', e => { input.files = e.dataTransfer.files; previewFile(previewNum); });
-        zone.addEventListener('click', () => input.click());
-    }
-    setupDragDrop('dropZone1', 'file1', 1); setupDragDrop('dropZone2', 'file2', 2);
+let productos = [];
+let img1File = null;
+let img2File = null;
 
-    function checkPass() { if(document.getElementById('passInput').value === PASS) { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appContent').style.display = 'block'; } else { document.getElementById('loginError').style.display = 'block'; } }
-    
-    function previewFile(num) {
-      const file = document.getElementById('file' + num).files[0]; const img = document.getElementById('previewImg' + num);
-      if (file) { const reader = new FileReader(); reader.onload = function(e) { img.src = e.target.result; img.style.display = 'block'; document.getElementById('dropZone' + num).querySelector('i').style.display = 'none'; document.getElementById('dropZone' + num).querySelector('p').style.display = 'none'; }; reader.readAsDataURL(file); }
-    }
+// --- FUNCIONES GLOBALES ---
 
-    async function uploadPhoto(fileInput) {
-        if(fileInput.files && fileInput.files.length > 0) {
-            const originalFile = fileInput.files[0]; const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
-            let compressedBlob = await imageCompression(originalFile, options);
-            const fileToSend = new File([compressedBlob], originalFile.name, { type: originalFile.type });
-            const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileToSend);
-            return `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
-        } return null;
-    }
-    
-    document.getElementById('productForm').addEventListener('submit', async (e) => {
-      e.preventDefault(); const id = document.getElementById('editId').value; const btn = document.getElementById('btnSave'); const msg = document.getElementById('msg');
-      btn.disabled = true; btn.innerText = "Procesando..."; msg.style.display = 'none';
-      try {
-        let finalUrl1 = document.getElementById('oldImg1').value; let finalUrl2 = document.getElementById('oldImg2').value;
-        const newUrl1 = await uploadPhoto(document.getElementById('file1')); if(newUrl1) finalUrl1 = newUrl1;
-        const newUrl2 = await uploadPhoto(document.getElementById('file2')); if(newUrl2) finalUrl2 = newUrl2;
-        if(!finalUrl1) throw new Error("La foto principal es obligatoria");
-        
-        const data = {
-          descripcion: document.getElementById('name').value, 
-          codigo: document.getElementById('code').value, 
-          categoria: document.getElementById('cat').value,
-          tipo: document.getElementById('type').value, 
-          preciopormayor: Number(document.getElementById('price').value), 
-          precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
-          moq: Number(document.getElementById('moq').value), 
-          imagen: finalUrl1, imagen2: finalUrl2, 
-          disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
-        };
-
-        if(id) { 
-            await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); 
-            msg.innerText = "✅ Actualizado";
-            const q = document.getElementById('search').value.toLowerCase().trim();
-            if(q) { 
-                const card = document.getElementById('card-' + id);
-                if(card) { card.style.opacity = "0"; setTimeout(() => card.remove(), 500); }
-            }
-        } 
-        else { await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); msg.innerText = "✅ Guardado"; }
-        msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
-        resetForm(); 
-        if(document.getElementById('search').value) doSearch(); 
-      } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
-    });
-
-    async function doSearch() {
-      const q = document.getElementById('search').value.toLowerCase().trim(); 
-      const list = document.getElementById('list'); 
-      if(!q) { list.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>La lista está vacía.</p><p style="font-size:0.9rem">Usa el buscador.</p></div>'; return; }
-      list.innerHTML = '<p style="text-align:center; color:#999">Buscando...</p>';
-      try {
-        const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
-        let docs = res.documents; let hits = [];
-        
-        if (q === "error" || q === "sin precio") {
-            hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
-            if(hits.length === 0) list.innerHTML = '<p style="text-align:center; color:#166534">✅ ¡Limpio! No hay errores!</p>';
-        } else { 
-            hits = docs.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)) || (d.tipo && d.tipo.toLowerCase().includes(q)));
+window.preview = function(input, imgId, boxId){
+    if(input.files && input.files[0]){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const img = document.getElementById(imgId);
+            img.src = e.target.result;
+            img.style.display = 'block';
+            document.getElementById(boxId).classList.add('has-img');
         }
+        reader.readAsDataURL(input.files[0]);
+        if(imgId === 'preview1') img1File = input.files[0];
+        if(imgId === 'preview2') img2File = input.files[0];
+    }
+}
 
-        if(hits.length > 0) list.innerHTML = ''; 
-        else if(q !== "error") list.innerHTML = '<p style="text-align:center; color:#999">Sin resultados para "'+q+'"</p>';
+window.limpiar = function(){
+    document.getElementById('prodForm').reset();
+    document.getElementById('editId').value = '';
+    document.getElementById('preview1').src = ''; document.getElementById('preview1').style.display='none';
+    document.getElementById('preview2').src = ''; document.getElementById('preview2').style.display='none';
+    document.getElementById('box1').classList.remove('has-img');
+    document.getElementById('box2').classList.remove('has-img');
+    img1File = null; img2File = null;
+    document.querySelector('.btn-save').textContent = 'Guardar Producto';
+}
 
-        hits.forEach(d => {
-          const enStock = (d.disponible === undefined) ? true : d.disponible;
-          const tieneError = !d.preciopormayor || d.preciopormayor === 0;
-          let claseExtra = ""; let alertaHtml = "";
-          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span style="color:#ef4444; font-weight:800; font-size:0.8rem; display:block;">⚠️ SIN PRECIO</span>'; } else if(!enStock) { claseExtra = " agotado"; }
-          
-          const div = document.createElement('div'); 
-          div.className = 'product-item' + claseExtra; 
-          div.id = 'card-' + d.$id;
-          const precioMostrar = tieneError ? "0.00" : d.preciopormayor;
-          const tipoMostrar = d.tipo ? `<span style="background:#eee; padding:2px 6px; border-radius:4px; font-size:0.75rem">${d.tipo}</span>` : '';
+window.cargar = async function(){
+    try {
+        // AQUÍ ESTÁ EL ARREGLO: Limit 5000
+        const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [
+            Query.limit(5000), 
+            Query.orderDesc('$createdAt')
+        ]);
+        productos = res.documents;
+        render(productos);
+    } catch(e){
+        alert("Error cargando: " + e.message);
+    }
+}
 
-          // INYECTAMOS EL HTML DE LA IMAGEN Y EL POPUP FLOTANTE (TOOLTIP)
-          const itemHtml = `
-            <img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
-            <div class="magnifier-popup">
-                <img src="${d.imagen || 'https://via.placeholder.com/250'}" alt="Preview Ampliada">
-            </div>
-            <div class="prod-info">
-                <div class="prod-title">${d.descripcion}</div>
-                <div class="prod-sub">${d.codigo} | Bs. ${precioMostrar} ${tipoMostrar}</div>
-                ${alertaHtml}
+function render(lista){
+    const div = document.getElementById('listado');
+    if(lista.length === 0) { div.innerHTML = '<div style="text-align:center; padding:20px; color:#aaa">No se encontraron productos</div>'; return; }
+    
+    div.innerHTML = lista.map(p => `
+        <div class="item">
+            <img src="${p.imagen}">
+            <div class="item-info">
+                <div class="item-title">${p.descripcion}</div>
+                <div class="item-sub">${p.codigo} | ${p.categoria} | Bs. ${p.preciopormayor}</div>
             </div>
             <div class="actions">
-                <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
-                <button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button>
-                <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
-            </div>`;
-          div.innerHTML = itemHtml;
-          list.appendChild(div);
-        });
-      } catch(e) { alert(e.message); }
-    }
+                <button class="btn-act edit" onclick="editar('${p.$id}')"><i class="bi bi-pencil-fill"></i></button>
+                <button class="btn-act del" onclick="borrar('${p.$id}')"><i class="bi bi-trash-fill"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
 
-    async function toggleStock(docId, currentState, btn) {
-      const newState = !currentState; const card = document.getElementById('card-' + docId); const originalIcon = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true;
-      try { await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState }); btn.innerHTML = '<i class="bi bi-power"></i>'; btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; if(newState) card.classList.remove('agotado'); else card.classList.add('agotado'); btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); } catch (err) { alert(err.message); btn.innerHTML = originalIcon; } finally { btn.disabled = false; }
-    }
-    
-    window.delItem = async function(id) { 
-        if(!confirm("¿Borrar?")) return; 
-        try { 
-            await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); 
-            document.getElementById('card-'+id).remove();
-            doSearch();
-        } catch(e) { 
-            alert(e.message); 
-        } 
-    }
-    
-    window.editItem = function(d) {
-      document.getElementById('editId').value = d.$id; 
-      document.getElementById('name').value = d.descripcion; 
-      document.getElementById('code').value = d.codigo; 
-      document.getElementById('cat').value = d.categoria;
-      document.getElementById('type').value = d.tipo || ''; 
-      
-      document.getElementById('price').value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
-      document.getElementById('priceUnit').value = d.precioUnidad || ''; 
-      document.getElementById('moq').value = d.moq || 6;
-      document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
-      
-      document.getElementById('oldImg1').value = d.imagen || ""; 
-      if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; document.getElementById('dropZone1').querySelector('p').style.display = 'none'; }
-      
-      document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i'); const txt2 = document.getElementById('dropZone2').querySelector('p');
-      if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; icon2.style.display = 'none'; txt2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; icon2.style.display = 'block'; txt2.style.display = 'block'; }
-      
-      // La solución de posición fija hace innecesario este scroll
-      // document.getElementById('formTitle').innerText = "Editando: " + d.codigo; 
-      // window.scrollTo({top:0, behavior:'smooth'}); 
-
-      document.getElementById('formTitle').innerText = "Editando: " + d.codigo; 
-      document.getElementById('btnSave').innerText = "Actualizar"; 
-      document.getElementById('btnSave').style.background = "#2563eb"; 
-      document.getElementById('btnCancel').style.display = "block";
-    }
-    
-    window.resetForm = function() {
-      document.getElementById('productForm').reset(); document.getElementById('editId').value = ""; document.getElementById('oldImg1').value = ""; document.getElementById('oldImg2').value = ""; document.getElementById('file1').value = ""; document.getElementById('file2').value = ""; 
-      ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; document.getElementById('dropZone'+n).querySelector('p').style.display = 'block'; });
-      document.getElementById('formTitle').innerText = "Nuevo Producto"; document.getElementById('btnSave').innerText = "Guardar Producto"; document.getElementById('btnSave').style.background = "#FFB800"; document.getElementById('btnCancel').style.display = "none";
-    }
-
-    document.getElementById('name').addEventListener('blur', function(e) {
-        const nombre = e.target.value.trim();
-        const campoTipo = document.getElementById('type');
-        if(nombre.length > 0 && campoTipo.value === '') {
-            const primeraPalabra = nombre.split(' ')[0];
-            if(primeraPalabra.length > 2) {
-                campoTipo.value = primeraPalabra.charAt(0).toUpperCase() + primeraPalabra.slice(1).toLowerCase();
-            }
-        }
+// BÚSQUEDA INTELIGENTE
+document.getElementById('searcher').addEventListener('input', (e)=>{
+    const txt = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const filtrados = productos.filter(p => {
+        const desc = (p.descripcion || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const cod = (p.codigo || '').toLowerCase();
+        return desc.includes(txt) || cod.includes(txt);
     });
-  </script>
+    render(filtrados);
+});
+
+// SUBIR IMAGEN (Helper)
+async function subirFoto(file){
+    if(!file) return null;
+    try {
+        const res = await storage.createFile(BUCKET_ID, ID.unique(), file);
+        // Construir URL pública
+        return `https://fra.cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${res.$id}/view?project=${PROJECT_ID}`;
+    } catch(e) { console.error(e); return null; }
+}
+
+window.guardar = async function(){
+    const id = document.getElementById('editId').value;
+    const desc = document.getElementById('desc').value;
+    const cat = document.getElementById('cat').value;
+    const tipo = document.getElementById('tipo').value;
+    const code = document.getElementById('code').value;
+    const moq = document.getElementById('moq').value;
+    const punit = document.getElementById('punit').value;
+    const pmayor = document.getElementById('pmayor').value;
+
+    if(!desc || !pmayor){ alert("Faltan datos obligatorios"); return; }
+    
+    document.getElementById('loadingOverlay').style.display = 'flex';
+
+    try {
+        let url1 = null; 
+        let url2 = null;
+
+        // Si hay archivos nuevos, subirlos
+        if(img1File) url1 = await subirFoto(img1File);
+        if(img2File) url2 = await subirFoto(img2File);
+
+        const data = {
+            descripcion: desc,
+            categoria: cat,
+            tipo: tipo,
+            codigo: code,
+            moq: moq,
+            precioUnidad: parseFloat(punit || 0),
+            preciopormayor: parseFloat(pmayor),
+            disponible: true
+        };
+
+        // Si se subieron nuevas fotos, actualizamos los campos. Si no, mantenemos lo que había (en caso de edición)
+        // NOTA: En Appwrite, si mandas el campo, lo sobrescribe. 
+        // En creación: necesitamos URL. En edición: si url1 es null, no enviamos el campo para no borrar la anterior.
+        
+        if(id){
+            // MODO EDICIÓN
+            if(url1) data.imagen = url1;
+            if(url2) data.imagen2 = url2;
+            await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data);
+            alert("¡Producto actualizado!");
+        } else {
+            // MODO CREACIÓN
+            // Aquí asumo que usas URL. Si no hay foto, ponemos una placeholder o string vacío
+            data.imagen = url1 || 'https://via.placeholder.com/300?text=Sin+Foto';
+            if(url2) data.imagen2 = url2;
+            await db.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), data);
+            alert("¡Producto creado!");
+        }
+
+        limpiar();
+        cargar(); // Recargar lista
+
+    } catch(e){
+        alert("Error al guardar: " + e.message);
+    } finally {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+}
+
+window.editar = function(id){
+    const p = productos.find(x => x.$id === id);
+    if(!p) return;
+
+    document.getElementById('editId').value = p.$id;
+    document.getElementById('desc').value = p.descripcion;
+    document.getElementById('cat').value = p.categoria;
+    document.getElementById('tipo').value = p.tipo || '';
+    document.getElementById('code').value = p.codigo;
+    document.getElementById('moq').value = p.moq;
+    document.getElementById('punit').value = p.precioUnidad;
+    document.getElementById('pmayor').value = p.preciopormayor;
+    
+    // Mostrar previews
+    const prev1 = document.getElementById('preview1');
+    prev1.src = p.imagen; prev1.style.display = 'block';
+    document.getElementById('box1').classList.add('has-img');
+
+    if(p.imagen2){
+        const prev2 = document.getElementById('preview2');
+        prev2.src = p.imagen2; prev2.style.display = 'block';
+        document.getElementById('box2').classList.add('has-img');
+    }
+
+    document.querySelector('.btn-save').textContent = 'Actualizar Producto';
+    
+    // Scroll arriba
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+window.borrar = async function(id){
+    if(!confirm("¿Seguro que quieres eliminar este producto?")) return;
+    try {
+        await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, { disponible: false }); // Soft delete o borrar real:
+        // await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); // Borrado real
+        alert("Eliminado");
+        cargar();
+    } catch(e){ alert(e.message); }
+}
+
+// Iniciar
+cargar();
+
+</script>
 </body>
 </html>
