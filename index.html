@@ -91,23 +91,21 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     font-size: 0.85rem; color: #555; font-weight: 600;
     display: flex; align-items: center; gap: 5px;
 }
-.moq-row i { color: var(--accent-dark); }
+.moq-row i { color: #CC0000; }
 
-/* BOTÓN COTIZAR (DEGRADADO VERDE - BONITO) */
+/* BOTÓN COTIZAR (ROJO OSCURO / ELEGANTE) */
 .cta{ 
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    background: #b91c1c; /* Rojo oscuro para combinar con header */
     color:#fff; border-radius:8px; padding:12px; 
-    font-weight:800; font-size:.9rem; display:flex; align-items:center; gap:8px; 
+    font-weight:800; font-size:.85rem; display:flex; align-items:center; gap:8px; 
     width:100%; justify-content:center; text-decoration:none; 
-    transition: 0.3s; box-shadow: 0 4px 15px rgba(37,211,102,0.3); 
+    transition: 0.3s; box-shadow: 0 4px 15px rgba(185, 28, 28, 0.3); 
     margin-top: 12px;
 }
-.cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,0.5); }
-.cta i { color: #fff; font-size: 1.2rem; }
+.cta:hover { transform: translateY(-2px); background: #991b1b; box-shadow: 0 6px 20px rgba(185, 28, 28, 0.5); }
+.cta i { color: #fff; font-size: 1.1rem; }
 
-.whatsapp{ position:fixed; right:20px; bottom:20px; z-index:100; background:#25D366; color:#fff; border-radius:50px; padding:12px 24px; font-weight:800; text-decoration:none; box-shadow:0 4px 20px rgba(37,211,102,0.4); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:1rem; }
-.whatsapp:hover{transform:scale(1.05);}
-.whatsapp-group{ position:fixed; right:20px; bottom:85px; z-index:100; background:#fff; color:#25D366; border:2px solid #25D366; border-radius:50px; padding:8px 20px; font-weight:700; text-decoration:none; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:0.9rem; }
+.whatsapp-group{ position:fixed; right:20px; bottom:20px; z-index:100; background:#fff; color:#25D366; border:2px solid #25D366; border-radius:50px; padding:8px 20px; font-weight:700; text-decoration:none; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:0.9rem; }
 .whatsapp-group:hover{transform:scale(1.05); background:#f0fff4;}
 
 .main-footer { max-width:1600px; margin:0 auto; padding: 30px 20px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -154,7 +152,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">&times;</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
 <a class="whatsapp-group" href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank"><i class="bi bi-people-fill"></i> Grupo Mayorista</a>
-<a class="whatsapp" href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido." target="_blank"><i class="bi bi-whatsapp" style="font-size:1.3rem"></i> Hacer Pedido</a>
 
 <script type="module">
 import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
@@ -229,7 +226,7 @@ function renderProductos(lista){
             
             <!-- MOQ Y MAYOR OCULTO -->
             <div class="moq-row">
-                <i class="bi bi-box-seam"></i> Venta Mínima: ${p.moq || 6} Unidades
+                <i class="bi bi-box-seam"></i> Venta Mínima: ${p.moq || 6} Unidades O mas x mayor
             </div>
         </div>
 
