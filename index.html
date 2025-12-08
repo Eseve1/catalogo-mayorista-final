@@ -12,7 +12,7 @@
 html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
-/* --- HEADER ROJO Y MARQUESINA --- */
+/* --- HEADER ROJO --- */
 .header-oferta{ 
     width:100%; background:#CC0000; color:#fff; border-bottom:2px solid #8e0000; 
     box-shadow:0 2px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; 
@@ -28,7 +28,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 @keyframes header-pulse { from { background-color: #CC0000; } to { background-color: #E00000; } }
 @keyframes text-pulse { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.4); } 100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); } }
-@keyframes dot-blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+@keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(5deg); } 50% { transform: rotate(0eg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0deg); } }
 
 @media (max-width: 768px) { .header-track { animation-duration: 12s; font-size: 0.9rem; gap: 20px; } }
 
@@ -61,161 +61,181 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
 .moq{ position:absolute; top:12px; right:12px; z-index:10; background:var(--accent); color:#000; border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; text-transform: uppercase; pointer-events: none; }
 
-/* --- CARRUSEL DESLIZABLE (SWIPE) --- */
-.img-box { 
-    background:#fff; padding:0; height:220px; border-bottom:1px solid #f0f0f0; 
-    position: relative; overflow: hidden;
-}
-.img-slider {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    height: 100%;
-    width: 100%;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE 10+ */
-}
-.img-slider::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
-
-.slide {
-    min-width: 100%;
-    height: 100%;
-    scroll-snap-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
+/* ETIQUETA DESCUENTO */
+.badge-promo {
+    position: absolute; top: 12px; left: 12px; z-index: 10;
+    background: #16a34a; color: #fff;
+    padding: 4px 8px; border-radius: 6px;
+    font-weight: 900; font-size: 0.8rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: shake 3s infinite;
 }
 
+.img-box { background:#fff; padding:0; height:220px; border-bottom:1px solid #f0f0f0; position: relative; overflow: hidden; }
+.img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
+.img-slider::-webkit-scrollbar { display: none; }
+.slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 15px; }
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); cursor: zoom-in; }
 
-/* MODAL DE ZOOM (LIGHTBOX) */
-#zoomModal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9); z-index: 9999;
-    display: none; justify-content: center; align-items: center;
-    opacity: 0; transition: opacity 0.3s;
-}
+#zoomModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
 #zoomModal.open { display: flex; opacity: 1; }
 #zoomImg { max-width: 90%; max-height: 90vh; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s; }
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
 
-/* INDICADORES DE PUNTOS */
-.dot-container { 
-    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); 
-    display: flex; gap: 6px; z-index: 15; 
-}
+.dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
 .dot { width: 8px; height: 8px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: background-color 0.3s; }
 .dot.active { background-color: var(--accent); box-shadow: 0 0 5px var(--accent); }
 
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
 .ref{font-size:.85rem; color:#888; font-weight:600; margin-bottom:12px;}
-.prices{display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
-.price{font-weight:900; font-size:1.25rem; color:#111;}
-.old-price{font-size:0.9rem; color:#999; text-decoration:line-through; margin-bottom:3px;}
-.cta{ background:#000; color:#fff; border-radius:8px; padding:8px 12px; font-weight:800; font-size:.85rem; display:inline-flex; align-items:center; gap:6px; width:100%; justify-content:center; }
+
+.prices-container { background: #fff; padding: 0; margin-bottom: 15px; }
+.price-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+.price-row.unit { color: #555; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #eee; }
+.price-row.mayor { color: #111; margin-top: 2px; align-items: baseline; }
+
+.price-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #555; }
+.price-val { font-weight: 800; font-size: 1.1rem; }
+/* Estilo del MOQ dinámico al costado */
+.moq-tag { font-size: 0.75rem; color: #666; font-weight: 500; margin-left: 5px; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; }
+
+.price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 5px; }
+.price-new { color: #16a34a; font-weight: 900; font-size: 1rem; }
+.price-mayor-val { color: #cc0000; font-size: 1.2rem; }
+
+/* BOTÓN ME INTERESA */
+.cta{ background:#222; color:#fff; border-radius:8px; padding:12px; font-weight:800; font-size:.9rem; display:flex; align-items:center; gap:8px; width:100%; justify-content:center; text-decoration:none; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+.cta:hover { background: #000; transform: translateY(-2px); }
+.cta i { color: #25D366; font-size: 1.1rem; }
 
 .whatsapp{ position:fixed; right:20px; bottom:20px; z-index:100; background:#25D366; color:#fff; border-radius:50px; padding:12px 24px; font-weight:800; text-decoration:none; box-shadow:0 4px 20px rgba(37,211,102,0.4); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:1rem; }
 .whatsapp:hover{transform:scale(1.05);}
 .whatsapp-group{ position:fixed; right:20px; bottom:85px; z-index:100; background:#fff; color:#25D366; border:2px solid #25D366; border-radius:50px; padding:8px 20px; font-weight:700; text-decoration:none; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:0.9rem; }
 .whatsapp-group:hover{transform:scale(1.05); background:#f0fff4;}
 
+.main-footer { max-width:1600px; margin:0 auto; padding: 30px 20px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.footer-col h4 { font-weight: 800; font-size: 1rem; color: #333; margin-bottom: 10px; }
+.footer-col p { margin-bottom: 8px; line-height: 1.4; }
+.footer-col i { color: var(--accent); margin-right: 5px; }
+.map-link { color: #3b82f6; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+@media (max-width: 768px) { .main-footer { grid-template-columns: 1fr; } }
 @media (max-width:992px){ .sidebar{position:static; margin-bottom:20px; max-height:none;} #menu-cat{flex-direction:row; flex-wrap:wrap; overflow-y:visible;} .btn-cat{flex:1; text-align:center; white-space:nowrap;} }
 </style>
 </head>
 <body>
 
+<div id="company-data" style="display:none;" data-horario="LUNES A DOMINGO: 9:00 - 19:30" data-envios="ENVÍOS A TODO BOLIVIA" data-whatsapp="59161333335"></div>
+
 <div class="header-oferta">
-    <div class="header-track">
-        <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN OFERTA! ¡APROVECHA AHORA!</div>
-        <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO TOTAL!</div>
-        <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN OFERTA! ¡APROVECHA AHORA!</div>
-        <div class="header-item"><i class="bi bi-tags-fill"></i> ¡35% DESCUENTO TOTAL!</div>
-    </div>
+  <div class="header-track">
+    <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN LIQUIDACIÓN!</div>
+    <div class="header-item"><i class="bi bi-tags-fill"></i> HASTA 35% OFF EN UNIDAD</div>
+    <div class="header-item"><i class="bi bi-fire"></i> ¡APROVECHA AHORA!</div>
+    <div class="header-item"><i class="bi bi-tags-fill"></i> HASTA 35% OFF EN UNIDAD</div>
+  </div>
 </div>
 
 <div class="main">
-  <aside class="sidebar">
-    <h2><i class="bi bi-grid-fill"></i> Categorías</h2>
-    <div id="menu-cat"><div style="color:#888; font-size:0.9rem">Cargando...</div></div>
-  </aside>
-
-  <section>
-    <div class="toolbar-container">
-        <div class="toolbar">
-            <i class="bi bi-search" style="font-size:1.2rem; color:#aaa"></i>
-            <input id="searchBox" placeholder="¿Qué estás buscando hoy?">
-        </div>
-        <div id="sub-chips"></div>
+    <div class="sidebar-wrapper">
+        <button id="menu-toggle-btn" style="display:none;"><span><i class="bi bi-list"></i> Categorías</span><i id="toggle-icon" class="bi bi-chevron-down"></i></button>
+        <aside class="sidebar" id="sidebar-menu"><h2><i class="bi bi-grid-fill"></i> Categorías</h2><div id="menu-cat"><div style="color:#888; font-size:0.9rem">Cargando...</div></div></aside>
     </div>
-
-    <div id="productos" class="grid"></div>
-  </section>
+    <section>
+        <div class="toolbar-container">
+            <div class="toolbar"><i class="bi bi-search" style="font-size:1.2rem; color:#aaa"></i><input id="searchBox" placeholder="¿Qué estás buscando hoy?"></div>
+            <div id="sub-chips"></div>
+        </div>
+        <div id="productos" class="grid"></div>
+    </section>
 </div>
 
-<!-- MODAL ZOOM (Auto-Cierre) -->
-<div id="zoomModal" onclick="closeZoom()">
-    <span class="close-zoom">&times;</span>
-    <img id="zoomImg" src="" onclick="event.stopPropagation()"> 
-</div>
+<footer class="main-footer">
+    <div class="footer-col"><h4><i class="bi bi-info-circle-fill"></i> Importadora Ale</h4><p>Tu proveedor mayorista de confianza.</p><p>© 2025 Todos los derechos reservados.</p></div>
+    <div class="footer-col"><h4><i class="bi bi-shop"></i> Tiendas Físicas</h4><p><b>Sucursal 1:</b> Aroma N.º 560 – Santa Cruz</p><a href="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9" target="_blank" class="map-link"><i class="bi bi-geo-alt-fill"></i> Ver en mapa</a><p class="mt-3"><b>Sucursal 2:</b> Av. Cañoto esq. Tundí #924</p><a href="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA" target="_blank" class="map-link"><i class="bi bi-geo-alt-fill"></i> Ver en mapa</a></div>
+    <div class="footer-col"><h4><i class="bi bi-headset"></i> Contacto</h4><p><i class="bi bi-clock-fill"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/59161333335" target="_blank" class="text-green-600 font-semibold">61333335</a></p></div>
+</footer>
 
-<a class="whatsapp-group" href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank">
-    <i class="bi bi-people-fill"></i> Grupo Mayorista
-</a>
-
+<div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">&times;</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
+<a class="whatsapp-group" href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank"><i class="bi bi-people-fill"></i> Grupo Mayorista</a>
 <a class="whatsapp" href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido." target="_blank"><i class="bi bi-whatsapp" style="font-size:1.3rem"></i> Hacer Pedido</a>
 
 <script type="module">
 import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
 const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c8601'; const COLLECTION_ID = 'catalogo';
+const COMPANY_DATA = document.getElementById('company-data');
+const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
+const DESCUENTO_UNIDAD_PORCENTAJE = 35; 
 
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
 
-// --- FUNCIÓN ZOOM (AUTO-CIERRE) ---
-window.openZoom = function(imgSrc) {
-    const modal = document.getElementById('zoomModal');
-    const img = document.getElementById('zoomImg');
-    img.src = imgSrc;
-    modal.classList.add('open');
-    clearTimeout(zoomTimeout);
-    zoomTimeout = setTimeout(() => { closeZoom(); }, 4000); 
+window.openZoom = function(imgSrc) { const modal = document.getElementById('zoomModal'); const img = document.getElementById('zoomImg'); img.src = imgSrc; modal.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout = setTimeout(() => { closeZoom(); }, 4000); }
+window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
+window.onSlideScroll = function(element) { const card = element.closest('.card'); const dots = card.querySelectorAll('.dot'); if(dots.length < 2) return; const index = Math.round(element.scrollLeft / element.offsetWidth); dots.forEach(d => d.classList.remove('active')); if(dots[index]) dots[index].classList.add('active'); }
+function injectCompanyData() { const horario = COMPANY_DATA.dataset.horario; const envios = COMPANY_DATA.dataset.envios; document.getElementById('footer-envios').textContent = envios; document.getElementById('footer-horario').textContent = horario; }
+
+function generarWhatsappLink(nombre, codigo, precio, moq, precioUnidadOferta) {
+    const texto = `Hola, quisiera consultar disponibilidad de:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n   PRECIO MAYOR: Bs. ${precio}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`;
 }
 
-window.closeZoom = function() {
-    document.getElementById('zoomModal').classList.remove('open');
-    clearTimeout(zoomTimeout);
-}
-
-// --- ACTUALIZAR PUNTOS AL DESLIZAR ---
-window.onSlideScroll = function(element) {
-    const card = element.closest('.card');
-    const dots = card.querySelectorAll('.dot');
-    if(dots.length < 2) return;
-    
-    // Calculamos si estamos en la primera o segunda mitad
-    const scrollPos = element.scrollLeft;
-    const width = element.offsetWidth;
-    const index = Math.round(scrollPos / width);
-
-    dots.forEach(d => d.classList.remove('active'));
-    if(dots[index]) dots[index].classList.add('active');
-}
-
-// --- LÓGICA DE INICIO ---
-async function iniciar(){
-  const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject(PROJECT_ID);
-  const db = new Databases(client);
+function renderProductos(lista){
   const grid = document.getElementById('productos');
-  try {
-    const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(5000), Query.orderDesc('$createdAt')]);
-    todos = res.documents.filter(doc => doc.disponible !== false);
-    renderCategorias(); 
-    renderProductos(todos);
-  } catch(e) { console.error(e); grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#666;">No se pudo cargar el catálogo.</p></div>`; }
+  if(lista.length === 0){ grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#888;">Sin productos.</div>`; return; }
+  
+  grid.innerHTML = lista.map(p => {
+    const tituloBonito = formatearTitulo(p.descripcion); const codigoBonito = formatearCodigo(p.codigo);
+    let pMayor = parseFloat(p.preciopormayor); if(isNaN(pMayor)) pMayor = 0;
+    let pUnidad = parseFloat(p.precioUnidad); if(isNaN(pUnidad)) pUnidad = 0;
+    
+    let promoBadge = '';
+    let precioUnidadHtml = '';
+    let pUnidadFinal = null;
+
+    if(pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
+        pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
+        promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% UNIDAD</div>`;
+        precioUnidadHtml = `<div class="price-row unit"><span class="price-label">UNIDAD:</span><span><span class="price-old">Bs. ${pUnidad.toFixed(2)}</span><span class="price-new">Bs. ${pUnidadFinal.toFixed(2)}</span></span></div>`;
+    } else if (pUnidad > 0) {
+        precioUnidadHtml = `<div class="price-row unit"><span class="price-label">UNIDAD:</span><span class="price-val">Bs. ${pUnidad.toFixed(2)}</span></div>`;
+    }
+
+    const tieneFoto2 = p.imagen2 ? true : false;
+    let dotHtml = ''; let imagesHtml = '';
+    if (tieneFoto2) {
+        imagesHtml = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div><div class="slide"><img src="${p.imagen2}" class="prod-img" onclick="openZoom('${p.imagen2}')"></div>`;
+        dotHtml = `<div class="dot-container"><div class="dot active"></div><div class="dot"></div></div>`;
+    } else {
+        imagesHtml = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div>`;
+    }
+
+    const whatsappLink = generarWhatsappLink(tituloBonito, codigoBonito, pMayor.toFixed(2), p.moq || 'No esp.', pUnidadFinal ? pUnidadFinal.toFixed(2) : null);
+
+    return `
+    <div class="card" id="card-${p.$id}">
+      <div class="moq">Mín. ${p.moq || 6} unid.</div>
+      ${promoBadge}
+      <div class="img-box"><div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>${dotHtml}</div>
+      <div class="info">
+        <h3 class="title">${tituloBonito}</h3>
+        <div class="ref">Ref: ${codigoBonito}</div>
+        <div class="prices-container">
+            ${precioUnidadHtml}
+            <div class="price-row mayor">
+                <span class="price-label" style="color:#000;">MAYOR:</span>
+                <div>
+                    <span class="price-val price-mayor-val">Bs. ${pMayor.toFixed(2)}</span>
+                    <span class="moq-tag">(Mín. ${p.moq || 6})</span>
+                </div>
+            </div>
+        </div>
+        <a href="${whatsappLink}" target="_blank" class="cta"><i class="bi bi-whatsapp"></i> ME INTERESA</a>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function formatearTexto(txt) { if(!txt) return ''; const lower = txt.toLowerCase().trim(); return lower.charAt(0).toUpperCase() + lower.slice(1); }
@@ -223,7 +243,17 @@ function formatearTitulo(txt) { if(!txt) return 'Sin Nombre'; const lower = txt.
 function formatearCodigo(txt) { if(!txt) return ''; return txt.toUpperCase().trim(); }
 function normalizarTexto(txt) { return (txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
 
-// 1. Sidebar Categorías
+async function iniciar(){
+  injectCompanyData();
+  const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject(PROJECT_ID);
+  const db = new Databases(client);
+  const grid = document.getElementById('productos');
+  try {
+    const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(5000), Query.orderDesc('$createdAt')]);
+    todos = res.documents.filter(doc => doc.disponible !== false);
+    renderCategorias(); renderProductos(todos);
+  } catch(e) { console.error(e); grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#666;">No se pudo cargar el catálogo.</p></div>`; }
+}
 function renderCategorias(){
   const menu = document.getElementById('menu-cat');
   let categoriasLimpias = todos.map(p => formatearTexto(p.categoria || 'Varios'));
@@ -231,22 +261,13 @@ function renderCategorias(){
   const cats = ['Todo', ...listadoCategorias];
   menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
 }
-
-// 2. Filtrado y Chips
 window.filtrar = function(cat, btn){
   if(btn){ document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
   catActual = cat;
   let filtrados = [];
-  if(cat === 'Todo') { 
-      filtrados = todos; 
-      document.getElementById('sub-chips').classList.remove('visible'); 
-  } else { 
-      filtrados = todos.filter(p => formatearTexto(p.categoria) === cat);
-      renderSubCategorias(filtrados);
-  }
+  if(cat === 'Todo') { filtrados = todos; document.getElementById('sub-chips').classList.remove('visible'); } else { filtrados = todos.filter(p => formatearTexto(p.categoria) === cat); renderSubCategorias(filtrados); }
   renderProductos(filtrados);
 }
-
 function renderSubCategorias(listaProductos){
     const container = document.getElementById('sub-chips');
     const tipos = listaProductos.map(p => p.tipo ? formatearTexto(p.tipo) : null).filter(t => t !== null);
@@ -256,76 +277,18 @@ function renderSubCategorias(listaProductos){
         let html = `<div class="chip active" onclick="filtrarSub('todos', this)">Ver todo</div>`;
         html += tiposUnicos.map(t => `<div class="chip" onclick="filtrarSub('${t}', this)">${t}</div>`).join('');
         container.innerHTML = html;
-    } else {
-        container.classList.remove('visible'); container.innerHTML = '';
-    }
+    } else { container.classList.remove('visible'); container.innerHTML = ''; }
 }
-
 window.filtrarSub = function(tipo, btn){
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
     const base = todos.filter(p => formatearTexto(p.categoria) === catActual);
     if(tipo === 'todos'){ renderProductos(base); } else { renderProductos(base.filter(p => formatearTexto(p.tipo) === tipo)); }
 }
-
-// 3. Grid Productos
-function renderProductos(lista){
-  const grid = document.getElementById('productos');
-  if(lista.length === 0){ grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#888;">Sin productos.</div>`; return; }
-  
-  grid.innerHTML = lista.map(p => {
-    const tituloBonito = formatearTitulo(p.descripcion);
-    const codigoBonito = formatearCodigo(p.codigo);
-    let valorPrecio = parseFloat(p.preciopormayor); if(isNaN(valorPrecio)) valorPrecio = 0;
-    const precio = valorPrecio.toFixed(2);
-    
-    let precioViejoHtml = '';
-    if(p.precioUnidad) { let valUnidad = parseFloat(p.precioUnidad); if(!isNaN(valUnidad)) precioViejoHtml = `<div class="old-price">Bs. ${valUnidad.toFixed(2)}</div>`; }
-
-    const tieneFoto2 = p.imagen2 ? true : false;
-    const cardId = `card-${p.$id}`;
-    
-    let dotHtml = '';
-    let imagesHtml = '';
-
-    // Si tiene 2 fotos, renderizamos ambas en el carrusel
-    if (tieneFoto2) {
-        imagesHtml = `
-            <div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div>
-            <div class="slide"><img src="${p.imagen2}" class="prod-img" onclick="openZoom('${p.imagen2}')"></div>
-        `;
-        dotHtml = `<div class="dot-container"><div class="dot active"></div><div class="dot"></div></div>`;
-    } else {
-        // Solo 1 foto
-        imagesHtml = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div>`;
-    }
-    
-    return `
-    <div class="card" id="${cardId}">
-      <div class="moq">Mín. ${p.moq || 6} unid.</div>
-      <div class="img-box">
-          <div class="img-slider" onscroll="onSlideScroll(this)">
-            ${imagesHtml}
-          </div>
-          ${dotHtml}
-      </div>
-      <div class="info">
-        <h3 class="title">${tituloBonito}</h3>
-        <div class="ref">Ref: ${codigoBonito}</div>
-        <div class="prices"><div>${precioViejoHtml}<div class="price">Bs. ${precio}</div></div></div>
-        <div class="cta"><i class="bi bi-fire"></i> PRECIO POR MAYOR</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
 document.getElementById('searchBox').addEventListener('input', (e)=>{
   const q = normalizarTexto(e.target.value);
   const resultados = todos.filter(p => {
-      return normalizarTexto(p.descripcion).includes(q) || 
-             normalizarTexto(p.codigo).includes(q) ||
-             normalizarTexto(p.categoria).includes(q) ||
-             normalizarTexto(p.tipo).includes(q);
+      return normalizarTexto(p.descripcion).includes(q) || normalizarTexto(p.codigo).includes(q) || normalizarTexto(p.categoria).includes(q) || normalizarTexto(p.tipo).includes(q);
   });
   renderProductos(resultados);
 });
