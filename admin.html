@@ -133,7 +133,7 @@
                         <div class="photo-label">Foto 1</div>
                         <div class="photo-area" id="dropZone1">
                             <img id="previewImg1">
-                            <i class="bi bi-camera-fill" style="font-size:2rem;color:#ccc"></i>
+                            <i class="bi bi-camera-fill" style="font-size:1.5rem;color:#ccc"></i>
                             <input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)">
                         </div>
                     </div>
@@ -141,7 +141,7 @@
                         <div class="photo-label">Foto 2</div>
                         <div class="photo-area" id="dropZone2">
                             <img id="previewImg2">
-                            <i class="bi bi-camera" style="font-size:2rem;color:#ccc"></i>
+                            <i class="bi bi-camera" style="font-size:1.5rem;color:#ccc"></i>
                             <input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)">
                         </div>
                     </div>
@@ -237,14 +237,9 @@
         const newUrl1 = await uploadPhoto(document.getElementById('file1')); if(newUrl1) finalUrl1 = newUrl1;
         const newUrl2 = await uploadPhoto(document.getElementById('file2')); if(newUrl2) finalUrl2 = newUrl2;
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
-        
-        // VALOR DEFAULT 0 SI ESTA VACIO
-        const pMayorVal = document.getElementById('price').value ? Number(document.getElementById('price').value) : 0;
-        const pUnidadVal = document.getElementById('priceUnit').value ? Number(document.getElementById('priceUnit').value) : 0;
-
         const data = {
           descripcion: document.getElementById('name').value, codigo: document.getElementById('code').value, categoria: document.getElementById('cat').value,
-          preciopormayor: pMayorVal, precioUnidad: pUnidadVal, 
+          preciopormayor: Number(document.getElementById('price').value), precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value), imagen: finalUrl1, imagen2: finalUrl2, disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
         if(id) { 
@@ -349,7 +344,7 @@
       document.getElementById('oldImg1').value = d.imagen || ""; if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; const icon = document.getElementById('dropZone1').querySelector('i'); if(icon) icon.style.display = 'none'; }
       document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i');
       if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; if(icon2) icon2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; if(icon2) icon2.style.display = 'block'; }
-      document.getElementById('formTitle').innerText = "Editando... <span style='color:orange'>●</span>"; 
+      document.getElementById('formTitle').innerHTML = "Editando... <span style='color:orange'>●</span>"; // CORREGIDO AQUÍ INNERHTML
       const btn = document.getElementById('btnSave'); if(btn) { btn.innerText = "Actualizar"; btn.style.background = "#2563eb"; }
       const cancel = document.getElementById('btnCancel'); if(cancel) cancel.style.display = "block";
     }
@@ -360,7 +355,7 @@
     window.resetForm = function() {
       document.getElementById('productForm').reset(); document.getElementById('editId').value = ""; document.getElementById('oldImg1').value = ""; document.getElementById('oldImg2').value = ""; document.getElementById('file1').value = ""; document.getElementById('file2').value = ""; 
       ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; const icon = document.getElementById('dropZone'+n).querySelector('i'); if(icon) icon.style.display = 'block'; });
-      const title = document.getElementById('formTitle'); if(title) title.innerHTML = "Nuevo Producto <span style='color:green; font-size:0.5em;'>●</span>"; 
+      document.getElementById('formTitle').innerHTML = "Nuevo Producto <span style='color:green; font-size:0.5em;'>●</span>"; // CORREGIDO AQUÍ INNERHTML
       const btn = document.getElementById('btnSave'); if(btn) { btn.innerText = "Guardar"; btn.style.background = "#FFB800"; }
       const cancel = document.getElementById('btnCancel'); if(cancel) cancel.style.display = "none";
     }
