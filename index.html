@@ -41,6 +41,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .toolbar-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
 .toolbar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:10px 15px; display:flex; align-items:center; gap:12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
 #searchBox{ flex:1; border:none; outline:none; font-size:1rem; padding:5px; color: #333; }
+#searchBox:focus{ border-color:var(--accent); }
 
 #sub-chips { display: flex; gap: 8px; flex-wrap: wrap; display: none; }
 #sub-chips.visible { display: flex; }
@@ -51,8 +52,13 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* GRID PRODUCTOS */
 .grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));}
 
-/* TARJETA DE PRODUCTO */
-.card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
+/* TARJETA DE PRODUCTO (Sin botón abajo, limpio para screenshot) */
+.card{ 
+    background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; 
+    position:relative; display:flex; flex-direction:column; 
+    transition:transform 0.2s, box-shadow 0.2s; 
+    padding-bottom: 10px; /* Un poco de aire abajo */
+}
 .card:hover{transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.08);}
 
 /* ETIQUETA ROJA DE OFERTA (-35%) */
@@ -69,6 +75,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* IMAGEN */
 .img-box { background:#fff; height:240px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
 .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
+.img-slider::-webkit-scrollbar { display: none; }
 .slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 20px; }
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
 .prod-img:hover { transform: scale(1.05); }
@@ -79,87 +86,69 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .dot.active { background-color: var(--brand-red); transform: scale(1.3); }
 
 /* INFORMACIÓN */
-.info{padding:18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
+.info{padding:18px 18px 5px 18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
 .title{font-size:1rem; font-weight:800; margin:0 0 5px; line-height:1.4; color:#111;}
 .ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:15px; display: block;}
 
-.prices-container { background: #fff; padding: 0; margin-bottom: 12px; }
+.prices-container { background: #fff; padding: 0; margin-bottom: 5px; }
+.price-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
 
-/* Precio Unidad Grande */
-.price-display { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-bottom: 8px; }
+/* Precio Unidad */
+.price-row.unit { color: #555; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
 .price-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #555; }
+.price-val { font-weight: 800; font-size: 1.1rem; color: #111; }
 .price-old { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
 .price-new { color: var(--brand-red); font-weight: 900; font-size: 1.4rem; }
-.price-val { font-weight: 800; font-size: 1.4rem; color: #111; }
-.price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
 
-/* TEXTO DE PIE (MOQ FORMAL) */
-.card-footer-text {
-    font-size: 0.75rem; color: #555; font-weight: 600;
-    margin-top: 10px; padding-top: 8px; border-top: 1px dashed #eee;
-    display: flex; align-items: center; gap: 5px;
+/* Texto de "Pide tu Descuento" */
+.promo-text { 
+    font-size: 0.7rem; color: #16a34a; font-weight: 700; 
+    background: #dcfce7; padding: 2px 6px; border-radius: 4px;
+    display: inline-block; margin-left: 5px;
 }
-.card-footer-text i { color: var(--accent); }
 
-/* --- ZONA FLOTANTE OPTIMIZADA --- */
+/* MOQ (Texto pequeño abajo) */
+.moq-row {
+    margin-top: 5px; font-size: 0.8rem; color: #555; font-weight: 600;
+    display: flex; align-items: center; gap: 5px;
+    background: #f8f9fa; padding: 6px; border-radius: 6px; /* Fondo suave para destacar */
+}
+.moq-row i { color: var(--brand-red); }
+
+/* --- ZONA FLOTANTE (BOTONES GLOBALES) --- */
 .floating-actions {
     position: fixed; bottom: 20px; right: 20px; z-index: 100;
-    display: flex; flex-direction: column; gap: 15px; align-items: flex-end;
+    display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
 }
 
-/* 1. Botón Grupo (CONTRAÍDO POR DEFECTO) */
+/* 1. Botón Grupo */
 .btn-group { 
     background: #fff; color: #25D366; border: 2px solid #25D366;
-    height: 45px; width: 45px; /* Círculo inicial */
-    border-radius: 50px; 
-    display: flex; align-items: center; justify-content: center;
+    padding: 8px 16px; border-radius: 50px; 
+    font-weight: 700; font-size: 0.85rem;
     text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    overflow: hidden;
-    white-space: nowrap;
+    display: flex; align-items: center; gap: 8px; transition: 0.2s;
 }
-.btn-group i { font-size: 1.3rem; margin: 0; }
-.btn-group span { opacity: 0; max-width: 0; transition: all 0.3s; margin-left: 0; font-weight: 700; font-size: 0.9rem; }
 
-/* Efecto Hover: Se expande */
-.btn-group:hover { width: 170px; padding: 0 15px; justify-content: flex-start; }
-.btn-group:hover span { opacity: 1; max-width: 200px; margin-left: 8px; }
-
-/* 2. Botón HACER PEDIDO (ANIMADO Y LLAMATIVO) */
+/* 2. Botón HACER PEDIDO (ROJO Y PEQUEÑO) */
 .btn-order {
-    background: #25D366; color: #fff; 
-    padding: 14px 28px; border-radius: 50px; 
-    font-weight: 900; font-size: 1.1rem; letter-spacing: 0.5px;
+    background: #D32F2F; color: #fff; /* Rojo */
+    padding: 10px 20px; border-radius: 50px; /* Más pequeño */
+    font-weight: 800; font-size: 0.9rem; 
     text-decoration: none; 
-    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
-    display: flex; align-items: center; gap: 10px;
-    animation: pulse-green 2s infinite; /* Pálpito */
+    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
+    display: flex; align-items: center; gap: 8px;
+    transition: 0.2s;
 }
-.btn-order:hover { transform: scale(1.05); background: #1eab52; }
-.btn-order i { font-size: 1.4rem; }
-
-@keyframes pulse-green {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-}
-
-/* BOTÓN COTIZAR EN TARJETA (Elegante) */
-.cta{ 
-    background: #FFB800; color:#000; border-radius:10px; padding:12px; 
-    font-weight:900; font-size:.9rem; display:flex; align-items:center; gap:8px; 
-    width:100%; justify-content:center; text-decoration:none; 
-    transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 184, 0, 0.3); 
-    margin-top: 15px; border-bottom: 4px solid #e0a200;
-}
-.cta:hover { transform: translateY(-1px); background: #ffc107; box-shadow: 0 6px 15px rgba(255, 184, 0, 0.4); border-bottom: 2px solid #e0a200; }
-.cta i { color: #000; font-size: 1.1rem; }
+.btn-order:hover { transform: scale(1.05); background: #b71c1c; }
+.btn-order i { font-size: 1.1rem; }
 
 /* FOOTER */
-.main-footer { max-width:1400px; margin:0 auto; padding: 40px 25px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
-.footer-col h4 { font-weight: 800; font-size: 1rem; color: #111; margin-bottom: 12px; }
-.footer-col p { margin-bottom: 8px; line-height: 1.5; color: #555; font-size: 0.9rem; }
-.map-link { color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+.main-footer { max-width:1400px; margin:0 auto; padding: 30px 20px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.footer-col h4 { font-weight: 800; font-size: 1rem; color: #111; margin-bottom: 10px; }
+.footer-col p { margin-bottom: 8px; line-height: 1.4; }
+.footer-col i { color: var(--accent); margin-right: 5px; }
+.map-link { color: #3b82f6; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
 
 /* MODALES */
 #zoomModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
@@ -169,6 +158,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
 
 @media (max-width:992px){ .sidebar-wrapper{display:none;} #menu-toggle-btn{display:flex; margin-bottom:15px;} .sidebar{position:static; margin-bottom:0; display:none;} .sidebar.open{display:flex;} }
+@media (max-width: 768px) { .main-footer { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -177,7 +167,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div class="header-oferta">
   <div class="header-track">
-    <div class="header-item"><i class="bi bi-fire"></i> LIQUIDACIÓN DE TEMPORADA</div>
+    <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN LIQUIDACIÓN!</div>
     <div class="header-item"><i class="bi bi-tags-fill"></i> HASTA 35% OFF EN UNIDAD</div>
     <div class="header-item"><i class="bi bi-box-seam"></i> PRECIOS DE LOCURA</div>
     <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO EL PAÍS</div>
@@ -201,15 +191,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     </section>
 </div>
 
-<!-- ZONA FLOTANTE (BOTONES DINÁMICOS) -->
+<!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
-    <!-- Botón Grupo (Se expande al tocar) -->
     <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
-        <i class="bi bi-people-fill"></i> 
-        <span>Grupo Mayorista</span>
+        <i class="bi bi-people-fill"></i> Grupo Mayorista
     </a>
-    
-    <!-- Botón Pedido (Animado y Principal) -->
     <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="btn-order">
         <i class="bi bi-whatsapp"></i> Hacer Pedido
     </a>
@@ -218,7 +204,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 <footer class="main-footer">
     <div class="footer-col"><h4><i class="bi bi-building"></i> Importadora Ale</h4><p>Tu proveedor mayorista de confianza.</p><p>© 2025 Derechos Reservados.</p></div>
     <div class="footer-col"><h4><i class="bi bi-geo-alt-fill"></i> Sucursales</h4><p><b>1:</b> Aroma N.º 560 – Santa Cruz <a href="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9" class="map-link">Ver mapa</a></p><p><b>2:</b> Av. Cañoto esq. Tundí #924 <a href="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA" class="map-link">Ver mapa</a></p></div>
-    <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/59161333335" target="_blank" class="text-green-600 font-semibold">61333335</a></p></div>
+    <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> 61333335</p></div>
 </footer>
 
 <div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">&times;</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
@@ -229,151 +215,152 @@ const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c
 const COMPANY_DATA = document.getElementById('company-data');
 const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
 
-// --- ESTRATEGIA DE PRECIOS ---
-const DESCUENTO_PORCENTAJE = 35;
+// --- CONFIGURACIÓN DE DESCUENTO ---
+const DESCUENTO_UNIDAD_PORCENTAJE = 35; 
 
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
 
-// --- FUNCIONES ---
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
 window.onSlideScroll = function(el) { const card=el.closest('.card'); const dots=card.querySelectorAll('.dot'); if(dots.length<2)return; const idx=Math.round(el.scrollLeft/el.offsetWidth); dots.forEach(d=>d.classList.remove('active')); if(dots[idx])dots[idx].classList.add('active'); }
 function injectCompanyData() { document.getElementById('footer-envios').textContent=COMPANY_DATA.dataset.envios; document.getElementById('footer-horario').textContent=COMPANY_DATA.dataset.horario; }
-function generarLink(nombre, codigo) { return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, me interesa este producto:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n¿Me ayudas con el precio por mayor?`)}`; }
 
 function renderProductos(lista){
   const grid = document.getElementById('productos');
-  if(lista.length === 0){ grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;color:#888;"><i class="bi bi-search" style="font-size:2rem"></i><p>Sin resultados.</p></div>`; return; }
+  if(lista.length === 0){ grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#888;">Sin productos.</div>`; return; }
   
   grid.innerHTML = lista.map(p => {
-    const titulo = formatearTitulo(p.descripcion); const codigo = formatearCodigo(p.codigo);
+    const tituloBonito = formatearTitulo(p.descripcion); const codigoBonito = formatearCodigo(p.codigo);
     
-    // PRECIOS BASE
-    let pUnidad = parseFloat(p.precioUnidad) || 0;
-    let pMayor = parseFloat(p.preciopormayor) || 0;
+    // Solo usamos pUnidad para mostrar (Mayorista oculto)
+    let pMayor = parseFloat(p.preciopormayor); if(isNaN(pMayor)) pMayor = 0;
+    let pUnidad = parseFloat(p.precioUnidad); if(isNaN(pUnidad)) pUnidad = 0;
     
+    let promoBadge = '';
+    let precioUnidadHtml = '';
+    let pUnidadFinal = null;
+
     // LÓGICA INTELIGENTE DE OFERTA
-    let htmlPrecio = '';
-    let htmlBadge = '';
+    let mostrarDescuento = false;
     
-    if (pUnidad > 0) {
-        let pConDescuento = pUnidad - (pUnidad * (DESCUENTO_PORCENTAJE / 100));
-        
-        // REGLA DE SEGURIDAD (Si el descuento baja más que el mayorista, no lo mostramos)
-        if (pConDescuento <= pMayor) {
-            htmlPrecio = `
-            <div class="price-display">
-                <span class="price-label-normal">PRECIO UNIDAD:</span>
-                <div class="price-val">Bs. ${pUnidad.toFixed(2)}</div>
-                <div class="promo-text" style="font-size:0.65rem; color:#555; background:none; padding:0; margin:0;">*Pide tu descuento en caja</div>
-            </div>`;
+    if(pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
+        pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
+        // SALVAVIDAS: Si el descuento baja el precio MÁS que el mayorista...
+        if (pUnidadFinal <= pMayor) {
+            mostrarDescuento = false; // PELIGRO: No aplicar descuento
         } else {
-            // Muestra OFERTA -35%
-            htmlBadge = `<div class="badge-offer">-${DESCUENTO_PORCENTAJE}% OFF</div>`;
-            htmlPrecio = `
-            <div class="price-display">
-                <span class="price-label">OFERTA UNIDAD:</span>
-                <div>
-                    <span class="price-old">Bs. ${pUnidad.toFixed(2)}</span>
-                    <span class="price-new">Bs. ${pConDescuento.toFixed(2)}</span>
-                </div>
-            </div>`;
+            mostrarDescuento = true; // SEGURO: Aplicar descuento
         }
-    } else {
-        htmlPrecio = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
+    }
+
+    if (mostrarDescuento) {
+        // CASO A: DESCUENTO APLICADO
+        promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% UNIDAD</div>`;
+        precioUnidadHtml = `
+        <div class="price-row unit">
+            <span class="price-label">PRECIO UNIDAD:</span>
+            <span>
+                <span class="price-old">Bs. ${pUnidad.toFixed(2)}</span>
+                <span class="price-new">Bs. ${pUnidadFinal.toFixed(2)}</span>
+            </span>
+        </div>`;
+    } else if (pUnidad > 0) {
+        // CASO B: SIN DESCUENTO
+        precioUnidadHtml = `
+        <div class="price-row unit">
+            <span class="price-label">PRECIO UNIDAD:</span>
+            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:5px;">
+                <span class="price-val" style="color:#111;">Bs. ${pUnidad.toFixed(2)}</span>
+                <span class="promo-text">🔥 Pide en caja tu descuento</span>
+            </div>
+        </div>`;
     }
 
     const tieneFoto2 = p.imagen2 ? true : false;
     const cardId = `card-${p.$id}`;
-    let slides = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div>`;
-    let dots = '';
-    if(tieneFoto2) {
-        slides += `<div class="slide"><img src="${p.imagen2}" class="prod-img" onclick="openZoom('${p.imagen2}')"></div>`;
-        dots = `<div class="dot-container"><div class="dot active"></div><div class="dot"></div></div>`;
-    }
+    let dotHtml = ''; let imagesHtml = '';
 
-    const whatsappLink = generarWhatsappLink(titulo, codigo, pMayor.toFixed(2), p.moq || 'No esp.');
+    if (tieneFoto2) {
+        imagesHtml = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div><div class="slide"><img src="${p.imagen2}" class="prod-img" onclick="openZoom('${p.imagen2}')"></div>`;
+        dotHtml = `<div class="dot-container"><div class="dot active"></div><div class="dot"></div></div>`;
+    } else {
+        imagesHtml = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div>`;
+    }
 
     return `
     <div class="card" id="${cardId}">
-      ${htmlBadge}
-      <div class="img-box"><div class="img-slider" onscroll="onSlideScroll(this)">${slides}</div>${dots}</div>
+      ${promoBadge}
+      <div class="img-box"><div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>${dotHtml}</div>
       <div class="info">
-        <div>
-            <h3 class="title">${titulo}</h3>
-            <span class="ref">Ref: ${codigo}</span>
-        </div>
+        <h3 class="title">${tituloBonito}</h3>
+        <div class="ref">Ref: ${codigoBonito}</div>
         
         <div class="prices-container">
-            ${htmlPrecio}
-            
-            <div class="card-footer-text">
+            ${precioUnidadHtml}
+            <div class="moq-row">
                 <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6} Unidades por mayor
             </div>
         </div>
-
-        <a href="${whatsappLink}" target="_blank" class="cta">
-            <i class="bi bi-whatsapp"></i> COTIZAR POR MAYOR
-        </a>
       </div>
     </div>`;
   }).join('');
 }
 
-// HELPERS
-function formatearTexto(txt) { if(!txt)return'';const l=txt.toLowerCase().trim();return l.charAt(0).toUpperCase()+l.slice(1); }
-function formatearTitulo(txt) { if(!txt)return'';const l=txt.toLowerCase().trim();return l.split(' ').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' '); }
-function formatearCodigo(txt) { if(!txt)return'';return txt.toUpperCase().trim(); }
-function normalizar(txt) { return (txt||'').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
-function generarWhatsappLink(nombre, codigo, precio, moq) {
-    const texto = `Hola, quisiera consultar el PRECIO MAYOR de este producto:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n   (Mínimo: ${moq})`;
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`;
-}
+function formatearTexto(txt) { if(!txt) return ''; const lower = txt.toLowerCase().trim(); return lower.charAt(0).toUpperCase() + lower.slice(1); }
+function formatearTitulo(txt) { if(!txt) return 'Sin Nombre'; const lower = txt.toLowerCase().trim(); return lower.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' '); }
+function formatearCodigo(txt) { if(!txt) return ''; return txt.toUpperCase().trim(); }
+function normalizarTexto(txt) { return (txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
 
 async function iniciar(){
   injectCompanyData();
   const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject(PROJECT_ID);
   const db = new Databases(client);
+  const grid = document.getElementById('productos');
   try {
     const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(5000), Query.orderDesc('$createdAt')]);
     todos = res.documents.filter(doc => doc.disponible !== false);
     renderCategorias(); renderProductos(todos);
-  } catch(e) { console.error(e); }
+  } catch(e) { console.error(e); grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#666;">No se pudo cargar el catálogo.</p></div>`; }
 }
-
 function renderCategorias(){
   const menu = document.getElementById('menu-cat');
-  let cats = ['Todo', ...new Set(todos.map(p => formatearTexto(p.categoria || 'Varios')))].sort();
+  let categoriasLimpias = todos.map(p => formatearTexto(p.categoria || 'Varios'));
+  let listadoCategorias = [...new Set(categoriasLimpias)]; listadoCategorias.sort();
+  const cats = ['Todo', ...listadoCategorias];
   menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
 }
 window.filtrar = function(cat, btn){
   if(btn){ document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
   catActual = cat;
-  let filtrados = cat === 'Todo' ? todos : todos.filter(p => formatearTexto(p.categoria) === cat);
-  
-  const subContainer = document.getElementById('sub-chips');
-  if(cat !== 'Todo') {
-      const tipos = [...new Set(filtrados.map(p => formatearTexto(p.tipo)).filter(t => t))].sort();
-      if(tipos.length > 0) {
-          subContainer.innerHTML = `<div class="chip active" onclick="filtrarSub('all', this)">Ver todo</div>` + 
-              tipos.map(t => `<div class="chip" onclick="filtrarSub('${t}', this)">${t}</div>`).join('');
-          subContainer.classList.add('visible');
-      } else { subContainer.classList.remove('visible'); }
-  } else { subContainer.classList.remove('visible'); }
-  
+  let filtrados = [];
+  if(cat === 'Todo') { filtrados = todos; document.getElementById('sub-chips').classList.remove('visible'); } else { filtrados = todos.filter(p => formatearTexto(p.categoria) === cat); renderSubCategorias(filtrados); }
   renderProductos(filtrados);
+}
+function renderSubCategorias(listaProductos){
+    const container = document.getElementById('sub-chips');
+    const tipos = listaProductos.map(p => p.tipo ? formatearTexto(p.tipo) : null).filter(t => t !== null);
+    const tiposUnicos = [...new Set(tipos)];
+    if(tiposUnicos.length > 0){
+        container.classList.add('visible');
+        let html = `<div class="chip active" onclick="filtrarSub('todos', this)">Ver todo</div>`;
+        html += tiposUnicos.map(t => `<div class="chip" onclick="filtrarSub('${t}', this)">${t}</div>`).join('');
+        container.innerHTML = html;
+    } else { container.classList.remove('visible'); container.innerHTML = ''; }
 }
 window.filtrarSub = function(tipo, btn){
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
     const base = todos.filter(p => formatearTexto(p.categoria) === catActual);
-    renderProductos(tipo === 'all' ? base : base.filter(p => formatearTexto(p.tipo) === tipo));
+    if(tipo === 'todos'){ renderProductos(base); } else { renderProductos(base.filter(p => formatearTexto(p.tipo) === tipo)); }
 }
 document.getElementById('searchBox').addEventListener('input', (e)=>{
-  const q = normalizar(e.target.value);
-  renderProductos(todos.filter(p => normalizar(p.descripcion).includes(q) || normalizar(p.codigo).includes(q) || normalizar(p.categoria).includes(q)));
+  const q = normalizarTexto(e.target.value);
+  const resultados = todos.filter(p => {
+      return normalizarTexto(p.descripcion).includes(q) || normalizarTexto(p.codigo).includes(q) || normalizarTexto(p.categoria).includes(q) || normalizarTexto(p.tipo).includes(q);
+  });
+  renderProductos(resultados);
 });
 
 iniciar();
