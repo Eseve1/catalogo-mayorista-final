@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Final</title>
+  <title>Admin Panel - FIX BÚSQUEDA</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -18,7 +18,7 @@
     #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     #appContent { display: none; }
 
-    /* LAYOUT DE 2 COLUMNAS (50% / 50%) */
+    /* LAYOUT 2 COLUMNAS (50% / 50%) */
     .main-layout {
         max-width: 1400px; margin: 0 auto;
         display: grid;
@@ -49,7 +49,9 @@
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 150px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    
+    /* FOTOS EN FORMULARIO (GRANDES PARA VER BIEN AL CARGAR) */
+    .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 200px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
     .photo-label { font-size: 0.75rem; font-weight: bold; margin-bottom: 3px; text-align: center; color: #666; }
 
@@ -71,19 +73,19 @@
     .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     
-    /* FOTO EN LA LISTA */
+    /* FOTO EN LA LISTA - CLICK PARA CARGAR AL COSTADO */
     .prod-img { 
-        width: 60px; height: 60px; 
+        width: 70px; height: 70px; 
         border-radius: 8px; object-fit: cover; background: #eee; 
         flex-shrink: 0; 
         cursor: pointer;
         border: 2px solid transparent;
     }
-    .prod-img:hover { border-color: var(--primary); }
+    .prod-img:hover { border-color: var(--primary); transform: scale(1.05); transition: 0.2s; }
 
     .prod-info { flex-grow: 1; overflow: hidden; }
     .prod-title { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
-    .prod-cat { font-size: 0.75rem; color: #888; margin-bottom: 2px; }
+    .prod-cat { font-size: 0.75rem; color: #888; margin-bottom: 2px; text-transform: capitalize; }
     .prod-price { font-weight: 600; color: #555; font-size: 0.85rem; }
     .alerta-precio { font-weight: 800; font-size: 0.7rem; color: #ef4444; }
 
@@ -117,7 +119,7 @@
         
         <!-- IZQUIERDA: FORMULARIO -->
         <div class="card-box">
-            <h2>Nuevo Producto</h2>
+            <h2><span style="color:#22c55e; font-size:0.5em; vertical-align:middle;">●</span> Editar / Nuevo</h2>
             <form id="productForm">
                 <input type="hidden" id="editId">
                 <input type="hidden" id="oldImg1">
@@ -262,7 +264,7 @@
             hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
             if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ ¡Limpio! No hay errores.</p>';
         } else { 
-            // CORREGIDO: AHORA BUSCA TAMBIÉN EN "categoria"
+            // --- CORRECCIÓN FINAL: BÚSQUEDA EN CATEGORÍA INCLUIDA ---
             hits = docs.filter(d => 
                 (d.descripcion && d.descripcion.toLowerCase().includes(q)) || 
                 (d.codigo && d.codigo.toLowerCase().includes(q)) || 
@@ -284,9 +286,9 @@
           const precioMostrar = tieneError ? "0.00" : Number(d.preciopormayor).toFixed(2);
           const imgSrc = d.imagen || 'https://via.placeholder.com/50';
           
-          // --- CLIC EN FOTO PARA CARGAR EN FORMULARIO ---
+          // --- CLIC EN FOTO PARA CARGAR AL COSTADO (EDITAR) ---
           div.innerHTML = `
-            <img src="${imgSrc}" class="prod-img" onclick='editItem(${JSON.stringify(d)})' title="Clic para editar">
+            <img src="${imgSrc}" class="prod-img" onclick='editItem(${JSON.stringify(d)})' title="Clic para cargar al formulario">
             <div class="prod-info">
                 <div class="prod-title">${d.descripcion}</div>
                 <div class="prod-cat">${d.categoria || 'Sin categoría'}</div>
