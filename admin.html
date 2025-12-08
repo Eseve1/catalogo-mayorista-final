@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Zoom</title>
+  <title>Admin Panel - Edición Rápida</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -49,7 +49,14 @@
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 120px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    
+    /* FOTOS MAS GRANDES EN EL FORMULARIO PARA VER MEJOR */
+    .photo-area { 
+        border: 2px dashed #ddd; border-radius: 12px; padding: 5px; 
+        text-align: center; position: relative; background: #fafafa; 
+        height: 220px; /* AUMENTADO DE 120px a 220px */
+        cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+    }
     .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
     .photo-label { font-size: 0.75rem; font-weight: bold; margin-bottom: 3px; text-align: center; color: #666; }
 
@@ -70,16 +77,16 @@
     .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     
-    /* FOTO CON ZOOM */
+    /* FOTO DE LISTA: CLIC PARA EDITAR */
     .prod-img { 
         width: 60px; height: 60px; 
         border-radius: 8px; object-fit: cover; background: #eee; 
         flex-shrink: 0; 
-        cursor: zoom-in; /* Cursor de Lupa */
+        cursor: pointer; /* Manito para indicar clic */
         border: 2px solid transparent;
         transition: border-color 0.2s;
     }
-    .prod-img:hover { border-color: var(--primary); }
+    .prod-img:hover { border-color: var(--primary); transform: scale(1.05); }
 
     .prod-info { flex-grow: 1; overflow: hidden; }
     .prod-title { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
@@ -99,21 +106,6 @@
     #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2f2; color: #991b1b; }
-
-    /* --- MODAL DE IMAGEN (ZOOM) --- */
-    #imageModal {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); z-index: 9999;
-        display: none; justify-content: center; align-items: center;
-        opacity: 0; transition: opacity 0.3s ease;
-    }
-    #imageModal.active { display: flex; opacity: 1; }
-    .modal-content { position: relative; max-width: 90%; max-height: 90%; }
-    .modal-content img { max-width: 100%; max-height: 85vh; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .close-modal {
-        position: absolute; top: -40px; right: 0;
-        color: white; font-size: 2rem; cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -195,14 +187,6 @@
     </div>
   </div>
 
-  <!-- MODAL DE IMAGEN -->
-  <div id="imageModal" onclick="closeModal()">
-      <div class="modal-content">
-          <span class="close-modal">&times;</span>
-          <img id="modalImg" src="">
-      </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 
@@ -211,24 +195,6 @@
     const client = new Appwrite.Client().setEndpoint("https://fra.cloud.appwrite.io/v1").setProject(PROJECT_ID);
     const db = new Appwrite.Databases(client); const storage = new Appwrite.Storage(client);
     const LIST_ELEMENT = document.getElementById('list');
-
-    // --- FUNCIONES DEL MODAL DE ZOOM ---
-    function openModal(imgUrl) {
-        if(!imgUrl || imgUrl.includes('placeholder')) return;
-        const modal = document.getElementById('imageModal');
-        const img = document.getElementById('modalImg');
-        img.src = imgUrl;
-        modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('active'), 10);
-    }
-    function closeModal() {
-        const modal = document.getElementById('imageModal');
-        modal.classList.remove('active');
-        setTimeout(() => { 
-            modal.style.display = 'none'; 
-            document.getElementById('modalImg').src = "";
-        }, 300);
-    }
 
     function setupDragDrop(zoneId, inputId, previewNum) {
         const zone = document.getElementById(zoneId); const input = document.getElementById(inputId);
@@ -302,7 +268,7 @@
             hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
             if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ ¡Limpio! No hay errores.</p>';
         } else { 
-            // BÚSQUEDA COMPLETA: Nombre, Código Y CATEGORÍA
+            // BUSQUEDA COMPLETA: Nombre, Código Y CATEGORÍA
             hits = docs.filter(d => 
                 (d.descripcion && d.descripcion.toLowerCase().includes(q)) || 
                 (d.codigo && d.codigo.toLowerCase().includes(q)) || 
@@ -324,9 +290,9 @@
           const precioMostrar = tieneError ? "0.00" : Number(d.preciopormayor).toFixed(2);
           const imgSrc = d.imagen || 'https://via.placeholder.com/50';
           
-          // --- AQUÍ AÑADIMOS EL EVENTO ONCLICK PARA LA FOTO ---
+          // --- CLIC EN FOTO PARA EDITAR ---
           div.innerHTML = `
-            <img src="${imgSrc}" class="prod-img" onclick="openModal('${imgSrc}')" title="Clic para ampliar">
+            <img src="${imgSrc}" class="prod-img" onclick='editItem(${JSON.stringify(d)})' title="Clic para editar" style="cursor:pointer">
             <div class="prod-info">
                 <div class="prod-title">${d.descripcion}</div>
                 <div class="prod-price">Bs. ${precioMostrar}</div>
