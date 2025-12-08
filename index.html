@@ -13,14 +13,23 @@ html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
 /* --- HEADER ROJO --- */
-.header-oferta{ width:100%; background:#CC0000; color:#fff; border-bottom:2px solid #8e0000; box-shadow:0 2px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; animation: header-pulse 1.5s infinite alternate; }
-.header-track{ display:flex; gap:40px; white-space:nowrap; animation:marquee 18s linear infinite; padding:12px 0; font-weight:900; font-size:1.1rem; letter-spacing:.5px; text-transform:uppercase; color: #fff; }
+.header-oferta{ 
+    width:100%; background:#CC0000; color:#fff; border-bottom:2px solid #8e0000; 
+    box-shadow:0 2px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; 
+    animation: header-pulse 1.5s infinite alternate; 
+}
+.header-track{ 
+    display:flex; gap:40px; white-space:nowrap; animation:marquee 18s linear infinite; 
+    padding:12px 0; font-weight:900; font-size:1.1rem; letter-spacing:.5px; text-transform:uppercase; color: #fff;
+}
 .header-item{ display:inline-flex; align-items:center; gap:10px; padding-left:20px; animation: text-pulse 1s infinite alternate; }
 .header-item i { color: var(--accent); } 
+
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 @keyframes header-pulse { from { background-color: #CC0000; } to { background-color: #E00000; } }
 @keyframes text-pulse { 0% { text-shadow: 0 0 5px rgba(255,255,255,0.4); } 100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); } }
 @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(5deg); } 50% { transform: rotate(0eg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0deg); } }
+
 @media (max-width: 768px) { .header-track { animation-duration: 12s; font-size: 0.9rem; gap: 20px; } }
 
 .main{ max-width:1600px; margin:0 auto; display:grid; grid-template-columns:260px 1fr; gap:20px; padding:20px; }
@@ -50,26 +59,38 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 .card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
+.moq{ position:absolute; top:12px; right:12px; z-index:10; background:var(--accent); color:#000; border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; text-transform: uppercase; pointer-events: none; }
 
-/* ETIQUETA FLOTANTE (Solo descuento) */
-.badge-promo { position: absolute; top: 12px; left: 12px; z-index: 10; background: #16a34a; color: #fff; padding: 4px 8px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: shake 3s infinite; }
+/* ETIQUETA DESCUENTO (Solo Visual) */
+.badge-promo {
+    position: absolute; top: 12px; left: 12px; z-index: 10;
+    background: #16a34a; color: #fff;
+    padding: 4px 8px; border-radius: 6px;
+    font-weight: 900; font-size: 0.8rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: shake 3s infinite;
+}
 
+/* --- CARRUSEL DESLIZABLE --- */
 .img-box { background:#fff; padding:0; height:220px; border-bottom:1px solid #f0f0f0; position: relative; overflow: hidden; }
 .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
 .img-slider::-webkit-scrollbar { display: none; }
 .slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 15px; }
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); cursor: zoom-in; }
 
+/* MODAL DE ZOOM */
 #zoomModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
 #zoomModal.open { display: flex; opacity: 1; }
 #zoomImg { max-width: 90%; max-height: 90vh; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s; }
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
 
+/* PUNTOS */
 .dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
 .dot { width: 8px; height: 8px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: background-color 0.3s; }
 .dot.active { background-color: var(--accent); box-shadow: 0 0 5px var(--accent); }
 
+/* --- PRECIOS (ESTRATEGIA "PIDE EN CAJA") --- */
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
 .ref{font-size:.85rem; color:#888; font-weight:600; margin-bottom:12px;}
@@ -77,26 +98,34 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .prices-container { background: #fff; padding: 0; margin-bottom: 15px; }
 .price-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
 
-/* ESTILOS DE PRECIO MEJORADOS */
-.price-row.unit { color: #555; }
+/* Precio Unidad Normal */
+.price-row.unit { color: #333; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
 .price-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #555; }
 .price-val { font-weight: 800; font-size: 1.1rem; }
 
-.price-old { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
-.price-new { color: #16a34a; font-weight: 900; font-size: 1.2rem; }
+/* Texto de "Pide tu Descuento" */
+.promo-text { 
+    font-size: 0.75rem; 
+    color: #16a34a; /* Verde */
+    font-weight: 800; 
+    background: #dcfce7; 
+    padding: 3px 8px; 
+    border-radius: 4px;
+    display: inline-block;
+    margin-left: 5px;
+    animation: text-pulse 2s infinite;
+}
 
 /* MOQ Destacado */
 .moq-row {
-    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #eee;
-    font-size: 0.85rem; color: #555; font-weight: 600;
+    margin-top: 5px; font-size: 0.8rem; color: #555; font-weight: 600;
     display: flex; align-items: center; gap: 5px;
 }
 .moq-row i { color: #CC0000; }
 
-/* BOTÓN COTIZAR (ROJO OSCURO / ELEGANTE) */
+/* BOTÓN COTIZAR */
 .cta{ 
-    background: #b91c1c; /* Rojo oscuro para combinar con header */
-    color:#fff; border-radius:8px; padding:12px; 
+    background: #b91c1c; color:#fff; border-radius:8px; padding:12px; 
     font-weight:800; font-size:.85rem; display:flex; align-items:center; gap:8px; 
     width:100%; justify-content:center; text-decoration:none; 
     transition: 0.3s; box-shadow: 0 4px 15px rgba(185, 28, 28, 0.3); 
@@ -159,8 +188,8 @@ const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c
 const COMPANY_DATA = document.getElementById('company-data');
 const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
 
-// --- CONFIGURACIÓN DE DESCUENTO ---
-const DESCUENTO_UNIDAD_PORCENTAJE = 35; 
+// --- CONFIGURACIÓN DE ETIQUETA ---
+const OFERTA_PORCENTAJE = 35; // Solo para mostrar el badge
 
 let todos = [];
 let catActual = 'Todo';
@@ -188,14 +217,22 @@ function renderProductos(lista){
     
     let promoBadge = '';
     let precioUnidadHtml = '';
-    let pUnidadFinal = null;
+    
+    // ETIQUETA ROJA "-35%" SIEMPRE VISIBLE SI HAY PRECIO UNIDAD
+    if(pUnidad > 0 && OFERTA_PORCENTAJE > 0) {
+        promoBadge = `<div class="badge-promo">-${OFERTA_PORCENTAJE}% UNIDAD</div>`;
+    }
 
-    if(pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
-        pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
-        promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% UNIDAD</div>`;
-        precioUnidadHtml = `<div class="price-row unit"><span><span class="price-old">Bs. ${pUnidad.toFixed(2)}</span><span class="price-new">Bs. ${pUnidadFinal.toFixed(2)}</span></span></div>`;
-    } else if (pUnidad > 0) {
-        precioUnidadHtml = `<div class="price-row unit"><span class="price-val">Bs. ${pUnidad.toFixed(2)}</span></div>`;
+    if(pUnidad > 0) {
+        // Muestra Precio Unidad + Texto "Pide tu descuento"
+        precioUnidadHtml = `
+        <div class="price-row unit">
+            <div>
+                <span class="price-label">PRECIO UNIDAD:</span>
+                <span class="price-val">Bs. ${pUnidad.toFixed(2)}</span>
+            </div>
+            <span class="promo-text">🔥 ¡Pide en caja tu descuento!</span>
+        </div>`;
     }
 
     const tieneFoto2 = p.imagen2 ? true : false;
@@ -220,13 +257,11 @@ function renderProductos(lista){
         <div class="ref">Ref: ${codigoBonito}</div>
         
         <div class="prices-container">
-            <!-- PRECIO UNIDAD CON DESCUENTO -->
-            <span class="price-label">PRECIO UNIDAD:</span>
             ${precioUnidadHtml}
             
-            <!-- MOQ Y MAYOR OCULTO (Texto más limpio) -->
+            <!-- MOQ Y MAYOR OCULTO -->
             <div class="moq-row">
-                <i class="bi bi-box-seam"></i> Venta Mínima: ${p.moq || 6} Unidades por mayor
+                <i class="bi bi-box-seam"></i> Venta Mínima: ${p.moq || 12} Unidades por mayor
             </div>
         </div>
 
