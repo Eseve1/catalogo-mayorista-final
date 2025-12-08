@@ -13,14 +13,20 @@ html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
 /* --- HEADER ROJO --- */
-.header-oferta{ width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; }
-.header-track{ display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; }
+.header-oferta{ 
+    width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; 
+    box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; 
+}
+.header-track{ 
+    display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; 
+    padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; 
+}
 .header-item{ display:inline-flex; align-items:center; gap:8px; }
 .header-item i { color: var(--accent); font-size: 1.2rem; } 
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 /* LAYOUT */
-.main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom: 100px; /* Espacio para botones flotantes */ }
+.main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom: 100px; }
 @media (max-width:992px){ .main{grid-template-columns:1fr; padding:15px; padding-bottom: 120px;} }
 
 /* SIDEBAR */
@@ -39,10 +45,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 #sub-chips { display: flex; gap: 8px; flex-wrap: wrap; display: none; }
 #sub-chips.visible { display: flex; }
 .chip { background: #fff; border: 1px solid #dee2e6; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
+.chip:hover { background: #eee; }
 .chip.active { background: #333; color: #fff; border-color: #333; }
 
 /* GRID PRODUCTOS */
-.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));} /* Tarjetas un poco más compactas */
+.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));}
 
 /* TARJETA DE PRODUCTO */
 .card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
@@ -50,9 +57,9 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 /* ETIQUETA ROJA DE OFERTA (-35%) */
 .badge-offer {
-    position: absolute; top: 10px; left: 10px; z-index: 10;
+    position: absolute; top: 12px; left: 12px; z-index: 10;
     background: #e63946; color: #fff;
-    padding: 3px 8px; border-radius: 4px;
+    padding: 4px 10px; border-radius: 4px;
     font-weight: 800; font-size: 0.75rem; letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4);
     animation: pulse-red 2s infinite;
@@ -60,26 +67,32 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
 /* IMAGEN */
-.img-box { background:#fff; height:220px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
+.img-box { background:#fff; height:240px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
 .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
-.slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 10px; }
+.slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 20px; }
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
+.prod-img:hover { transform: scale(1.05); }
 
-/* INFORMACIÓN (Compacta para Screenshot) */
-.info{padding:15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
-.title{font-size:0.95rem; font-weight:800; margin:0 0 4px; line-height:1.3; color:#111;}
-.ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:10px; display: block;}
+/* PUNTOS */
+.dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
+.dot { width: 6px; height: 6px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: 0.3s; }
+.dot.active { background-color: var(--brand-red); transform: scale(1.3); }
 
-.price-box { margin-bottom: 5px; }
+/* INFORMACIÓN */
+.info{padding:18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
+.title{font-size:1rem; font-weight:800; margin:0 0 5px; line-height:1.4; color:#111;}
+.ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:15px; display: block;}
+
+.price-box { margin-bottom: 15px; }
 
 /* PRECIOS */
-.price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 6px; }
-.price-new { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
-.price-normal { color: #111; font-weight: 900; font-size: 1.2rem; }
-.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
+.price-old { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
+.price-new { color: #d32f2f; font-weight: 900; font-size: 1.4rem; }
+.price-normal { color: #111; font-weight: 900; font-size: 1.3rem; }
+.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 2px; }
 .price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
 
-/* TEXTO DE PIE (MOQ) */
+/* TEXTO DE PIE (MOQ AJUSTADO) */
 .card-footer-text {
     font-size: 0.75rem; color: #555; font-weight: 600;
     margin-top: 10px; padding-top: 8px; border-top: 1px dashed #eee;
@@ -90,36 +103,27 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* --- ZONA FLOTANTE (Fixed Bottom) --- */
 .floating-actions {
     position: fixed; bottom: 20px; right: 20px; z-index: 100;
-    display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+    display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
 }
 
-/* Botón Grupo (Secundario) */
-.btn-group { 
-    background: #fff; color: #000; border: 2px solid #000;
-    padding: 10px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem;
+/* ESTILO UNIFICADO PARA BOTONES FLOTANTES (Mismo Tamaño y Estilo) */
+.float-btn { 
+    background: #fff; color: #25D366; border: 2px solid #25D366;
+    padding: 10px 20px; border-radius: 50px; 
+    font-weight: 700; font-size: 0.9rem;
     text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     display: flex; align-items: center; gap: 8px; transition: 0.2s;
+    width: fit-content;
 }
+.float-btn:hover { transform: scale(1.05); background: #f0fff4; }
 
-/* Botón HACER PEDIDO (Principal y Animado) */
-.btn-order {
-    background: linear-gradient(135deg, #FFB800 0%, #FF9900 100%); /* Amarillo Marca */
-    color: #000; 
-    padding: 15px 30px; border-radius: 50px; 
-    font-weight: 900; font-size: 1.1rem; letter-spacing: 0.5px;
-    text-decoration: none; 
-    box-shadow: 0 4px 20px rgba(255, 184, 0, 0.5);
-    display: flex; align-items: center; gap: 10px;
-    animation: pulse-btn 2s infinite; /* Movimiento constante */
+/* El de pedido lo destacamos un poquito más rellenándolo */
+.float-btn.primary {
+    background: #25D366; color: #fff; border: 2px solid #25D366;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
 }
-.btn-order:hover { transform: scale(1.05); }
-.btn-order i { font-size: 1.4rem; }
+.float-btn.primary:hover { background: #1eab52; border-color: #1eab52; }
 
-@keyframes pulse-btn {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 184, 0, 0.7); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 184, 0, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 184, 0, 0); }
-}
 
 /* FOOTER */
 .main-footer { max-width:1400px; margin:0 auto; padding: 40px 25px; border-top: 1px solid #e5e5e5; background-color: #fff; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
@@ -133,9 +137,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 #zoomImg { max-width: 90%; max-height: 90vh; border-radius: 8px; transform: scale(0.9); transition: transform 0.3s; }
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
-.dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
-.dot { width: 6px; height: 6px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: 0.3s; }
-.dot.active { background-color: var(--brand-red); transform: scale(1.3); }
 
 @media (max-width:992px){ .sidebar-wrapper{display:none;} #menu-toggle-btn{display:flex; margin-bottom:15px;} .sidebar{position:static; margin-bottom:0; display:none;} .sidebar.open{display:flex;} }
 </style>
@@ -172,11 +173,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
-    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
+    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="float-btn">
         <i class="bi bi-people-fill"></i> Grupo Mayorista
     </a>
-    <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="btn-order">
-        <i class="bi bi-whatsapp"></i> HACER PEDIDO
+    <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="float-btn primary">
+        <i class="bi bi-whatsapp"></i> Hacer Pedido
     </a>
 </div>
 
@@ -206,6 +207,7 @@ window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
 window.onSlideScroll = function(el) { const card=el.closest('.card'); const dots=card.querySelectorAll('.dot'); if(dots.length<2)return; const idx=Math.round(el.scrollLeft/el.offsetWidth); dots.forEach(d=>d.classList.remove('active')); if(dots[idx])dots[idx].classList.add('active'); }
 function injectCompanyData() { document.getElementById('footer-envios').textContent=COMPANY_DATA.dataset.envios; document.getElementById('footer-horario').textContent=COMPANY_DATA.dataset.horario; }
+function generarLink(nombre, codigo) { return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, me interesa este producto:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n¿Me ayudas con el precio por mayor?`)}`; }
 
 function renderProductos(lista){
   const grid = document.getElementById('productos');
@@ -225,16 +227,17 @@ function renderProductos(lista){
     if (pUnidad > 0) {
         let pConDescuento = pUnidad - (pUnidad * (DESCUENTO_PORCENTAJE / 100));
         
-        // REGLA DE SEGURIDAD (Si el descuento baja más que el mayorista, no lo mostramos)
+        // REGLA DE ORO: Si el precio con descuento es MENOR que el mayorista...
+        // ...entonces NO aplicamos descuento (Protección de Margen)
         if (pConDescuento <= pMayor) {
             htmlPrecio = `
             <div class="price-box">
                 <span class="price-label-normal">PRECIO UNIDAD:</span>
                 <div class="price-normal">Bs. ${pUnidad.toFixed(2)}</div>
-                <div class="promo-text" style="font-size:0.65rem; color:#555; background:none; padding:0; margin:0;">*Pide tu descuento en caja</div>
             </div>`;
         } else {
-            htmlBadge = `<div class="badge-offer">-${DESCUENTO_PORCENTAJE}%</div>`;
+            // Muestra OFERTA -35%
+            htmlBadge = `<div class="badge-offer">-${DESCUENTO_PORCENTAJE}% OFF</div>`;
             htmlPrecio = `
             <div class="price-box">
                 <span class="price-label">OFERTA UNIDAD:</span>
@@ -245,7 +248,7 @@ function renderProductos(lista){
             </div>`;
         }
     } else {
-        htmlPrecio = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
+        htmlPrecio = `<div class="price-box"><span class="price-val" style="color:#888">CONSULTAR PRECIO</span></div>`;
     }
 
     const tieneFoto2 = p.imagen2 ? true : false;
@@ -270,7 +273,7 @@ function renderProductos(lista){
         ${htmlPrecio}
 
         <div class="card-footer-text">
-            <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6} Unidades o más x mayor
+            <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 12} Unidades o más x mayor
         </div>
       </div>
     </div>`;
@@ -317,7 +320,8 @@ window.filtrar = function(cat, btn){
   renderProductos(filtrados);
 }
 window.filtrarSub = function(tipo, btn){
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active')); btn.classList.add('active');
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
     const base = todos.filter(p => formatearTexto(p.categoria) === catActual);
     renderProductos(tipo === 'all' ? base : base.filter(p => formatearTexto(p.tipo) === tipo));
 }
