@@ -23,7 +23,7 @@
 
     .form-group { margin-bottom: 15px; }
     label { display: block; margin: 0 0 6px; font-weight: 600; font-size: 0.85rem; color: #555; }
-    /* Inputs limpios y grandes */
+    /* INPUTS LIMPIOS */
     input[type="text"], input[type="number"] { width: 100%; padding: 12px 15px; border: 2px solid #f0f0f0; border-radius: 10px; font-size: 0.95rem; transition: 0.2s; background: #fafafa; }
     input:focus { outline: none; border-color: var(--primary); background: #fff; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
@@ -38,7 +38,7 @@
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
     
-    /* --- GRILLA RESPONSIVA DEL INVENTARIO --- */
+    /* --- GRILLA RESPONSIVA 2 COLUMNAS --- */
     #list {
         display: grid;
         grid-template-columns: 1fr; /* Móvil: 1 columna */
@@ -52,7 +52,7 @@
     
     .product-item { 
       display: flex; 
-      flex-direction: column; /* Estructura vertical dentro de la tarjeta */
+      flex-direction: column;
       align-items: flex-start;
       gap: 10px; 
       padding: 15px;
@@ -71,7 +71,7 @@
     .item-content { display: flex; align-items: center; width: 100%; }
     
     .prod-img { 
-      width: 60px; height: 60px; /* Foto un poco más grande para ver mejor */
+      width: 60px; height: 60px; 
       border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; 
     }
     .prod-info { flex-grow: 1; margin-left: 12px; }
@@ -106,14 +106,14 @@
 
   <div id="appContent">
     <div class="container">
-      <h2 id="formTitle">Nuevo Producto</h2>
+      <h2 id="formTitle">Nuevo Producto <span style="color:blue; font-size:0.5em;">●</span></h2>
       <form id="productForm">
         <input type="hidden" id="editId">
         <input type="hidden" id="oldImg1">
         <input type="hidden" id="oldImg2">
         <input type="hidden" id="currentStockStatus" value="true">
         
-        <!-- CAJONES SIN EJEMPLOS (PLACEHOLDERS VACÍOS) -->
+        <!-- INPUTS SIN EJEMPLOS -->
         <div class="form-group">
             <label>Nombre / Descripción</label>
             <input type="text" id="name" required>
@@ -235,7 +235,7 @@
             await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); 
             msg.innerText = "✅ Actualizado";
             const q = document.getElementById('search').value.toLowerCase().trim();
-            if(q) { // Si hay búsqueda activa, quitamos el editado de la vista
+            if(q) { // Si hay búsqueda activa, quitamos el editado
                 const card = document.getElementById('card-' + id);
                 if(card) { card.style.opacity = "0"; setTimeout(() => card.remove(), 500); }
             }
