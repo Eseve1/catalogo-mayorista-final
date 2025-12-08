@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Finalizado</title>
+  <title>Admin Panel - Limpio</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -23,6 +23,7 @@
 
     .form-group { margin-bottom: 15px; }
     label { display: block; margin: 0 0 6px; font-weight: 600; font-size: 0.85rem; color: #555; }
+    /* Inputs limpios y grandes */
     input[type="text"], input[type="number"] { width: 100%; padding: 12px 15px; border: 2px solid #f0f0f0; border-radius: 10px; font-size: 0.95rem; transition: 0.2s; background: #fafafa; }
     input:focus { outline: none; border-color: var(--primary); background: #fff; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
@@ -32,77 +33,65 @@
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
     .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 15px; text-align: center; position: relative; background: #fafafa; height: 180px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
-    
+    .photo-label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; text-align: center; color: #666; }
+
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
     
-    /* ADAPTACIÓN DE LA LISTA: 2 COLUMNAS EN PC, 1 COLUMNA EN MÓVIL */
+    /* --- GRILLA RESPONSIVA DEL INVENTARIO --- */
     #list {
         display: grid;
-        grid-template-columns: 1fr; /* 1 columna por defecto (móvil) */
+        grid-template-columns: 1fr; /* Móvil: 1 columna */
         gap: 10px;
     }
     @media (min-width: 768px) {
         #list {
-            grid-template-columns: 1fr 1fr; /* 2 columnas en PC */
+            grid-template-columns: 1fr 1fr; /* PC: 2 columnas */
         }
     }
     
-    /* ESTILOS DE CADA ITEM EN LA LISTA */
     .product-item { 
       display: flex; 
-      flex-direction: column; /* Cambiado a columna para ocupar mejor el espacio en la grilla */
-      align-items: flex-start; /* Los items comienzan arriba */
-      gap: 10px; /* Espacio entre imagen y texto */
-      padding: 10px; /* Reducido para que quepan 2 */
+      flex-direction: column; /* Estructura vertical dentro de la tarjeta */
+      align-items: flex-start;
+      gap: 10px; 
+      padding: 15px;
       background: var(--card); 
       border: 1px solid #f0f0f0; 
       border-radius: 12px; 
       position: relative; 
       transition: all 0.3s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      min-height: 120px; /* Altura mínima para que todos se vean iguales */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+      min-height: 100px;
     }
     
     .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     
-    /* Contenedor de Info y Acciones */
-    .item-content {
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
+    .item-content { display: flex; align-items: center; width: 100%; }
     
     .prod-img { 
-      width: 50px; height: 50px; 
-      border-radius: 8px; 
-      object-fit: cover; 
-      background: #eee; 
-      flex-shrink: 0; /* No se encoge la imagen */
+      width: 60px; height: 60px; /* Foto un poco más grande para ver mejor */
+      border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; 
     }
-    .prod-info { flex-grow: 1; margin-left: 10px; }
-    .prod-title { font-weight: 700; margin: 0 0 2px; font-size: 0.9rem; line-height: 1.2; }
-    /* OCULTAMOS EL DETALLE COMPLETO (SOLO TITULO Y ERROR) */
-    .prod-sub { display: none; } 
+    .prod-info { flex-grow: 1; margin-left: 12px; }
+    .prod-title { font-weight: 700; margin: 0 0 4px; font-size: 0.95rem; line-height: 1.2; color: #333; }
+    .prod-price { font-weight: 600; color: #555; font-size: 0.9rem; }
     
-    .actions { 
-        display: flex; gap: 4px; 
-        position: absolute; right: 10px; top: 10px; 
-        z-index: 10;
-    }
-    .btn-icon { width: 30px; height: 30px; border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+    .actions { display: flex; gap: 5px; position: absolute; right: 10px; top: 10px; z-index: 10; }
+    .btn-icon { width: 32px; height: 32px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; transition: 0.2s; }
     .btn-edit { background: #eff6ff; color: #3b82f6; } 
     .btn-del { background: #fff5f5; color: #ef4444; }  
     .btn-power { background: #f0fdf4; color: #166534; } 
     .btn-power.off { background: #f3f4f6; color: #9ca3af; } 
     
-    /* ESTADO VACIO PARA MODO FANTASMA */
     .empty-state { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #9ca3af; }
     .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5; }
+    .alerta-precio { font-weight: 800; font-size: 0.75rem; color: #ef4444; display: block; margin-top: 4px; }
     
-    /* MENSAJE DE ERROR CLARO */
-    .alerta-precio { font-weight: 800; font-size: 0.75rem; color: #ef4444; margin-top: 5px; }
+    #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
+    .success { background: #dcfce7; color: #166534; }
+    .error { background: #fee2f2; color: #991b1b; }
   </style>
 </head>
 <body>
@@ -110,7 +99,7 @@
   <div id="loginScreen">
     <i class="bi bi-shield-lock-fill" style="font-size: 3rem; color: var(--primary);"></i>
     <h3>Acceso Admin</h3>
-    <input type="password" id="passInput" placeholder="Contraseña">
+    <input type="password" id="passInput">
     <button onclick="checkPass()">Entrar</button>
     <p id="loginError" style="color: #ff6b6b; display: none;">Contraseña incorrecta</p>
   </div>
@@ -123,19 +112,54 @@
         <input type="hidden" id="oldImg1">
         <input type="hidden" id="oldImg2">
         <input type="hidden" id="currentStockStatus" value="true">
-        <div class="form-group"><label>Nombre / Descripción</label><input type="text" id="name" placeholder="Ej: Reloj Casio Vintage" required></div>
-        <div class="row">
-          <div class="form-group"><label>Código</label><input type="text" id="code" placeholder="A-01" required></div>
-          <div class="form-group"><label>Categoría</label><input type="text" id="cat" placeholder="Relojes" required></div>
+        
+        <!-- CAJONES SIN EJEMPLOS (PLACEHOLDERS VACÍOS) -->
+        <div class="form-group">
+            <label>Nombre / Descripción</label>
+            <input type="text" id="name" required>
         </div>
         <div class="row">
-          <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01" placeholder="0.00"></div>
-          <div class="form-group"><label>Precio Mayor (Bs)</label><input type="number" id="price" step="0.01" placeholder="0.00" required></div>
+          <div class="form-group">
+              <label>Código</label>
+              <input type="text" id="code" required>
+          </div>
+          <div class="form-group">
+              <label>Categoría</label>
+              <input type="text" id="cat" required>
+          </div>
         </div>
-        <div class="form-group"><label>MOQ (Mínimo de Compra)</label><input type="number" id="moq" placeholder="Ej: 6" required></div>
+        <div class="row">
+          <div class="form-group">
+              <label>P. Unidad (Opcional)</label>
+              <input type="number" id="priceUnit" step="0.01">
+          </div>
+          <div class="form-group">
+              <label>Precio Mayor (Bs)</label>
+              <input type="number" id="price" step="0.01" required>
+          </div>
+        </div>
+        <div class="form-group">
+            <label>MOQ (Mínimo de Compra)</label>
+            <input type="number" id="moq" required>
+        </div>
+
         <div class="photos-grid">
-            <div><div class="photo-label">Foto Principal</div><div class="photo-area" id="dropZone1"><img id="previewImg1"><i class="bi bi-camera-fill" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)"><p>Principal</p></div></div>
-            <div><div class="photo-label">Foto 2 (Opcional)</div><div class="photo-area" id="dropZone2"><img id="previewImg2"><i class="bi bi-camera" style="font-size:1.8rem;color:#ccc"></i><input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)"><p>Secundaria</p></div></div>
+            <div>
+                <div class="photo-label">Foto Principal</div>
+                <div class="photo-area" id="dropZone1">
+                    <img id="previewImg1">
+                    <i class="bi bi-camera-fill" style="font-size:1.8rem;color:#ccc"></i>
+                    <input type="file" id="file1" accept="image/*" style="display:none;" onchange="previewFile(1)">
+                </div>
+            </div>
+            <div>
+                <div class="photo-label">Foto 2 (Opcional)</div>
+                <div class="photo-area" id="dropZone2">
+                    <img id="previewImg2">
+                    <i class="bi bi-camera" style="font-size:1.8rem;color:#ccc"></i>
+                    <input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)">
+                </div>
+            </div>
         </div>
         <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
         <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Cancelar Edición</button>
@@ -145,16 +169,15 @@
 
     <div class="container">
       <h2>Inventario</h2>
-      <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:5px;">💡 Escribe <b>"error"</b> para ver solo los que faltan precio.</p>
+      <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:5px;">💡 Escribe <b>"error"</b> para ver productos sin precio.</p>
       <div class="search-box">
-        <input type="text" id="search" placeholder="Buscar por nombre, código o 'error'">
+        <input type="text" id="search" placeholder="Buscar...">
         <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
       </div>
       <div id="list">
-        <!-- Contenido vacío por defecto (Modo Fantasma) -->
         <div class="empty-state">
             <i class="bi bi-search"></i>
-            <p>Escribe arriba para comenzar la búsqueda.</p>
+            <p>Lista oculta. Escribe para buscar.</p>
         </div>
       </div>
       <p style="text-align:center; color:#999; font-size:0.85rem; margin-top:20px;">Stock | Editar | Borrar</p>
@@ -183,7 +206,7 @@
     
     function previewFile(num) {
       const file = document.getElementById('file' + num).files[0]; const img = document.getElementById('previewImg' + num);
-      if (file) { const reader = new FileReader(); reader.onload = function(e) { img.src = e.target.result; img.style.display = 'block'; document.getElementById('dropZone' + num).querySelector('i').style.display = 'none'; document.getElementById('dropZone' + num).querySelector('p').style.display = 'none'; }; reader.readAsDataURL(file); }
+      if (file) { const reader = new FileReader(); reader.onload = function(e) { img.src = e.target.result; img.style.display = 'block'; document.getElementById('dropZone' + num).querySelector('i').style.display = 'none'; }; reader.readAsDataURL(file); }
     }
     async function uploadPhoto(fileInput) {
         if(fileInput.files && fileInput.files.length > 0) {
@@ -212,7 +235,7 @@
             await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); 
             msg.innerText = "✅ Actualizado";
             const q = document.getElementById('search').value.toLowerCase().trim();
-            if(q) { // Si hay búsqueda activa, quitamos el editado
+            if(q) { // Si hay búsqueda activa, quitamos el editado de la vista
                 const card = document.getElementById('card-' + id);
                 if(card) { card.style.opacity = "0"; setTimeout(() => card.remove(), 500); }
             }
@@ -220,61 +243,50 @@
         else { await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); msg.innerText = "✅ Guardado"; }
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        if(document.getElementById('search').value) doSearch(); // Solo recargar si hay búsqueda
+        if(document.getElementById('search').value) doSearch(); 
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
 
-    // --- FUNCIÓN PRINCIPAL DE BÚSQUEDA ---
     async function doSearch() {
       const q = document.getElementById('search').value.toLowerCase().trim(); 
-      
-      // MODO FANTASMA: Si no hay texto, limpia la lista y muestra el estado vacío
       if(!q) {
           LIST_ELEMENT.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>Escribe arriba para comenzar la búsqueda.</p></div>';
           return;
       }
-
-      LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#999">Buscando...</p>';
+      LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#999; grid-column:1/-1">Buscando...</p>';
       
       try {
         const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(100), Appwrite.Query.orderDesc('$createdAt')]);
         let docs = res.documents;
         let hits = [];
-        
         const isErrorMode = (q === "error" || q === "sin precio");
 
         if (isErrorMode) {
             hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
-            if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-check-circle-fill" style="color:#166534"></i><p style="color:#166534">¡Limpio! No hay errores de precio.</p></p>';
+            if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ ¡Limpio! No hay errores de precio.</p>';
         } else { 
             hits = docs.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)));
         }
 
         if(hits.length > 0) LIST_ELEMENT.innerHTML = ''; 
-        else if(!isErrorMode) LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-x-circle-fill" style="color:#999"></i><p style="color:#999">Sin resultados para "'+q+'"</p></p>';
+        else if(!isErrorMode) LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-x-circle-fill" style="color:#999"></i><p style="color:#999">Sin resultados.</p></p>';
 
         hits.forEach(d => {
           const enStock = (d.disponible === undefined) ? true : d.disponible;
           const tieneError = !d.preciopormayor || d.preciopormayor === 0;
           let claseExtra = ""; let alertaHtml = "";
           
-          if(tieneError) { 
-              claseExtra = " sin-precio"; 
-              alertaHtml = '<span class="alerta-precio">⚠️ SIN PRECIO</span>'; 
-          } else if(!enStock) { 
-              claseExtra = " agotado"; 
-          }
+          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span class="alerta-precio">⚠️ SIN PRECIO</span>'; } else if(!enStock) { claseExtra = " agotado"; }
           
           const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
           const precioMostrar = tieneError ? "0.00" : Number(d.preciopormayor).toFixed(2);
           
-          // GENERACIÓN DE LA FILA DE PRODUCTO SIMPLIFICADA
           div.innerHTML = `
             <div class="item-content">
                 <img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
                 <div class="prod-info">
                     <div class="prod-title">${d.descripcion}</div>
-                    <div class="prod-title">Bs. ${precioMostrar}</div>
+                    <div class="prod-price">Bs. ${precioMostrar}</div>
                     ${alertaHtml}
                 </div>
             </div>
@@ -288,8 +300,7 @@
       } catch(e) { alert(e.message); }
     }
 
-    // --- MANEJO DE EVENTOS ---
-    document.getElementById('search').addEventListener('input', doSearch); // Llama a buscar al escribir
+    document.getElementById('search').addEventListener('input', doSearch);
     
     async function toggleStock(docId, currentState, btn) {
       const newState = !currentState; const card = document.getElementById('card-' + docId); const originalIcon = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true;
@@ -300,15 +311,15 @@
       document.getElementById('price').value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
-      document.getElementById('oldImg1').value = d.imagen || ""; if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; document.getElementById('dropZone1').querySelector('p').style.display = 'none'; }
-      document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i'); const txt2 = document.getElementById('dropZone2').querySelector('p');
-      if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; icon2.style.display = 'none'; txt2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; icon2.style.display = 'block'; txt2.style.display = 'block'; }
+      document.getElementById('oldImg1').value = d.imagen || ""; if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; }
+      document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i');
+      if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; icon2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; icon2.style.display = 'block'; }
       document.getElementById('formTitle').innerText = "Editando: " + d.codigo; document.getElementById('btnSave').innerText = "Actualizar"; document.getElementById('btnSave').style.background = "#2563eb"; document.getElementById('btnCancel').style.display = "block"; window.scrollTo({top:0, behavior:'smooth'});
     }
     window.delItem = async function(id) { if(!confirm("¿Borrar?")) return; try { await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); document.getElementById('card-'+id).remove(); } catch(e) { alert(e.message); } }
     window.resetForm = function() {
       document.getElementById('productForm').reset(); document.getElementById('editId').value = ""; document.getElementById('oldImg1').value = ""; document.getElementById('oldImg2').value = ""; document.getElementById('file1').value = ""; document.getElementById('file2').value = ""; 
-      ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; document.getElementById('dropZone'+n).querySelector('p').style.display = 'block'; });
+      ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; });
       document.getElementById('formTitle').innerText = "Nuevo Producto"; document.getElementById('btnSave').innerText = "Guardar Producto"; document.getElementById('btnSave').style.background = "#FFB800"; document.getElementById('btnCancel').style.display = "none";
     }
   </script>
