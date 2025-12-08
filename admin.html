@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Final</title>
+  <title>Admin Panel - Responsivo</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -18,21 +18,33 @@
     #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     #appContent { display: none; }
 
-    .container { max-width: 700px; margin: 0 auto 30px; background: var(--card); padding: 30px; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-    h2 { margin-top: 0; text-align: center; font-size: 1.4rem; color: #111; font-weight: 800; margin-bottom: 25px; }
+    .container { max-width: 800px; margin: 0 auto 30px; background: var(--card); padding: 20px; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    
+    /* TITULO ROJO PARA VERIFICAR CAMBIO */
+    h2 { margin-top: 0; text-align: center; font-size: 1.5rem; color: #dc2626; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
 
     .form-group { margin-bottom: 15px; }
     label { display: block; margin: 0 0 6px; font-weight: 600; font-size: 0.85rem; color: #555; }
     
-    /* Inputs grandes y limpios */
     input[type="text"], input[type="number"] { width: 100%; padding: 12px 15px; border: 2px solid #f0f0f0; border-radius: 10px; font-size: 0.95rem; transition: 0.2s; background: #fafafa; }
     input:focus { outline: none; border-color: var(--primary); background: #fff; }
     
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
+    /* --- GRILLA DEL FORMULARIO (RESPONSIVA) --- */
+    /* En móvil (por defecto): 1 sola columna */
+    .row { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    
+    /* En PC (pantallas medianas y grandes): 2 columnas */
+    @media (min-width: 768px) {
+        .row { grid-template-columns: 1fr 1fr; }
+    }
+
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
-    .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    /* FOTOS: Responsivas también */
+    .photos-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
+    @media (min-width: 768px) { .photos-grid { grid-template-columns: 1fr 1fr; } }
+
     .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 15px; text-align: center; position: relative; background: #fafafa; height: 180px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
     .photo-label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; text-align: center; color: #666; }
@@ -40,57 +52,22 @@
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
     
-    /* --- GRILLA DEL INVENTARIO (CORREGIDA) --- */
-    #list {
-        display: grid;
-        /* Móvil: 1 columna */
-        grid-template-columns: 1fr; 
-        gap: 15px; /* Espacio entre tarjetas */
-        width: 100%;
-    }
-
-    /* PC: A partir de 768px, FORZAMOS 2 columnas paralelas */
-    @media (min-width: 768px) {
-        #list {
-            /* 'minmax(0, 1fr)' evita que el contenido empuje el ancho y rompa la grilla */
-            grid-template-columns: repeat(2, minmax(0, 1fr)); 
-        }
-    }
+    /* --- GRILLA DEL INVENTARIO (RESPONSIVA) --- */
+    #list { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; }
+    @media (min-width: 768px) { #list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     
-    .product-item { 
-      background: var(--card); 
-      border: 1px solid #f0f0f0; 
-      border-radius: 12px; 
-      padding: 12px;
-      position: relative; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-      display: flex;
-      flex-direction: column;
-      height: 100%; /* Para que todas tengan la misma altura */
-    }
-    
+    .product-item { background: var(--card); border: 1px solid #f0f0f0; border-radius: 12px; padding: 12px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); display: flex; flex-direction: column; height: 100%; }
     .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     
-    .item-content { 
-        display: flex; 
-        align-items: center; 
-        width: 100%;
-        margin-top: 5px; /* Espacio para los botones de arriba */
-    }
-    
-    .prod-img { 
-      width: 50px; height: 50px; 
-      border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; 
-    }
+    .item-content { display: flex; align-items: center; width: 100%; margin-top: 5px; }
+    .prod-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; }
     .prod-info { flex-grow: 1; margin-left: 10px; overflow: hidden; }
     .prod-title { font-weight: 700; margin: 0 0 2px; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .prod-price { font-weight: 600; color: #555; font-size: 0.85rem; }
-    
-    .actions { 
-        display: flex; gap: 5px; 
-        position: absolute; right: 8px; top: 8px; 
-    }
+    .alerta-precio { font-weight: 800; font-size: 0.75rem; color: #ef4444; display: block; }
+
+    .actions { display: flex; gap: 5px; position: absolute; right: 8px; top: 8px; }
     .btn-icon { width: 28px; height: 28px; border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
     .btn-edit { background: #eff6ff; color: #3b82f6; } 
     .btn-del { background: #fff5f5; color: #ef4444; }  
@@ -99,7 +76,6 @@
     
     .empty-state { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #9ca3af; }
     .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5; }
-    .alerta-precio { font-weight: 800; font-size: 0.75rem; color: #ef4444; display: block; }
     
     #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
     .success { background: #dcfce7; color: #166534; }
@@ -118,18 +94,19 @@
 
   <div id="appContent">
     <div class="container">
-      <h2 id="formTitle">Nuevo Producto <span style="color:blue; font-size:0.5em;">●</span></h2>
+      <h2><i class="bi bi-gear-fill"></i> Panel de Control</h2>
       <form id="productForm">
         <input type="hidden" id="editId">
         <input type="hidden" id="oldImg1">
         <input type="hidden" id="oldImg2">
         <input type="hidden" id="currentStockStatus" value="true">
         
-        <!-- INPUTS TOTALMENTE LIMPIOS -->
         <div class="form-group">
             <label>Nombre / Descripción</label>
             <input type="text" id="name" required>
         </div>
+        
+        <!-- ESTA FILA SE ADAPTA: 1 col en Móvil, 2 en PC -->
         <div class="row">
           <div class="form-group">
               <label>Código</label>
@@ -140,6 +117,7 @@
               <input type="text" id="cat" required>
           </div>
         </div>
+
         <div class="row">
           <div class="form-group">
               <label>P. Unidad (Opcional)</label>
@@ -150,6 +128,7 @@
               <input type="number" id="price" step="0.01" required>
           </div>
         </div>
+
         <div class="form-group">
             <label>MOQ (Mínimo de Compra)</label>
             <input type="number" id="moq" required>
@@ -294,11 +273,6 @@
           const precioMostrar = tieneError ? "0.00" : Number(d.preciopormayor).toFixed(2);
           
           div.innerHTML = `
-            <div class="actions">
-                <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
-                <button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button>
-                <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
-            </div>
             <div class="item-content">
                 <img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
                 <div class="prod-info">
@@ -306,6 +280,11 @@
                     <div class="prod-price">Bs. ${precioMostrar}</div>
                     ${alertaHtml}
                 </div>
+            </div>
+            <div class="actions">
+                <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
+                <button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button>
+                <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
             </div>`;
           LIST_ELEMENT.appendChild(div);
         });
