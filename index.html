@@ -13,8 +13,14 @@ html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
 /* --- HEADER ROJO --- */
-.header-oferta{ width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; }
-.header-track{ display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; }
+.header-oferta{ 
+    width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; 
+    box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; 
+}
+.header-track{ 
+    display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; 
+    padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; 
+}
 .header-item{ display:inline-flex; align-items:center; gap:8px; }
 .header-item i { color: var(--accent); font-size: 1.2rem; } 
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -22,7 +28,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* LAYOUT */
 .main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom: 100px; }
 
-/* SIDEBAR (SOLO PC) */
+/* SIDEBAR (PC) */
 .sidebar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:20px; position:sticky; top:80px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
 .sidebar h2{ margin:0 0 15px; font-size:1.1rem; font-weight:900; color: #333; display: flex; align-items: center; gap: 8px; }
 #menu-cat{ display:flex; flex-direction:column; gap:6px; overflow-y: auto; }
@@ -30,8 +36,8 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .btn-cat:hover{ background:#f1f3f5; color:#000; }
 .btn-cat.active{ background:var(--brand-red); color:#fff; font-weight: 700; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); }
 
-/* --- MENÚ MÓVIL HORIZONTAL (NUEVO) --- */
-.mobile-cats { display: none; } /* Oculto en PC */
+/* MENÚ MÓVIL (Horizontal) */
+.mobile-cats { display: none; } 
 
 /* TOOLBAR */
 .toolbar-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
@@ -39,7 +45,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 #searchBox{ flex:1; border:none; outline:none; font-size:1rem; padding:5px; color: #333; }
 #searchBox:focus{ border-color:var(--accent); }
 
-/* CHIPS (Subcategorías) */
 #sub-chips { display: flex; gap: 8px; flex-wrap: wrap; display: none; }
 #sub-chips.visible { display: flex; }
 .chip { background: #fff; border: 1px solid #dee2e6; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
@@ -49,12 +54,12 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 /* GRID PRODUCTOS */
 .grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));}
 
-/* TARJETA DE PRODUCTO (LIMPIA PARA SCREENSHOT) */
+/* TARJETA DE PRODUCTO */
 .card{ 
     background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; 
     position:relative; display:flex; flex-direction:column; 
     transition:transform 0.2s, box-shadow 0.2s; 
-    padding-bottom: 15px; /* Espacio abajo ya que no hay botón */
+    padding-bottom: 15px; 
 }
 .card:hover{transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.08);}
 
@@ -91,22 +96,22 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .price-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
 
 /* Precio Unidad */
-.price-row.unit { color: #555; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
+.price-row.unit { color: #555; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
 .price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
 .price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
 
 .price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 6px; }
 .price-new { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
 .price-normal { color: #111; font-weight: 900; font-size: 1.2rem; }
-.promo-text { font-size: 0.7rem; color: #16a34a; font-weight: 700; background: #dcfce7; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-left: 5px; }
 
-/* MOQ (Texto pequeño abajo) */
-.moq-row {
-    margin-top: 5px; font-size: 0.8rem; color: #555; font-weight: 600;
-    display: flex; align-items: center; gap: 5px;
-    background: #f8f9fa; padding: 6px; border-radius: 6px;
+/* MOQ (TEXTO CORREGIDO) */
+.moq-text {
+    font-size: 0.75rem; color: #444; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 5px;
+    background: #f1f5f9; padding: 6px 10px; border-radius: 6px;
 }
-.moq-row i { color: var(--brand-red); }
+.moq-text i { color: var(--brand-red); font-size: 1rem; }
 
 /* --- ZONA FLOTANTE --- */
 .floating-actions {
@@ -152,7 +157,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
 
-/* --- ADAPTACIÓN MÓVIL MEJORADA --- */
+/* --- ADAPTACIÓN MÓVIL (MENÚ HORIZONTAL) --- */
 @media (max-width:992px){ 
     .main{ display:block; padding:15px; padding-bottom: 120px; }
     .sidebar-wrapper { display: none; } /* Ocultamos sidebar clásico */
@@ -265,7 +270,10 @@ function renderProductos(lista){
     
     if(pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
         pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
-        if (pUnidadFinal > pMayor) { mostrarDescuento = true; promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`; }
+        if (pUnidadFinal > pMayor) {
+            mostrarDescuento = true;
+            promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
+        }
     }
 
     if (mostrarDescuento) {
@@ -311,8 +319,9 @@ function renderProductos(lista){
         
         <div class="prices-container">
             ${precioUnidadHtml}
+            <!-- TEXTO DE MOQ CORREGIDO -->
             <div class="moq-row">
-                <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6}
+                <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6} Unidades por mayor
             </div>
         </div>
         <!-- SIN BOTÓN -->
@@ -357,18 +366,13 @@ window.filtrar = function(cat, btn, isMobile = false){
   document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('active'));
   
-  // Buscar el botón correspondiente en la otra lista para activarlo también visualmente
+  // Buscar el botón correspondiente en la otra lista
   const pcBtns = document.querySelectorAll('.btn-cat');
   const mobBtns = document.querySelectorAll('.cat-chip');
   
-  // Encontrar índice
-  let index = -1;
-  // Lógica simple de activación visual
-  if(isMobile) {
-      btn.classList.add('active');
-  } else {
-      btn.classList.add('active');
-  }
+  // Como no tenemos ID único, buscamos por texto
+  for (let b of pcBtns) { if (b.textContent === cat) b.classList.add('active'); }
+  for (let b of mobBtns) { if (b.textContent === cat) b.classList.add('active'); }
 
   catActual = cat;
   let filtrados = [];
