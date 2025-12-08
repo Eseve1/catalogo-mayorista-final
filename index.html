@@ -90,7 +90,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .dot { width: 8px; height: 8px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: background-color 0.3s; }
 .dot.active { background-color: var(--accent); box-shadow: 0 0 5px var(--accent); }
 
-/* --- PRECIOS (LIMPIOS) --- */
+/* --- PRECIOS (ESTRATEGIA VISIBLE) --- */
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
 .ref{font-size:.85rem; color:#888; font-weight:600; margin-bottom:12px;}
@@ -98,43 +98,41 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .prices-container { background: #fff; padding: 0; margin-bottom: 15px; }
 .price-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
 
-/* PRECIO UNIDAD DESTACADO */
-.price-row.unit { color: #333; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
+/* Precio Unidad */
+.price-row.unit { color: #555; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
 .price-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #555; }
-.price-val { font-weight: 800; font-size: 1.1rem; }
+.price-val { font-weight: 800; font-size: 1.1rem; color: #111; }
+.price-old { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
+.price-new { color: #16a34a; font-weight: 900; font-size: 1.3rem; }
 
-/* Estilos de precio */
-.price-old { text-decoration: line-through; color: #999; font-size: 0.95rem; margin-right: 8px; }
-.price-new { color: #16a34a; font-weight: 900; font-size: 1.3rem; } /* Verde Grande */
-
-/* Texto de "Pide tu Descuento" */
+/* Texto de "Pide tu Descuento" (Para margen peligroso) */
 .promo-text { 
-    font-size: 0.75rem; color: #16a34a; font-weight: 800; 
-    background: #dcfce7; padding: 3px 8px; border-radius: 4px;
-    display: inline-block;
-    animation: text-pulse 2s infinite;
+    font-size: 0.7rem; color: #16a34a; font-weight: 700; 
+    background: #dcfce7; padding: 2px 6px; border-radius: 4px;
+    display: inline-block; margin-left: 5px;
 }
 
-/* MOQ (Texto pequeño abajo) */
-.moq-row {
-    margin-top: 8px; font-size: 0.8rem; color: #666; font-weight: 500;
-    display: flex; align-items: center; gap: 6px;
-    background: #f0f0f0; padding: 4px 8px; border-radius: 4px; width: fit-content;
+/* PRECIO MAYORISTA (VISIBLE Y DESTACADO) */
+.price-row.mayor { 
+    color: #111; margin-top: 5px; align-items: center; 
+    background: #fff5f5; padding: 8px; border-radius: 8px; border: 1px solid #fee2e2;
 }
-.moq-row i { color: #555; }
+.price-label-mayor { font-size: 0.85rem; font-weight: 900; text-transform: uppercase; color: #000; }
+.price-val-mayor { font-weight: 900; font-size: 1.5rem; color: #cc0000; } /* GIGANTE */
 
-/* BOTÓN "BONITO" (Dorado/Amarillo Marca) */
+.moq-tag { font-size: 0.75rem; color: #666; font-weight: 600; margin-left: auto; }
+
+/* BOTÓN "HACER PEDIDO" */
 .cta{ 
-    background: #FFB800; color:#000; border-radius:10px; padding:12px; 
+    background: #25D366; color:#fff; border-radius:8px; padding:12px; 
     font-weight:900; font-size:.9rem; display:flex; align-items:center; gap:8px; 
     width:100%; justify-content:center; text-decoration:none; 
-    transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 184, 0, 0.3); 
-    margin-top: 15px;
-    border-bottom: 4px solid #e0a200; /* Efecto botón 3D */
+    transition: 0.2s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); 
+    margin-top: 15px; border-bottom: 3px solid #128C7E;
 }
-.cta:hover { transform: translateY(-1px); background: #ffc107; box-shadow: 0 6px 15px rgba(255, 184, 0, 0.4); border-bottom: 2px solid #e0a200; }
-.cta:active { transform: translateY(2px); border-bottom: 0px solid #e0a200; }
-.cta i { color: #000; font-size: 1.1rem; }
+.cta:hover { transform: translateY(-2px); background: #128C7E; }
+.cta:active { transform: translateY(2px); border-bottom: 0px; }
+.cta i { color: #fff; font-size: 1.2rem; }
 
 .whatsapp{ position:fixed; right:20px; bottom:20px; z-index:100; background:#25D366; color:#fff; border-radius:50px; padding:12px 24px; font-weight:800; text-decoration:none; box-shadow:0 4px 20px rgba(37,211,102,0.4); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:1rem; }
 .whatsapp:hover{transform:scale(1.05);}
@@ -185,6 +183,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">&times;</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
 <a class="whatsapp-group" href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank"><i class="bi bi-people-fill"></i> Grupo Mayorista</a>
+<!-- Sin botón flotante extra para no saturar -->
 
 <script type="module">
 import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
@@ -204,8 +203,9 @@ window.closeZoom = function() { document.getElementById('zoomModal').classList.r
 window.onSlideScroll = function(element) { const card = element.closest('.card'); const dots = card.querySelectorAll('.dot'); if(dots.length < 2) return; const index = Math.round(element.scrollLeft / element.offsetWidth); dots.forEach(d => d.classList.remove('active')); if(dots[index]) dots[index].classList.add('active'); }
 function injectCompanyData() { const horario = COMPANY_DATA.dataset.horario; const envios = COMPANY_DATA.dataset.envios; document.getElementById('footer-envios').textContent = envios; document.getElementById('footer-horario').textContent = horario; }
 
-function generarWhatsappLink(nombre, codigo, moq) {
-    const texto = `Hola, quisiera COTIZAR POR MAYOR este producto:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n   (Mínimo: ${moq})`;
+function generarWhatsappLink(nombre, codigo, precio, moq) {
+    // MENSAJE PARA COMPRA DIRECTA
+    const texto = `Hola, quiero hacer un pedido:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n   PRECIO MAYOR: Bs. ${precio}\n   MÍNIMO: ${moq}`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`;
 }
 
@@ -216,7 +216,6 @@ function renderProductos(lista){
   grid.innerHTML = lista.map(p => {
     const tituloBonito = formatearTitulo(p.descripcion); const codigoBonito = formatearCodigo(p.codigo);
     
-    // Solo usamos pUnidad para mostrar (Precio mayorista oculto)
     let pMayor = parseFloat(p.preciopormayor); if(isNaN(pMayor)) pMayor = 0;
     let pUnidad = parseFloat(p.precioUnidad); if(isNaN(pUnidad)) pUnidad = 0;
     
@@ -224,23 +223,19 @@ function renderProductos(lista){
     let precioUnidadHtml = '';
     let pUnidadFinal = null;
 
-    // --- CEREBRO: PROTECCIÓN DE MARGEN ---
+    // --- PROTECCIÓN DE MARGEN ---
     let mostrarDescuento = false;
     
     if(pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
         pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
-        
-        // SALVAVIDAS: Si el descuento baja el precio MÁS que el mayorista...
-        if (pUnidadFinal <= pMayor) {
-            mostrarDescuento = false; // PELIGRO: No aplicar descuento
-        } else {
-            mostrarDescuento = true; // SEGURO: Aplicar descuento
+        // Si el precio con descuento sigue siendo MAYOR al mayorista, es seguro mostrarlo
+        if (pUnidadFinal > pMayor) {
+            mostrarDescuento = true;
+            promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% UNIDAD</div>`;
         }
     }
 
     if (mostrarDescuento) {
-        // CASO A: DESCUENTO APLICADO
-        promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% UNIDAD</div>`;
         precioUnidadHtml = `
         <div class="price-row unit">
             <span class="price-label">PRECIO UNIDAD:</span>
@@ -250,7 +245,7 @@ function renderProductos(lista){
             </span>
         </div>`;
     } else if (pUnidad > 0) {
-        // CASO B: SIN DESCUENTO (Texto "Pide tu descuento")
+        // Margen apretado: No mostramos descuento matemático, solo texto
         precioUnidadHtml = `
         <div class="price-row unit">
             <span class="price-label">PRECIO UNIDAD:</span>
@@ -272,7 +267,7 @@ function renderProductos(lista){
         imagesHtml = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div>`;
     }
 
-    const whatsappLink = generarWhatsappLink(tituloBonito, codigoBonito, p.moq || 'No esp.');
+    const whatsappLink = generarWhatsappLink(tituloBonito, codigoBonito, pMayor.toFixed(2), p.moq || 'No esp.');
 
     return `
     <div class="card" id="${cardId}">
@@ -285,13 +280,18 @@ function renderProductos(lista){
         <div class="prices-container">
             ${precioUnidadHtml}
             
-            <div class="moq-row">
-                <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 12} Unidades
+            <!-- PRECIO MAYORISTA GIGANTE -->
+            <div class="price-row mayor">
+                <div>
+                    <span class="price-label-mayor">POR MAYOR:</span>
+                    <div class="price-val-mayor">Bs. ${pMayor.toFixed(2)}</div>
+                </div>
+                <span class="moq-tag">(Mín. ${p.moq || 6})</span>
             </div>
         </div>
 
         <a href="${whatsappLink}" target="_blank" class="cta">
-            <i class="bi bi-whatsapp"></i> COTIZAR POR MAYOR
+            <i class="bi bi-whatsapp"></i> HACER PEDIDO
         </a>
       </div>
     </div>`;
