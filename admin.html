@@ -36,40 +36,73 @@
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
     
-    /* ESTILOS LISTA */
+    /* ADAPTACIÓN DE LA LISTA: 2 COLUMNAS EN PC, 1 COLUMNA EN MÓVIL */
+    #list {
+        display: grid;
+        grid-template-columns: 1fr; /* 1 columna por defecto (móvil) */
+        gap: 10px;
+    }
+    @media (min-width: 768px) {
+        #list {
+            grid-template-columns: 1fr 1fr; /* 2 columnas en PC */
+        }
+    }
+    
+    /* ESTILOS DE CADA ITEM EN LA LISTA */
     .product-item { 
-      display: flex; align-items: center; gap: 15px; padding: 12px; 
-      background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; 
-      margin-bottom: 10px; position: relative; transition: 0.3s; 
+      display: flex; 
+      flex-direction: column; /* Cambiado a columna para ocupar mejor el espacio en la grilla */
+      align-items: flex-start; /* Los items comienzan arriba */
+      gap: 10px; /* Espacio entre imagen y texto */
+      padding: 10px; /* Reducido para que quepan 2 */
+      background: var(--card); 
+      border: 1px solid #f0f0f0; 
+      border-radius: 12px; 
+      position: relative; 
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      min-height: 120px; /* Altura mínima para que todos se vean iguales */
     }
     
     .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
-    .product-item.agotado .prod-title { color: #9ca3af; text-decoration: line-through; }
+    
+    /* Contenedor de Info y Acciones */
+    .item-content {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
     
     .prod-img { 
       width: 50px; height: 50px; 
       border-radius: 8px; 
       object-fit: cover; 
       background: #eee; 
-      /* VISTA PREVIA CORREGIDA */
+      flex-shrink: 0; /* No se encoge la imagen */
     }
-    .prod-info { flex: 1; }
-    .prod-title { font-weight: 700; margin: 0 0 2px; font-size: 0.95rem; }
-    .prod-sub { font-size: 0.8rem; color: #666; }
-    .actions { display: flex; gap: 6px; }
-    .btn-icon { width: 38px; height: 38px; border-radius: 8px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; transition: 0.2s; }
+    .prod-info { flex-grow: 1; margin-left: 10px; }
+    .prod-title { font-weight: 700; margin: 0 0 2px; font-size: 0.9rem; line-height: 1.2; }
+    /* OCULTAMOS EL DETALLE COMPLETO (SOLO TITULO Y ERROR) */
+    .prod-sub { display: none; } 
+    
+    .actions { 
+        display: flex; gap: 4px; 
+        position: absolute; right: 10px; top: 10px; 
+        z-index: 10;
+    }
+    .btn-icon { width: 30px; height: 30px; border-radius: 6px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
     .btn-edit { background: #eff6ff; color: #3b82f6; } 
     .btn-del { background: #fff5f5; color: #ef4444; }  
     .btn-power { background: #f0fdf4; color: #166534; } 
     .btn-power.off { background: #f3f4f6; color: #9ca3af; } 
-    #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
-    .success { background: #dcfce7; color: #166534; }
-    .error { background: #fee2f2; color: #991b1b; }
-
+    
     /* ESTADO VACIO PARA MODO FANTASMA */
-    .empty-state { text-align: center; padding: 40px 20px; color: #9ca3af; }
+    .empty-state { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #9ca3af; }
     .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5; }
+    
+    /* MENSAJE DE ERROR CLARO */
+    .alerta-precio { font-weight: 800; font-size: 0.75rem; color: #ef4444; margin-top: 5px; }
   </style>
 </head>
 <body>
@@ -208,18 +241,17 @@
         let docs = res.documents;
         let hits = [];
         
-        // Lógica de Filtrado: Modos 'error' y Búsqueda Normal
         const isErrorMode = (q === "error" || q === "sin precio");
 
         if (isErrorMode) {
             hits = docs.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
-            if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534">✅ ¡Limpio! No hay errores.</p>';
+            if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-check-circle-fill" style="color:#166534"></i><p style="color:#166534">¡Limpio! No hay errores de precio.</p></p>';
         } else { 
             hits = docs.filter(d => (d.descripcion && d.descripcion.toLowerCase().includes(q)) || (d.codigo && d.codigo.toLowerCase().includes(q)));
         }
 
         if(hits.length > 0) LIST_ELEMENT.innerHTML = ''; 
-        else if(!isErrorMode) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#999">Sin resultados para "'+q+'"</p>';
+        else if(!isErrorMode) LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-x-circle-fill" style="color:#999"></i><p style="color:#999">Sin resultados para "'+q+'"</p></p>';
 
         hits.forEach(d => {
           const enStock = (d.disponible === undefined) ? true : d.disponible;
@@ -228,21 +260,23 @@
           
           if(tieneError) { 
               claseExtra = " sin-precio"; 
-              alertaHtml = '<span style="color:#ef4444; font-weight:800; font-size:0.8rem; display:block;">⚠️ SIN PRECIO</span>'; 
+              alertaHtml = '<span class="alerta-precio">⚠️ SIN PRECIO</span>'; 
           } else if(!enStock) { 
               claseExtra = " agotado"; 
           }
           
           const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
-          const precioMostrar = tieneError ? "0.00" : d.preciopormayor;
+          const precioMostrar = tieneError ? "0.00" : Number(d.preciopormayor).toFixed(2);
           
-          // GENERACIÓN DE LA FILA DE PRODUCTO
+          // GENERACIÓN DE LA FILA DE PRODUCTO SIMPLIFICADA
           div.innerHTML = `
-            <img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
-            <div class="prod-info">
-              <div class="prod-title">${d.descripcion}</div>
-              <div class="prod-sub">${d.codigo} | Bs. ${precioMostrar}</div>
-              ${alertaHtml}
+            <div class="item-content">
+                <img src="${d.imagen || 'https://via.placeholder.com/50'}" class="prod-img">
+                <div class="prod-info">
+                    <div class="prod-title">${d.descripcion}</div>
+                    <div class="prod-title">Bs. ${precioMostrar}</div>
+                    ${alertaHtml}
+                </div>
             </div>
             <div class="actions">
                 <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
