@@ -50,7 +50,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .chip.active { background: #333; color: #fff; border-color: #333; }
 
 /* GRID PRODUCTOS */
-.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));} /* Tarjetas un poco más compactas */
+.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));}
 
 /* TARJETA DE PRODUCTO */
 .card{ 
@@ -69,16 +69,25 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
 .prod-img:hover { transform: scale(1.05); }
 
-/* ETIQUETA ROJA DE OFERTA (DENTRO DE LA IMAGEN) */
-.badge-offer {
-    position: absolute; top: 10px; left: 10px; z-index: 10;
-    background: #e63946; color: #fff;
-    padding: 4px 8px; border-radius: 4px;
+/* --- ETIQUETA ROJA ANIMADA (PULSE) --- */
+.badge-promo {
+    position: absolute; top: 12px; left: 12px; z-index: 10;
+    background: #e63946; /* Rojo bonito */
+    color: #fff;
+    padding: 5px 12px; 
+    border-radius: 50px; /* Redondeada */
     font-weight: 800; font-size: 0.75rem; letter-spacing: 0.5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    animation: pulse-red 2s infinite;
+    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+    animation: pulse-red 2s infinite; /* Animación suave */
+    display: flex; align-items: center; gap: 4px;
 }
-@keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+.badge-promo i { font-size: 0.9rem; }
+
+@keyframes pulse-red { 
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(230, 57, 70, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(230, 57, 70, 0); }
+}
 
 /* INFORMACIÓN */
 .info{padding:15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
@@ -88,11 +97,20 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .prices-container { margin-bottom: 5px; }
 
 /* PRECIOS */
+.price-row.unit { color: #555; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
+.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
+.price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
+
 .price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 6px; }
 .price-new { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
 .price-normal { color: #111; font-weight: 900; font-size: 1.2rem; }
-.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
-.price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
+
+/* Texto de "Pide tu Descuento" */
+.promo-text { 
+    font-size: 0.7rem; color: #16a34a; font-weight: 700; 
+    background: #dcfce7; padding: 2px 6px; border-radius: 4px;
+    display: inline-block; margin-left: 5px;
+}
 
 /* TEXTO DE PIE (MOQ) */
 .card-footer-text {
@@ -263,10 +281,10 @@ function renderProductos(lista){
     }
 
     if (mostrarDescuento) {
-        // CASO A: DESCUENTO APLICADO
-        promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% UNIDAD</div>`;
+        // CASO A: DESCUENTO APLICADO (Etiqueta Bonita Roja)
+        promoBadge = `<div class="badge-promo"><i class="bi bi-tag-fill"></i> -${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
         precioUnidadHtml = `
-        <div class="price-box">
+        <div class="price-row unit">
             <span class="price-label">OFERTA UNIDAD:</span>
             <div>
                 <span class="price-old">Bs. ${pUnidad.toFixed(2)}</span>
@@ -276,7 +294,7 @@ function renderProductos(lista){
     } else if (pUnidad > 0) {
         // CASO B: SIN DESCUENTO
         precioUnidadHtml = `
-        <div class="price-box">
+        <div class="price-row unit">
             <span class="price-label-normal">PRECIO UNIDAD:</span>
             <div class="price-normal">Bs. ${pUnidad.toFixed(2)}</div>
             <div class="promo-text" style="font-size:0.65rem; color:#555; background:none; padding:0; margin:0;">*Pide tu descuento en caja</div>
@@ -311,7 +329,7 @@ function renderProductos(lista){
         
         <div class="prices-container">
             ${precioUnidadHtml}
-            <div class="moq-row">
+            <div class="card-footer-text">
                 <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6} Unidades por mayor
             </div>
         </div>
