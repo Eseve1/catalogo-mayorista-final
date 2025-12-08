@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - v4.5</title>
+  <title>Admin Panel - v4.6</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -102,8 +102,9 @@
                     <div class="form-group"><label>Categoría</label><input type="text" id="cat" required></div>
                 </div>
                 <div class="row">
-                    <div class="form-group"><label>P. Unidad</label><input type="number" id="priceUnit" step="0.01"></div>
-                    <div class="form-group"><label>P. Mayor</label><input type="number" id="price" step="0.01" required></div>
+                    <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01"></div>
+                    <!-- AQUI CAMBIE: YA NO ES REQUIRED -->
+                    <div class="form-group"><label>P. Mayor (Opcional)</label><input type="number" id="price" step="0.01"></div>
                 </div>
                 <div class="form-group"><label>MOQ</label><input type="number" id="moq" required></div>
 
@@ -216,9 +217,14 @@
         const newUrl1 = await uploadPhoto(document.getElementById('file1')); if(newUrl1) finalUrl1 = newUrl1;
         const newUrl2 = await uploadPhoto(document.getElementById('file2')); if(newUrl2) finalUrl2 = newUrl2;
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
+        
+        // VALOR DEFAULT 0 SI ESTA VACIO
+        const pMayorVal = document.getElementById('price').value ? Number(document.getElementById('price').value) : 0;
+        const pUnidadVal = document.getElementById('priceUnit').value ? Number(document.getElementById('priceUnit').value) : 0;
+
         const data = {
           descripcion: document.getElementById('name').value, codigo: document.getElementById('code').value, categoria: document.getElementById('cat').value,
-          preciopormayor: Number(document.getElementById('price').value), precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
+          preciopormayor: pMayorVal, precioUnidad: pUnidadVal, 
           moq: Number(document.getElementById('moq').value), imagen: finalUrl1, imagen2: finalUrl2, disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
         if(id) { 
@@ -262,17 +268,15 @@
       
       LIST_ELEMENT.innerHTML = ''; let hits = [];
       const isErrorMode = (q === "error" || q === "sin precio");
-      const isAgotadoMode = (q === "agotado" || q === "off"); // --- NUEVO MODO AGOTADO ---
+      const isAgotadoMode = (q === "agotado" || q === "off"); 
 
       if (isErrorMode) {
           hits = GLOBAL_INVENTORY.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
           if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ ¡Limpio! No hay errores.</p>';
       } else if (isAgotadoMode) {
-          // --- FILTRO DE AGOTADOS ---
           hits = GLOBAL_INVENTORY.filter(d => d.disponible === false);
           if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ Todo está activo (Stock OK).</p>';
       } else { 
-          // BÚSQUEDA NORMAL
           hits = GLOBAL_INVENTORY.filter(d => {
               const desc = (d.descripcion || '').toLowerCase();
               const cod = (d.codigo || '').toLowerCase();
@@ -309,21 +313,16 @@
           await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState }); 
           const p = GLOBAL_INVENTORY.find(x => x.$id === docId); if(p) p.disponible = newState;
           btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; 
-          
-          // Actualización visual inmediata
           if(newState) { card.classList.remove('agotado'); if(card.querySelector('.alerta-precio')) card.querySelector('.alerta-precio').remove(); }
           else { card.classList.add('agotado'); }
-          
           btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); 
-          
-          // Si estamos filtrando "agotado", quitar de la vista al reactivar
           const q = document.getElementById('search').value.toLowerCase().trim();
           if(q === "agotado" && newState === true) { card.remove(); }
-          
       } catch (err) { alert(err.message); }
     }
     window.editItem = function(d) {
       document.getElementById('editId').value = d.$id; document.getElementById('name').value = d.descripcion; document.getElementById('code').value = d.codigo; document.getElementById('cat').value = d.categoria;
+      // SI NO HAY PRECIO, DEJAR VACÍO EL INPUT
       document.getElementById('price').value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
