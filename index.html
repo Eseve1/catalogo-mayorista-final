@@ -50,105 +50,106 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .chip.active { background: #333; color: #fff; border-color: #333; }
 
 /* GRID PRODUCTOS */
-.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));}
+.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));} /* Tarjetas un poco más compactas */
 
-/* TARJETA DE PRODUCTO (Sin botón abajo, limpio para screenshot) */
+/* TARJETA DE PRODUCTO */
 .card{ 
     background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; 
     position:relative; display:flex; flex-direction:column; 
     transition:transform 0.2s, box-shadow 0.2s; 
-    padding-bottom: 10px; /* Un poco de aire abajo */
+    padding-bottom: 10px; 
 }
 .card:hover{transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.08);}
 
-/* ETIQUETA ROJA DE OFERTA (-35%) */
+/* IMAGEN */
+.img-box { background:#fff; height:220px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
+.img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
+.img-slider::-webkit-scrollbar { display: none; }
+.slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 10px; }
+.prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
+.prod-img:hover { transform: scale(1.05); }
+
+/* ETIQUETA ROJA DE OFERTA (DENTRO DE LA IMAGEN) */
 .badge-offer {
-    position: absolute; top: 12px; left: 12px; z-index: 10;
+    position: absolute; top: 10px; left: 10px; z-index: 10;
     background: #e63946; color: #fff;
-    padding: 4px 10px; border-radius: 4px;
+    padding: 4px 8px; border-radius: 4px;
     font-weight: 800; font-size: 0.75rem; letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     animation: pulse-red 2s infinite;
 }
 @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-/* IMAGEN */
-.img-box { background:#fff; height:240px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
-.img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
-.img-slider::-webkit-scrollbar { display: none; }
-.slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 20px; }
-.prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
-.prod-img:hover { transform: scale(1.05); }
-
-/* PUNTOS */
-.dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
-.dot { width: 6px; height: 6px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: 0.3s; }
-.dot.active { background-color: var(--brand-red); transform: scale(1.3); }
-
 /* INFORMACIÓN */
-.info{padding:18px 18px 5px 18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
-.title{font-size:1rem; font-weight:800; margin:0 0 5px; line-height:1.4; color:#111;}
-.ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:15px; display: block;}
+.info{padding:15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
+.title{font-size:0.95rem; font-weight:800; margin:0 0 4px; line-height:1.3; color:#111;}
+.ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:10px; display: block;}
 
-.prices-container { background: #fff; padding: 0; margin-bottom: 5px; }
-.price-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+.prices-container { margin-bottom: 5px; }
 
-/* Precio Unidad */
-.price-row.unit { color: #555; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
-.price-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #555; }
-.price-val { font-weight: 800; font-size: 1.1rem; color: #111; }
-.price-old { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
-.price-new { color: var(--brand-red); font-weight: 900; font-size: 1.4rem; }
+/* PRECIOS */
+.price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 6px; }
+.price-new { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
+.price-normal { color: #111; font-weight: 900; font-size: 1.2rem; }
+.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
+.price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
 
-/* Texto de "Pide tu Descuento" */
-.promo-text { 
-    font-size: 0.7rem; color: #16a34a; font-weight: 700; 
-    background: #dcfce7; padding: 2px 6px; border-radius: 4px;
-    display: inline-block; margin-left: 5px;
-}
-
-/* MOQ (Texto pequeño abajo) */
-.moq-row {
-    margin-top: 5px; font-size: 0.8rem; color: #555; font-weight: 600;
+/* TEXTO DE PIE (MOQ) */
+.card-footer-text {
+    font-size: 0.75rem; color: #555; font-weight: 600;
+    margin-top: 10px; padding-top: 8px; border-top: 1px dashed #eee;
     display: flex; align-items: center; gap: 5px;
-    background: #f8f9fa; padding: 6px; border-radius: 6px; /* Fondo suave para destacar */
 }
-.moq-row i { color: var(--brand-red); }
+.card-footer-text i { color: var(--accent); }
 
-/* --- ZONA FLOTANTE (BOTONES GLOBALES) --- */
+/* --- ZONA FLOTANTE (Fixed Bottom) --- */
 .floating-actions {
     position: fixed; bottom: 20px; right: 20px; z-index: 100;
-    display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
 }
 
-/* 1. Botón Grupo */
-.btn-group { 
-    background: #fff; color: #25D366; border: 2px solid #25D366;
-    padding: 8px 16px; border-radius: 50px; 
-    font-weight: 700; font-size: 0.85rem;
-    text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    display: flex; align-items: center; gap: 8px; transition: 0.2s;
-}
-
-/* 2. Botón HACER PEDIDO (ROJO Y PEQUEÑO) */
+/* 1. Botón HACER PEDIDO (ROJO Y PARPADEANTE - ARRIBA) */
 .btn-order {
     background: #D32F2F; color: #fff; /* Rojo */
-    padding: 10px 20px; border-radius: 50px; /* Más pequeño */
-    font-weight: 800; font-size: 0.9rem; 
+    padding: 12px 24px; border-radius: 50px; 
+    font-weight: 900; font-size: 1rem; 
     text-decoration: none; 
-    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
+    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.5);
     display: flex; align-items: center; gap: 8px;
-    transition: 0.2s;
+    animation: pulse-glow 1.5s infinite; /* Parpadeo Intenso */
 }
-.btn-order:hover { transform: scale(1.05); background: #b71c1c; }
-.btn-order i { font-size: 1.1rem; }
+.btn-order i { font-size: 1.3rem; }
+
+@keyframes pulse-glow {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+}
+
+/* 2. Botón Grupo (CONTRAÍDO - ABAJO) */
+.btn-group { 
+    background: #fff; color: #25D366; border: 2px solid #25D366;
+    height: 45px; width: 45px; /* Círculo pequeño inicial */
+    border-radius: 50px; 
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.btn-group i { font-size: 1.4rem; margin: 0; }
+.btn-group span { opacity: 0; max-width: 0; transition: all 0.3s; margin-left: 0; font-weight: 700; font-size: 0.9rem; }
+
+/* Efecto Hover: Se expande */
+.btn-group:hover { width: 180px; padding: 0 15px; justify-content: flex-start; }
+.btn-group:hover span { opacity: 1; max-width: 200px; margin-left: 10px; }
+
 
 /* FOOTER */
-.main-footer { max-width:1400px; margin:0 auto; padding: 30px 20px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.footer-col h4 { font-weight: 800; font-size: 1rem; color: #111; margin-bottom: 10px; }
-.footer-col p { margin-bottom: 8px; line-height: 1.4; }
-.footer-col i { color: var(--accent); margin-right: 5px; }
-.map-link { color: #3b82f6; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+.main-footer { max-width:1400px; margin:0 auto; padding: 40px 25px; border-top: 1px solid #e5e5e5; background-color: #fff; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
+.footer-col h4 { font-weight: 800; font-size: 1rem; color: #111; margin-bottom: 12px; }
+.footer-col p { margin-bottom: 8px; line-height: 1.5; color: #555; font-size: 0.9rem; }
+.map-link { color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
 
 /* MODALES */
 #zoomModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
@@ -156,9 +157,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 #zoomImg { max-width: 90%; max-height: 90vh; border-radius: 8px; transform: scale(0.9); transition: transform 0.3s; }
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
+.dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
+.dot { width: 6px; height: 6px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: 0.3s; }
+.dot.active { background-color: var(--brand-red); transform: scale(1.3); }
 
 @media (max-width:992px){ .sidebar-wrapper{display:none;} #menu-toggle-btn{display:flex; margin-bottom:15px;} .sidebar{position:static; margin-bottom:0; display:none;} .sidebar.open{display:flex;} }
-@media (max-width: 768px) { .main-footer { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -167,7 +170,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div class="header-oferta">
   <div class="header-track">
-    <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN LIQUIDACIÓN!</div>
+    <div class="header-item"><i class="bi bi-fire"></i> LIQUIDACIÓN DE TEMPORADA</div>
     <div class="header-item"><i class="bi bi-tags-fill"></i> HASTA 35% OFF EN UNIDAD</div>
     <div class="header-item"><i class="bi bi-box-seam"></i> PRECIOS DE LOCURA</div>
     <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO EL PAÍS</div>
@@ -191,13 +194,17 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     </section>
 </div>
 
-<!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
+<!-- ZONA FLOTANTE (BOTONES GLOBALES - ORDEN CORREGIDO) -->
 <div class="floating-actions">
-    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
-        <i class="bi bi-people-fill"></i> Grupo Mayorista
-    </a>
+    <!-- Botón Pedido (Animado y ARRIBA) -->
     <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="btn-order">
-        <i class="bi bi-whatsapp"></i> Hacer Pedido
+        <i class="bi bi-whatsapp"></i> HACER PEDIDO
+    </a>
+    
+    <!-- Botón Grupo (Contraído y ABAJO) -->
+    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
+        <i class="bi bi-people-fill"></i> 
+        <span>Grupo Mayorista</span>
     </a>
 </div>
 
@@ -259,23 +266,23 @@ function renderProductos(lista){
         // CASO A: DESCUENTO APLICADO
         promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% UNIDAD</div>`;
         precioUnidadHtml = `
-        <div class="price-row unit">
-            <span class="price-label">PRECIO UNIDAD:</span>
-            <span>
+        <div class="price-box">
+            <span class="price-label">OFERTA UNIDAD:</span>
+            <div>
                 <span class="price-old">Bs. ${pUnidad.toFixed(2)}</span>
                 <span class="price-new">Bs. ${pUnidadFinal.toFixed(2)}</span>
-            </span>
+            </div>
         </div>`;
     } else if (pUnidad > 0) {
         // CASO B: SIN DESCUENTO
         precioUnidadHtml = `
-        <div class="price-row unit">
-            <span class="price-label">PRECIO UNIDAD:</span>
-            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:5px;">
-                <span class="price-val" style="color:#111;">Bs. ${pUnidad.toFixed(2)}</span>
-                <span class="promo-text">🔥 Pide en caja tu descuento</span>
-            </div>
+        <div class="price-box">
+            <span class="price-label-normal">PRECIO UNIDAD:</span>
+            <div class="price-normal">Bs. ${pUnidad.toFixed(2)}</div>
+            <div class="promo-text" style="font-size:0.65rem; color:#555; background:none; padding:0; margin:0;">*Pide tu descuento en caja</div>
         </div>`;
+    } else {
+        precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
 
     const tieneFoto2 = p.imagen2 ? true : false;
@@ -291,11 +298,16 @@ function renderProductos(lista){
 
     return `
     <div class="card" id="${cardId}">
-      ${promoBadge}
-      <div class="img-box"><div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>${dotHtml}</div>
+      <div class="img-box">
+          ${promoBadge}
+          <div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>
+          ${dotHtml}
+      </div>
       <div class="info">
-        <h3 class="title">${tituloBonito}</h3>
-        <div class="ref">Ref: ${codigoBonito}</div>
+        <div>
+            <h3 class="title">${tituloBonito}</h3>
+            <span class="ref">Ref: ${codigoBonito}</span>
+        </div>
         
         <div class="prices-container">
             ${precioUnidadHtml}
