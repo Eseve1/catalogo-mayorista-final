@@ -4,30 +4,24 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Catálogo Mayorista - Ale Importadora</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 <style>
-:root{ --bg:#f8f9fa; --text:#212529; --accent:#FFC107; --brand-red:#D32F2F; --card-border:#e9ecef; }
+:root{ --bg:#f6f8fb; --text:#111; --accent:#FFB800; --brand-red:#CC0000; --card-border:#e5e5e5; }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
-/* HEADER ROJO CORPORATIVO */
-.header-oferta{ 
-    width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; 
-    box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; 
-}
-.header-track{ 
-    display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; 
-    padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; 
-}
+/* --- HEADER ROJO --- */
+.header-oferta{ width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; }
+.header-track{ display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; }
 .header-item{ display:inline-flex; align-items:center; gap:8px; }
 .header-item i { color: var(--accent); font-size: 1.2rem; } 
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 /* LAYOUT */
-.main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; }
-@media (max-width:992px){ .main{grid-template-columns:1fr; padding:15px;} }
+.main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom: 100px; /* Espacio para botones flotantes */ }
+@media (max-width:992px){ .main{grid-template-columns:1fr; padding:15px; padding-bottom: 120px;} }
 
 /* SIDEBAR */
 .sidebar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:20px; position:sticky; top:80px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
@@ -41,7 +35,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .toolbar-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
 .toolbar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:10px 15px; display:flex; align-items:center; gap:12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
 #searchBox{ flex:1; border:none; outline:none; font-size:1rem; padding:5px; color: #333; }
-#searchBox::placeholder { color: #adb5bd; }
 
 #sub-chips { display: flex; gap: 8px; flex-wrap: wrap; display: none; }
 #sub-chips.visible { display: flex; }
@@ -49,90 +42,106 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .chip.active { background: #333; color: #fff; border-color: #333; }
 
 /* GRID PRODUCTOS */
-.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));}
+.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));} /* Tarjetas un poco más compactas */
 
 /* TARJETA DE PRODUCTO */
 .card{ background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; position:relative; display:flex; flex-direction:column; transition:transform 0.2s, box-shadow 0.2s; }
 .card:hover{transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.08);}
 
-/* ETIQUETA ROJA DE OFERTA (Dinámica) */
+/* ETIQUETA ROJA DE OFERTA (-35%) */
 .badge-offer {
-    position: absolute; top: 12px; left: 12px; z-index: 10;
+    position: absolute; top: 10px; left: 10px; z-index: 10;
     background: #e63946; color: #fff;
-    padding: 4px 10px; border-radius: 4px;
+    padding: 3px 8px; border-radius: 4px;
     font-weight: 800; font-size: 0.75rem; letter-spacing: 0.5px;
     box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4);
     animation: pulse-red 2s infinite;
 }
 @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-/* ETIQUETA MÍNIMO (Discreta) */
-.badge-moq {
-    position: absolute; top: 12px; right: 12px; z-index: 10;
-    background: rgba(255,255,255,0.9); color: #333;
-    padding: 4px 8px; border-radius: 4px; border: 1px solid #eee;
-    font-weight: 700; font-size: 0.7rem; 
-}
-
 /* IMAGEN */
-.img-box { background:#fff; height:240px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
+.img-box { background:#fff; height:220px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
 .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
-.slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 20px; }
+.slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 10px; }
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
-.prod-img:hover { transform: scale(1.05); }
 
-/* PRECIOS Y TEXTO */
-.info{padding:18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
-.title{font-size:1rem; font-weight:800; margin:0 0 5px; line-height:1.4; color:#111;}
-.ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:15px; display: block;}
+/* INFORMACIÓN (Compacta para Screenshot) */
+.info{padding:15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
+.title{font-size:0.95rem; font-weight:800; margin:0 0 4px; line-height:1.3; color:#111;}
+.ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:10px; display: block;}
 
-.price-box { margin-bottom: 15px; }
+.price-box { margin-bottom: 5px; }
 
-/* CASO 1: CON DESCUENTO */
-.price-old { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
-.price-new { color: #d32f2f; font-weight: 900; font-size: 1.4rem; }
-.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 2px; }
-
-/* CASO 2: SIN DESCUENTO (Normal) */
-.price-normal { color: #111; font-weight: 900; font-size: 1.3rem; }
+/* PRECIOS */
+.price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 6px; }
+.price-new { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
+.price-normal { color: #111; font-weight: 900; font-size: 1.2rem; }
+.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
 .price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
 
-/* BOTÓN DE ACCIÓN (Negro Elegante) */
-.cta{ 
-    background: #111; color:#fff; border-radius:8px; padding:12px; 
-    font-weight:700; font-size:.9rem; display:flex; align-items:center; justify-content: center; gap:8px; 
-    text-decoration:none; transition: 0.2s; 
+/* TEXTO DE PIE (MOQ) */
+.card-footer-text {
+    font-size: 0.75rem; color: #555; font-weight: 600;
+    margin-top: 10px; padding-top: 8px; border-top: 1px dashed #eee;
+    display: flex; align-items: center; gap: 5px;
 }
-.cta:hover { background: #333; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-.cta i { color: #25D366; font-size: 1.1rem; }
+.card-footer-text i { color: var(--accent); }
+
+/* --- ZONA FLOTANTE (Fixed Bottom) --- */
+.floating-actions {
+    position: fixed; bottom: 20px; right: 20px; z-index: 100;
+    display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+}
+
+/* Botón Grupo (Secundario) */
+.btn-group { 
+    background: #fff; color: #000; border: 2px solid #000;
+    padding: 10px 20px; border-radius: 50px; font-weight: 700; font-size: 0.9rem;
+    text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex; align-items: center; gap: 8px; transition: 0.2s;
+}
+
+/* Botón HACER PEDIDO (Principal y Animado) */
+.btn-order {
+    background: linear-gradient(135deg, #FFB800 0%, #FF9900 100%); /* Amarillo Marca */
+    color: #000; 
+    padding: 15px 30px; border-radius: 50px; 
+    font-weight: 900; font-size: 1.1rem; letter-spacing: 0.5px;
+    text-decoration: none; 
+    box-shadow: 0 4px 20px rgba(255, 184, 0, 0.5);
+    display: flex; align-items: center; gap: 10px;
+    animation: pulse-btn 2s infinite; /* Movimiento constante */
+}
+.btn-order:hover { transform: scale(1.05); }
+.btn-order i { font-size: 1.4rem; }
+
+@keyframes pulse-btn {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 184, 0, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 184, 0, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 184, 0, 0); }
+}
 
 /* FOOTER */
 .main-footer { max-width:1400px; margin:0 auto; padding: 40px 25px; border-top: 1px solid #e5e5e5; background-color: #fff; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
 .footer-col h4 { font-weight: 800; font-size: 1rem; color: #111; margin-bottom: 12px; }
 .footer-col p { margin-bottom: 8px; line-height: 1.5; color: #555; font-size: 0.9rem; }
-.footer-col i { color: var(--brand-red); margin-right: 5px; }
 .map-link { color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
 
-/* MODALES Y EXTRAS */
+/* MODALES */
 #zoomModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
 #zoomModal.open { display: flex; opacity: 1; }
-#zoomImg { max-width: 90%; max-height: 90vh; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s; }
+#zoomImg { max-width: 90%; max-height: 90vh; border-radius: 8px; transform: scale(0.9); transition: transform 0.3s; }
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
-
 .dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
 .dot { width: 6px; height: 6px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: 0.3s; }
 .dot.active { background-color: var(--brand-red); transform: scale(1.3); }
-
-.whatsapp-group{ position:fixed; right:20px; bottom:20px; z-index:100; background:#fff; color:#25D366; border:2px solid #25D366; border-radius:50px; padding:10px 20px; font-weight:700; text-decoration:none; box-shadow:0 4px 15px rgba(0,0,0,0.1); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:0.9rem; }
-.whatsapp-group:hover{transform:scale(1.05); background:#f0fff4;}
 
 @media (max-width:992px){ .sidebar-wrapper{display:none;} #menu-toggle-btn{display:flex; margin-bottom:15px;} .sidebar{position:static; margin-bottom:0; display:none;} .sidebar.open{display:flex;} }
 </style>
 </head>
 <body>
 
-<!-- DATOS -->
 <div id="company-data" style="display:none;" data-horario="LUNES A DOMINGO: 9:00 - 19:30" data-envios="ENVÍOS A TODO BOLIVIA" data-whatsapp="59161333335"></div>
 
 <div class="header-oferta">
@@ -161,15 +170,23 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     </section>
 </div>
 
-<!-- FOOTER -->
+<!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
+<div class="floating-actions">
+    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
+        <i class="bi bi-people-fill"></i> Grupo Mayorista
+    </a>
+    <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="btn-order">
+        <i class="bi bi-whatsapp"></i> HACER PEDIDO
+    </a>
+</div>
+
 <footer class="main-footer">
-    <div class="footer-col"><h4><i class="bi bi-building"></i> Importadora Ale</h4><p>Expertos en mayoreo. Productos de alta rotación para tu negocio.</p><p>© 2025 Derechos Reservados.</p></div>
+    <div class="footer-col"><h4><i class="bi bi-building"></i> Importadora Ale</h4><p>Tu proveedor mayorista de confianza.</p><p>© 2025 Derechos Reservados.</p></div>
     <div class="footer-col"><h4><i class="bi bi-geo-alt-fill"></i> Sucursales</h4><p><b>1:</b> Aroma N.º 560 – Santa Cruz <a href="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9" class="map-link">Ver mapa</a></p><p><b>2:</b> Av. Cañoto esq. Tundí #924 <a href="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA" class="map-link">Ver mapa</a></p></div>
     <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> 61333335</p></div>
 </footer>
 
 <div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">&times;</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
-<a class="whatsapp-group" href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank"><i class="bi bi-people-fill"></i> Grupo Mayorista</a>
 
 <script type="module">
 import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
@@ -177,19 +194,18 @@ const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c
 const COMPANY_DATA = document.getElementById('company-data');
 const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
 
-// --- ESTRATEGIA: 35% DE DESCUENTO ---
+// --- ESTRATEGIA DE PRECIOS ---
 const DESCUENTO_PORCENTAJE = 35;
 
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
 
-// --- FUNCIONES Y LÓGICA ---
+// --- FUNCIONES ---
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
 window.onSlideScroll = function(el) { const card=el.closest('.card'); const dots=card.querySelectorAll('.dot'); if(dots.length<2)return; const idx=Math.round(el.scrollLeft/el.offsetWidth); dots.forEach(d=>d.classList.remove('active')); if(dots[idx])dots[idx].classList.add('active'); }
 function injectCompanyData() { document.getElementById('footer-envios').textContent=COMPANY_DATA.dataset.envios; document.getElementById('footer-horario').textContent=COMPANY_DATA.dataset.horario; }
-function generarLink(nombre, codigo) { return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, me interesa este producto:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n¿Me ayudas con el precio por mayor?`)}`; }
 
 function renderProductos(lista){
   const grid = document.getElementById('productos');
@@ -207,21 +223,18 @@ function renderProductos(lista){
     let htmlBadge = '';
     
     if (pUnidad > 0) {
-        // Calculamos descuento
         let pConDescuento = pUnidad - (pUnidad * (DESCUENTO_PORCENTAJE / 100));
         
-        // REGLA DE ORO: Si el precio con descuento es MENOR que el mayorista...
-        // ...entonces NO aplicamos descuento (Protección de Margen)
+        // REGLA DE SEGURIDAD (Si el descuento baja más que el mayorista, no lo mostramos)
         if (pConDescuento <= pMayor) {
-            // Muestra precio normal
             htmlPrecio = `
             <div class="price-box">
                 <span class="price-label-normal">PRECIO UNIDAD:</span>
                 <div class="price-normal">Bs. ${pUnidad.toFixed(2)}</div>
+                <div class="promo-text" style="font-size:0.65rem; color:#555; background:none; padding:0; margin:0;">*Pide tu descuento en caja</div>
             </div>`;
         } else {
-            // Muestra OFERTA -35%
-            htmlBadge = `<div class="badge-offer">-${DESCUENTO_PORCENTAJE}% OFF</div>`;
+            htmlBadge = `<div class="badge-offer">-${DESCUENTO_PORCENTAJE}%</div>`;
             htmlPrecio = `
             <div class="price-box">
                 <span class="price-label">OFERTA UNIDAD:</span>
@@ -232,11 +245,9 @@ function renderProductos(lista){
             </div>`;
         }
     } else {
-        // Si no tiene precio unidad, muestra "Consultar"
-        htmlPrecio = `<div class="price-box"><span class="price-val" style="color:#888">CONSULTAR PRECIO</span></div>`;
+        htmlPrecio = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
 
-    // FOTOS
     const tieneFoto2 = p.imagen2 ? true : false;
     const cardId = `card-${p.$id}`;
     let slides = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div>`;
@@ -249,7 +260,6 @@ function renderProductos(lista){
     return `
     <div class="card" id="${cardId}">
       ${htmlBadge}
-      <div class="badge-moq">Mín. ${p.moq || 6}</div>
       <div class="img-box"><div class="img-slider" onscroll="onSlideScroll(this)">${slides}</div>${dots}</div>
       <div class="info">
         <div>
@@ -259,9 +269,9 @@ function renderProductos(lista){
         
         ${htmlPrecio}
 
-        <a href="${generarLink(titulo, codigo)}" target="_blank" class="cta">
-            <i class="bi bi-whatsapp"></i> COTIZAR POR MAYOR
-        </a>
+        <div class="card-footer-text">
+            <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6} Unidades o más x mayor
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -294,7 +304,6 @@ window.filtrar = function(cat, btn){
   catActual = cat;
   let filtrados = cat === 'Todo' ? todos : todos.filter(p => formatearTexto(p.categoria) === cat);
   
-  // Subcategorias (Tipos)
   const subContainer = document.getElementById('sub-chips');
   if(cat !== 'Todo') {
       const tipos = [...new Set(filtrados.map(p => formatearTexto(p.tipo)).filter(t => t))].sort();
