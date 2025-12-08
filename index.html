@@ -61,32 +61,36 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .card:hover{transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,.08);}
 .moq{ position:absolute; top:12px; right:12px; z-index:10; background:var(--accent); color:#000; border-radius:6px; padding:4px 10px; font-weight:800; font-size:.75rem; text-transform: uppercase; pointer-events: none; }
 
-/* ETIQUETA DESCUENTO */
+/* ETIQUETA DE DESCUENTO (SOLO VISUAL) */
 .badge-promo {
     position: absolute; top: 12px; left: 12px; z-index: 10;
-    background: #16a34a; color: #fff;
+    background: #16a34a; color: #fff; /* Verde Oferta */
     padding: 4px 8px; border-radius: 6px;
     font-weight: 900; font-size: 0.8rem;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     animation: shake 3s infinite;
 }
 
+/* --- CARRUSEL DESLIZABLE --- */
 .img-box { background:#fff; padding:0; height:220px; border-bottom:1px solid #f0f0f0; position: relative; overflow: hidden; }
 .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
 .img-slider::-webkit-scrollbar { display: none; }
 .slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 15px; }
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); cursor: zoom-in; }
 
+/* MODAL DE ZOOM */
 #zoomModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
 #zoomModal.open { display: flex; opacity: 1; }
 #zoomImg { max-width: 90%; max-height: 90vh; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s; }
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
 
+/* PUNTOS */
 .dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
 .dot { width: 8px; height: 8px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: background-color 0.3s; }
 .dot.active { background-color: var(--accent); box-shadow: 0 0 5px var(--accent); }
 
+/* --- PRECIOS (LIMPIOS) --- */
 .info{padding:16px;}
 .title{font-size:1.05rem; font-weight:900; margin:0 0 6px; line-height:1.4; color:#000;}
 .ref{font-size:.85rem; color:#888; font-weight:600; margin-bottom:12px;}
@@ -98,14 +102,9 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 .price-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #555; }
 .price-val { font-weight: 800; font-size: 1.1rem; }
-/* Estilo del MOQ dinámico al costado */
-.moq-tag { font-size: 0.75rem; color: #666; font-weight: 500; margin-left: 5px; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; }
-
-.price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 5px; }
-.price-new { color: #16a34a; font-weight: 900; font-size: 1rem; }
+.price-val.strike { text-decoration: line-through; font-size: 0.95rem; font-weight: 400; color: #999; }
 .price-mayor-val { color: #cc0000; font-size: 1.2rem; }
 
-/* BOTÓN ME INTERESA */
 .cta{ background:#222; color:#fff; border-radius:8px; padding:12px; font-weight:800; font-size:.9rem; display:flex; align-items:center; gap:8px; width:100%; justify-content:center; text-decoration:none; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
 .cta:hover { background: #000; transform: translateY(-2px); }
 .cta i { color: #25D366; font-size: 1.1rem; }
@@ -115,6 +114,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .whatsapp-group{ position:fixed; right:20px; bottom:85px; z-index:100; background:#fff; color:#25D366; border:2px solid #25D366; border-radius:50px; padding:8px 20px; font-weight:700; text-decoration:none; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:flex; align-items:center; gap:8px; transition:transform 0.2s; font-size:0.9rem; }
 .whatsapp-group:hover{transform:scale(1.05); background:#f0fff4;}
 
+/* FOOTER */
 .main-footer { max-width:1600px; margin:0 auto; padding: 30px 20px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .footer-col h4 { font-weight: 800; font-size: 1rem; color: #333; margin-bottom: 10px; }
 .footer-col p { margin-bottom: 8px; line-height: 1.4; }
@@ -126,8 +126,10 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 </head>
 <body>
 
+<!-- DATOS DE EMPRESA -->
 <div id="company-data" style="display:none;" data-horario="LUNES A DOMINGO: 9:00 - 19:30" data-envios="ENVÍOS A TODO BOLIVIA" data-whatsapp="59161333335"></div>
 
+<!-- MARQUESINA DE OFERTA -->
 <div class="header-oferta">
   <div class="header-track">
     <div class="header-item"><i class="bi bi-fire"></i> ¡GRAN LIQUIDACIÓN!</div>
@@ -166,7 +168,10 @@ import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@
 const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c8601'; const COLLECTION_ID = 'catalogo';
 const COMPANY_DATA = document.getElementById('company-data');
 const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
-const DESCUENTO_UNIDAD_PORCENTAJE = 35; 
+
+// --- CONFIGURACIÓN DE OFERTA VISUAL ---
+// Cambia esto a 35, 20 o 0 cuando quieras. Solo muestra la etiqueta.
+const OFERTA_UNIDAD_LABEL = 35; 
 
 let todos = [];
 let catActual = 'Todo';
@@ -177,8 +182,8 @@ window.closeZoom = function() { document.getElementById('zoomModal').classList.r
 window.onSlideScroll = function(element) { const card = element.closest('.card'); const dots = card.querySelectorAll('.dot'); if(dots.length < 2) return; const index = Math.round(element.scrollLeft / element.offsetWidth); dots.forEach(d => d.classList.remove('active')); if(dots[index]) dots[index].classList.add('active'); }
 function injectCompanyData() { const horario = COMPANY_DATA.dataset.horario; const envios = COMPANY_DATA.dataset.envios; document.getElementById('footer-envios').textContent = envios; document.getElementById('footer-horario').textContent = horario; }
 
-function generarWhatsappLink(nombre, codigo, precio, moq, precioUnidadOferta) {
-    const texto = `Hola, quisiera consultar disponibilidad de:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n   PRECIO MAYOR: Bs. ${precio}`;
+function generarWhatsappLink(nombre, codigo, precio, moq) {
+    const texto = `Hola, me interesa este producto:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n   PRECIO MAYOR: Bs. ${precio}`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`;
 }
 
@@ -188,23 +193,32 @@ function renderProductos(lista){
   
   grid.innerHTML = lista.map(p => {
     const tituloBonito = formatearTitulo(p.descripcion); const codigoBonito = formatearCodigo(p.codigo);
+    
+    // PRECIOS ORIGINALES DE LA DB (Sin matemáticas raras)
     let pMayor = parseFloat(p.preciopormayor); if(isNaN(pMayor)) pMayor = 0;
     let pUnidad = parseFloat(p.precioUnidad); if(isNaN(pUnidad)) pUnidad = 0;
     
     let promoBadge = '';
     let precioUnidadHtml = '';
-    let pUnidadFinal = null;
 
-    if(pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
-        pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
-        promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% UNIDAD</div>`;
-        precioUnidadHtml = `<div class="price-row unit"><span class="price-label">UNIDAD:</span><span><span class="price-old">Bs. ${pUnidad.toFixed(2)}</span><span class="price-new">Bs. ${pUnidadFinal.toFixed(2)}</span></span></div>`;
-    } else if (pUnidad > 0) {
-        precioUnidadHtml = `<div class="price-row unit"><span class="price-label">UNIDAD:</span><span class="price-val">Bs. ${pUnidad.toFixed(2)}</span></div>`;
+    // Si hay precio unidad y oferta activa, mostramos la etiqueta
+    if(pUnidad > 0 && OFERTA_UNIDAD_LABEL > 0) {
+        promoBadge = `<div class="badge-promo">-${OFERTA_UNIDAD_LABEL}% UNIDAD</div>`;
+    }
+    
+    if(pUnidad > 0) {
+        // Mostramos el precio unidad tachado (como referencia cara)
+        precioUnidadHtml = `
+        <div class="price-row unit">
+            <span class="price-label">UNIDAD:</span>
+            <span class="price-val strike">Bs. ${pUnidad.toFixed(2)}</span>
+        </div>`;
     }
 
     const tieneFoto2 = p.imagen2 ? true : false;
+    const cardId = `card-${p.$id}`;
     let dotHtml = ''; let imagesHtml = '';
+
     if (tieneFoto2) {
         imagesHtml = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div><div class="slide"><img src="${p.imagen2}" class="prod-img" onclick="openZoom('${p.imagen2}')"></div>`;
         dotHtml = `<div class="dot-container"><div class="dot active"></div><div class="dot"></div></div>`;
@@ -212,10 +226,10 @@ function renderProductos(lista){
         imagesHtml = `<div class="slide"><img src="${p.imagen}" class="prod-img" onclick="openZoom('${p.imagen}')"></div>`;
     }
 
-    const whatsappLink = generarWhatsappLink(tituloBonito, codigoBonito, pMayor.toFixed(2), p.moq || 'No esp.', pUnidadFinal ? pUnidadFinal.toFixed(2) : null);
+    const whatsappLink = generarWhatsappLink(tituloBonito, codigoBonito, pMayor.toFixed(2), p.moq || 'No esp.');
 
     return `
-    <div class="card" id="card-${p.$id}">
+    <div class="card" id="${cardId}">
       <div class="moq">Mín. ${p.moq || 6} unid.</div>
       ${promoBadge}
       <div class="img-box"><div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>${dotHtml}</div>
@@ -226,10 +240,7 @@ function renderProductos(lista){
             ${precioUnidadHtml}
             <div class="price-row mayor">
                 <span class="price-label" style="color:#000;">MAYOR:</span>
-                <div>
-                    <span class="price-val price-mayor-val">Bs. ${pMayor.toFixed(2)}</span>
-                    <span class="moq-tag">(Mín. ${p.moq || 6})</span>
-                </div>
+                <span class="price-val price-mayor-val">Bs. ${pMayor.toFixed(2)}</span>
             </div>
         </div>
         <a href="${whatsappLink}" target="_blank" class="cta"><i class="bi bi-whatsapp"></i> ME INTERESA</a>
