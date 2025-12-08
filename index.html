@@ -83,16 +83,17 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .title{font-size:1rem; font-weight:800; margin:0 0 5px; line-height:1.4; color:#111;}
 .ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:15px; display: block;}
 
-.price-box { margin-bottom: 15px; }
+.prices-container { background: #fff; padding: 0; margin-bottom: 12px; }
 
-/* PRECIOS */
+/* Precio Unidad Grande */
+.price-display { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-bottom: 8px; }
+.price-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #555; }
 .price-old { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
-.price-new { color: #d32f2f; font-weight: 900; font-size: 1.4rem; }
-.price-normal { color: #111; font-weight: 900; font-size: 1.3rem; }
-.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 2px; }
+.price-new { color: var(--brand-red); font-weight: 900; font-size: 1.4rem; }
+.price-val { font-weight: 800; font-size: 1.4rem; color: #111; }
 .price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
 
-/* TEXTO DE PIE (MOQ AJUSTADO) */
+/* TEXTO DE PIE (MOQ FORMAL) */
 .card-footer-text {
     font-size: 0.75rem; color: #555; font-weight: 600;
     margin-top: 10px; padding-top: 8px; border-top: 1px dashed #eee;
@@ -100,33 +101,62 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 }
 .card-footer-text i { color: var(--accent); }
 
-/* --- ZONA FLOTANTE (Fixed Bottom) --- */
+/* --- ZONA FLOTANTE OPTIMIZADA --- */
 .floating-actions {
     position: fixed; bottom: 20px; right: 20px; z-index: 100;
-    display: flex; flex-direction: column; gap: 10px; align-items: flex-end;
+    display: flex; flex-direction: column; gap: 15px; align-items: flex-end;
 }
 
-/* ESTILO UNIFICADO PARA BOTONES FLOTANTES (Mismo Tamaño y Estilo) */
-.float-btn { 
+/* 1. Botón Grupo (CONTRAÍDO POR DEFECTO) */
+.btn-group { 
     background: #fff; color: #25D366; border: 2px solid #25D366;
-    padding: 10px 20px; border-radius: 50px; 
-    font-weight: 700; font-size: 0.9rem;
+    height: 45px; width: 45px; /* Círculo inicial */
+    border-radius: 50px; 
+    display: flex; align-items: center; justify-content: center;
     text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    display: flex; align-items: center; gap: 8px; transition: 0.2s;
-    width: fit-content;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
 }
-.float-btn:hover { transform: scale(1.05); background: #f0fff4; }
+.btn-group i { font-size: 1.3rem; margin: 0; }
+.btn-group span { opacity: 0; max-width: 0; transition: all 0.3s; margin-left: 0; font-weight: 700; font-size: 0.9rem; }
 
-/* El de pedido lo destacamos un poquito más rellenándolo */
-.float-btn.primary {
-    background: #25D366; color: #fff; border: 2px solid #25D366;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+/* Efecto Hover: Se expande */
+.btn-group:hover { width: 170px; padding: 0 15px; justify-content: flex-start; }
+.btn-group:hover span { opacity: 1; max-width: 200px; margin-left: 8px; }
+
+/* 2. Botón HACER PEDIDO (ANIMADO Y LLAMATIVO) */
+.btn-order {
+    background: #25D366; color: #fff; 
+    padding: 14px 28px; border-radius: 50px; 
+    font-weight: 900; font-size: 1.1rem; letter-spacing: 0.5px;
+    text-decoration: none; 
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
+    display: flex; align-items: center; gap: 10px;
+    animation: pulse-green 2s infinite; /* Pálpito */
 }
-.float-btn.primary:hover { background: #1eab52; border-color: #1eab52; }
+.btn-order:hover { transform: scale(1.05); background: #1eab52; }
+.btn-order i { font-size: 1.4rem; }
 
+@keyframes pulse-green {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+/* BOTÓN COTIZAR EN TARJETA (Elegante) */
+.cta{ 
+    background: #FFB800; color:#000; border-radius:10px; padding:12px; 
+    font-weight:900; font-size:.9rem; display:flex; align-items:center; gap:8px; 
+    width:100%; justify-content:center; text-decoration:none; 
+    transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 184, 0, 0.3); 
+    margin-top: 15px; border-bottom: 4px solid #e0a200;
+}
+.cta:hover { transform: translateY(-1px); background: #ffc107; box-shadow: 0 6px 15px rgba(255, 184, 0, 0.4); border-bottom: 2px solid #e0a200; }
+.cta i { color: #000; font-size: 1.1rem; }
 
 /* FOOTER */
-.main-footer { max-width:1400px; margin:0 auto; padding: 40px 25px; border-top: 1px solid #e5e5e5; background-color: #fff; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
+.main-footer { max-width:1400px; margin:0 auto; padding: 40px 25px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
 .footer-col h4 { font-weight: 800; font-size: 1rem; color: #111; margin-bottom: 12px; }
 .footer-col p { margin-bottom: 8px; line-height: 1.5; color: #555; font-size: 0.9rem; }
 .map-link { color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
@@ -171,12 +201,16 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     </section>
 </div>
 
-<!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
+<!-- ZONA FLOTANTE (BOTONES DINÁMICOS) -->
 <div class="floating-actions">
-    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="float-btn">
-        <i class="bi bi-people-fill"></i> Grupo Mayorista
+    <!-- Botón Grupo (Se expande al tocar) -->
+    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
+        <i class="bi bi-people-fill"></i> 
+        <span>Grupo Mayorista</span>
     </a>
-    <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="float-btn primary">
+    
+    <!-- Botón Pedido (Animado y Principal) -->
+    <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="btn-order">
         <i class="bi bi-whatsapp"></i> Hacer Pedido
     </a>
 </div>
@@ -184,7 +218,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 <footer class="main-footer">
     <div class="footer-col"><h4><i class="bi bi-building"></i> Importadora Ale</h4><p>Tu proveedor mayorista de confianza.</p><p>© 2025 Derechos Reservados.</p></div>
     <div class="footer-col"><h4><i class="bi bi-geo-alt-fill"></i> Sucursales</h4><p><b>1:</b> Aroma N.º 560 – Santa Cruz <a href="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9" class="map-link">Ver mapa</a></p><p><b>2:</b> Av. Cañoto esq. Tundí #924 <a href="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA" class="map-link">Ver mapa</a></p></div>
-    <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> 61333335</p></div>
+    <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/59161333335" target="_blank" class="text-green-600 font-semibold">61333335</a></p></div>
 </footer>
 
 <div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">&times;</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
@@ -227,19 +261,19 @@ function renderProductos(lista){
     if (pUnidad > 0) {
         let pConDescuento = pUnidad - (pUnidad * (DESCUENTO_PORCENTAJE / 100));
         
-        // REGLA DE ORO: Si el precio con descuento es MENOR que el mayorista...
-        // ...entonces NO aplicamos descuento (Protección de Margen)
+        // REGLA DE SEGURIDAD (Si el descuento baja más que el mayorista, no lo mostramos)
         if (pConDescuento <= pMayor) {
             htmlPrecio = `
-            <div class="price-box">
+            <div class="price-display">
                 <span class="price-label-normal">PRECIO UNIDAD:</span>
-                <div class="price-normal">Bs. ${pUnidad.toFixed(2)}</div>
+                <div class="price-val">Bs. ${pUnidad.toFixed(2)}</div>
+                <div class="promo-text" style="font-size:0.65rem; color:#555; background:none; padding:0; margin:0;">*Pide tu descuento en caja</div>
             </div>`;
         } else {
             // Muestra OFERTA -35%
             htmlBadge = `<div class="badge-offer">-${DESCUENTO_PORCENTAJE}% OFF</div>`;
             htmlPrecio = `
-            <div class="price-box">
+            <div class="price-display">
                 <span class="price-label">OFERTA UNIDAD:</span>
                 <div>
                     <span class="price-old">Bs. ${pUnidad.toFixed(2)}</span>
@@ -248,7 +282,7 @@ function renderProductos(lista){
             </div>`;
         }
     } else {
-        htmlPrecio = `<div class="price-box"><span class="price-val" style="color:#888">CONSULTAR PRECIO</span></div>`;
+        htmlPrecio = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
 
     const tieneFoto2 = p.imagen2 ? true : false;
@@ -260,6 +294,8 @@ function renderProductos(lista){
         dots = `<div class="dot-container"><div class="dot active"></div><div class="dot"></div></div>`;
     }
 
+    const whatsappLink = generarWhatsappLink(titulo, codigo, pMayor.toFixed(2), p.moq || 'No esp.');
+
     return `
     <div class="card" id="${cardId}">
       ${htmlBadge}
@@ -270,11 +306,17 @@ function renderProductos(lista){
             <span class="ref">Ref: ${codigo}</span>
         </div>
         
-        ${htmlPrecio}
-
-        <div class="card-footer-text">
-            <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 12} Unidades o más x mayor
+        <div class="prices-container">
+            ${htmlPrecio}
+            
+            <div class="card-footer-text">
+                <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6} Unidades por mayor
+            </div>
         </div>
+
+        <a href="${whatsappLink}" target="_blank" class="cta">
+            <i class="bi bi-whatsapp"></i> COTIZAR POR MAYOR
+        </a>
       </div>
     </div>`;
   }).join('');
@@ -285,6 +327,10 @@ function formatearTexto(txt) { if(!txt)return'';const l=txt.toLowerCase().trim()
 function formatearTitulo(txt) { if(!txt)return'';const l=txt.toLowerCase().trim();return l.split(' ').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' '); }
 function formatearCodigo(txt) { if(!txt)return'';return txt.toUpperCase().trim(); }
 function normalizar(txt) { return (txt||'').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+function generarWhatsappLink(nombre, codigo, precio, moq) {
+    const texto = `Hola, quisiera consultar el PRECIO MAYOR de este producto:\n➡️ *${nombre}*\n   CÓDIGO: ${codigo}\n   (Mínimo: ${moq})`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`;
+}
 
 async function iniciar(){
   injectCompanyData();
