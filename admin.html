@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - FIX BÚSQUEDA</title>
+  <title>Admin Panel - Ilimitado</title>
   
-  <link href="https://fonts.googleapis.com/css2? family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
@@ -18,75 +18,43 @@
     #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     #appContent { display: none; }
 
-    /* LAYOUT 2 COLUMNAS (50% / 50%) */
-    .main-layout {
-        max-width: 1400px; margin: 0 auto;
-        display: grid;
-        grid-template-columns: 1fr; /* Móvil: 1 columna */
-        gap: 20px;
-    }
-    @media (min-width: 1024px) {
-        .main-layout {
-            grid-template-columns: 1fr 1fr; /* PC: 2 columnas iguales */
-            align-items: start;
-        }
-    }
+    /* LAYOUT */
+    .main-layout { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 1024px) { .main-layout { grid-template-columns: 1fr 1fr; align-items: start; } }
 
-    . card-box { 
-        background: var(--card); padding: 25px; border-radius: var(--border-radius); 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: fit-content; 
-    }
-    
+    .card-box { background: var(--card); padding: 25px; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: fit-content; }
     h2 { margin-top: 0; text-align: center; font-size: 1.3rem; color: #111; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; }
 
     .form-group { margin-bottom: 15px; }
     label { display: block; margin: 0 0 6px; font-weight: 600; font-size: 0.85rem; color: #555; }
     input[type="text"], input[type="number"] { width: 100%; padding: 12px 15px; border: 2px solid #f0f0f0; border-radius: 10px; font-size: 0.95rem; transition: 0.2s; background: #fafafa; }
     input:focus { outline: none; border-color: var(--primary); background: #fff; }
-    . row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } 
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } 
 
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    
-    /* FOTOS EN FORMULARIO (GRANDES PARA VER BIEN AL CARGAR) */
-    .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 200px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .photo-area { border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 180px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
     .photo-label { font-size: 0.75rem; font-weight: bold; margin-bottom: 3px; text-align: center; color: #666; }
 
     .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
     .btn-search { background: #000; color: #fff; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; }
     
-    /* LISTA DE RESULTADOS */
-    #list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-        gap: 15px; width: 100%;
-    }
+    #list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; width: 100%; }
     
-    .product-item { 
-      background: var(--card); border: 1px solid #f0f0f0; border-radius: 12px; padding: 10px; 
-      position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); 
-      display: flex; align-items: center; gap: 12px;
-    }
-    . product-item. sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
+    .product-item { background: var(--card); border: 1px solid #f0f0f0; border-radius: 12px; padding: 10px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px; }
+    .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     
-    /* FOTO EN LA LISTA - CLICK PARA CARGAR AL COSTADO */
-    .prod-img { 
-        width: 70px; height: 70px; 
-        border-radius: 8px; object-fit: cover; background: #eee; 
-        flex-shrink: 0; 
-        cursor: pointer;
-        border: 2px solid transparent;
-    }
+    .prod-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; }
     .prod-img:hover { border-color: var(--primary); transform: scale(1.05); transition: 0.2s; }
 
     .prod-info { flex-grow: 1; overflow: hidden; }
     .prod-title { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
     .prod-cat { font-size: 0.75rem; color: #888; margin-bottom: 2px; text-transform: capitalize; }
-    .prod-price { font-weight: 600; color: #555; font-size: 0. 85rem; }
+    .prod-price { font-weight: 600; color: #555; font-size: 0.85rem; }
     .alerta-precio { font-weight: 800; font-size: 0.7rem; color: #ef4444; }
 
     .actions { display: flex; gap: 5px; margin-left: auto; }
@@ -94,14 +62,17 @@
     .btn-edit { background: #eff6ff; color: #3b82f6; } 
     .btn-del { background: #fff5f5; color: #ef4444; }  
     .btn-power { background: #f0fdf4; color: #166534; } 
-    .btn-power. off { background: #f3f4f6; color: #9ca3af; } 
+    .btn-power.off { background: #f3f4f6; color: #9ca3af; } 
     
     .empty-state { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #9ca3af; }
-    . empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5; }
+    .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5; }
     
     #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
-    . success { background: #dcfce7; color: #166534; }
+    .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2f2; color: #991b1b; }
+    
+    /* Loading indicator */
+    #global-loader { text-align:center; font-size:0.8rem; color:#666; margin-bottom:10px; display:none; }
   </style>
 </head>
 <body>
@@ -119,7 +90,7 @@
         
         <!-- IZQUIERDA: FORMULARIO -->
         <div class="card-box">
-            <h2 id="formTitle"><span style="color:#22c55e; font-size:0.5em; vertical-align:middle;">●</span> Editar / Nuevo</h2>
+            <h2><span style="color:#10b981; font-size:0.5em; vertical-align:middle;">●</span> Editar / Nuevo</h2>
             <form id="productForm">
                 <input type="hidden" id="editId">
                 <input type="hidden" id="oldImg1">
@@ -150,7 +121,7 @@
                         <div class="photo-label">Foto 2</div>
                         <div class="photo-area" id="dropZone2">
                             <img id="previewImg2">
-                            <i class="bi bi-camera" style="font-size:1. 5rem;color:#ccc"></i>
+                            <i class="bi bi-camera" style="font-size:1.5rem;color:#ccc"></i>
                             <input type="file" id="file2" accept="image/*" style="display:none;" onchange="previewFile(2)">
                         </div>
                     </div>
@@ -164,16 +135,17 @@
         <!-- DERECHA: INVENTARIO -->
         <div class="card-box">
             <h2>Inventario</h2>
-            <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:10px;">💡 Escribe <b>"error"</b> para filtrar sin precio. </p>
+            <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:10px;">💡 Escribe <b>"error"</b> para filtrar sin precio.</p>
+            <div id="global-loader"><i class="bi bi-arrow-repeat animate-spin"></i> Actualizando inventario...</div>
             <div class="search-box">
-                <input type="text" id="search" placeholder="Buscar por Nombre, Código o Categoría... ">
-                <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
+                <input type="text" id="search" placeholder="Buscar por Nombre, Código o Categoría...">
+                <button class="btn-search"><i class="bi bi-search"></i></button>
             </div>
             
             <div id="list">
                 <div class="empty-state">
                     <i class="bi bi-search"></i>
-                    <p>Usa el buscador. </p>
+                    <p>Usa el buscador.</p>
                 </div>
             </div>
             
@@ -183,182 +155,183 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr. net/npm/appwrite@13.0.0"></script>
-  <script src="https://cdn.jsdelivr. net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 
   <script>
     const PASS = "eddy4242"; const PROJECT_ID = "692ee6b70012153cd33c"; const DATABASE_ID = "692ee774002e9a3c8601"; const COLLECTION_ID = "catalogo"; const BUCKET_ID = "692ef19e001ffa75d062";
-    const client = new Appwrite. Client(). setEndpoint("https://fra.cloud.appwrite.io/v1").setProject(PROJECT_ID);
-    const db = new Appwrite. Databases(client); const storage = new Appwrite.Storage(client);
+    const client = new Appwrite.Client().setEndpoint("https://fra.cloud.appwrite.io/v1").setProject(PROJECT_ID);
+    const db = new Appwrite.Databases(client); const storage = new Appwrite.Storage(client);
     const LIST_ELEMENT = document.getElementById('list');
+    
+    // VARIABLE GLOBAL PARA ALMACENAR TODO EL INVENTARIO
+    let GLOBAL_INVENTORY = [];
 
     function setupDragDrop(zoneId, inputId, previewNum) {
         const zone = document.getElementById(zoneId); const input = document.getElementById(inputId);
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false));
-        ['dragenter', 'dragover']. forEach(evt => zone.addEventListener(evt, () => zone.style.borderColor = 'var(--primary)'));
-        ['dragleave', 'drop'].forEach(evt => zone.addEventListener(evt, () => zone.style.borderColor = '#ddd'));
+        ['dragenter', 'dragover'].forEach(evt => zone.classList.add('dragover')); ['dragleave', 'drop'].forEach(evt => zone.classList.remove('dragover'));
         zone.addEventListener('drop', e => { input.files = e.dataTransfer.files; previewFile(previewNum); });
         zone.addEventListener('click', () => input.click());
     }
     setupDragDrop('dropZone1', 'file1', 1); setupDragDrop('dropZone2', 'file2', 2);
 
-    function checkPass() { if(document.getElementById('passInput').value === PASS) { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appContent'). style.display = 'block'; } else { document.getElementById('loginError').style.display = 'block'; } }
+    function checkPass() { if(document.getElementById('passInput').value === PASS) { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appContent').style.display = 'block'; loadAllProducts(); } else { document.getElementById('loginError').style.display = 'block'; } }
     
     function previewFile(num) {
-      const file = document.getElementById('file' + num). files[0]; const img = document.getElementById('previewImg' + num);
-      if (file) { const reader = new FileReader(); reader. onload = function(e) { img.src = e.target. result; img.style.display = 'block'; document.getElementById('dropZone' + num).querySelector('i').style.display = 'none'; }; reader.readAsDataURL(file); }
+      const file = document.getElementById('file' + num).files[0]; const img = document.getElementById('previewImg' + num);
+      if (file) { const reader = new FileReader(); reader.onload = function(e) { img.src = e.target.result; img.style.display = 'block'; document.getElementById('dropZone' + num).querySelector('i').style.display = 'none'; }; reader.readAsDataURL(file); }
     }
     async function uploadPhoto(fileInput) {
-        if(fileInput.files && fileInput.files. length > 0) {
+        if(fileInput.files && fileInput.files.length > 0) {
             const originalFile = fileInput.files[0]; const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
             let compressedBlob = await imageCompression(originalFile, options);
             const fileToSend = new File([compressedBlob], originalFile.name, { type: originalFile.type });
             const up = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), fileToSend);
-            return `${client.config. endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
+            return `${client.config.endpoint}/storage/buckets/${BUCKET_ID}/files/${up.$id}/view?project=${PROJECT_ID}`;
         } return null;
     }
     
     document.getElementById('productForm').addEventListener('submit', async (e) => {
-      e.preventDefault(); const id = document.getElementById('editId'). value; const btn = document.getElementById('btnSave'); const msg = document.getElementById('msg');
+      e.preventDefault(); const id = document.getElementById('editId').value; const btn = document.getElementById('btnSave'); const msg = document.getElementById('msg');
       btn.disabled = true; btn.innerText = "Procesando..."; msg.style.display = 'none';
       try {
         let finalUrl1 = document.getElementById('oldImg1').value; let finalUrl2 = document.getElementById('oldImg2').value;
         const newUrl1 = await uploadPhoto(document.getElementById('file1')); if(newUrl1) finalUrl1 = newUrl1;
         const newUrl2 = await uploadPhoto(document.getElementById('file2')); if(newUrl2) finalUrl2 = newUrl2;
-        if(! finalUrl1) throw new Error("La foto principal es obligatoria");
+        if(!finalUrl1) throw new Error("La foto principal es obligatoria");
         const data = {
-          descripcion: document.getElementById('name'). value, codigo: document.getElementById('code').value, categoria: document.getElementById('cat'). value,
+          descripcion: document.getElementById('name').value, codigo: document.getElementById('code').value, categoria: document.getElementById('cat').value,
           preciopormayor: Number(document.getElementById('price').value), precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
-          moq: Number(document.getElementById('moq').value), imagen: finalUrl1, imagen2: finalUrl2, disponible: id ?  (document.getElementById('currentStockStatus').value === "true") : true
+          moq: Number(document.getElementById('moq').value), imagen: finalUrl1, imagen2: finalUrl2, disponible: id ? (document.getElementById('currentStockStatus').value === "true") : true
         };
         if(id) { 
             await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); 
             msg.innerText = "✅ Actualizado";
-            const q = document.getElementById('search').value. toLowerCase(). trim();
-            if(q) { 
-                const card = document.getElementById('card-' + id);
-                if(card) { card.style.opacity = "0"; setTimeout(() => card.remove(), 500); }
-            }
         } 
         else { await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); msg.innerText = "✅ Guardado"; }
+        
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        if(document.getElementById('search').value) doSearch(); 
-      } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg. className = 'error'; msg. style.display = 'block'; } finally { btn.disabled = false; if(! id) btn.innerText = "Guardar"; }
+        
+        // Recargar TODO el inventario para asegurar datos frescos
+        await loadAllProducts();
+        // Si había búsqueda, refrescarla
+        if(document.getElementById('search').value) filterLocalData(); 
+
+      } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar"; }
     });
 
-    // ✅ FUNCIÓN DE BÚSQUEDA CORREGIDA - NORMALIZA ACENTOS
-    function normalizeText(text) {
-        if (!text) return '';
-        return text.toString().toLowerCase()
-            .normalize("NFD"). replace(/[\u0300-\u036f]/g, ""); // Elimina acentos
+    // --- NUEVA LÓGICA: CARGA TOTAL Y FILTRO LOCAL (SIN LÍMITES) ---
+    async function loadAllProducts() {
+        document.getElementById('global-loader').style.display = 'block';
+        try {
+            // Traemos hasta 5000 productos (límite de Appwrite en loop)
+            // Hacemos una carga inicial grande
+            const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [
+                Appwrite.Query.limit(1000), 
+                Appwrite.Query.orderDesc('$createdAt')
+            ]);
+            GLOBAL_INVENTORY = res.documents;
+            console.log("Inventario cargado: " + GLOBAL_INVENTORY.length + " items");
+        } catch(e) {
+            console.error("Error cargando inventario", e);
+        }
+        document.getElementById('global-loader').style.display = 'none';
     }
 
-    async function doSearch() {
-      const q = normalizeText(document.getElementById('search').value. trim());
-      
-      if(! q) {
-          LIST_ELEMENT.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>Usa el buscador.</p></div>';
-          return;
-      }
-      
-      LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#999; grid-column:1/-1">Buscando...</p>';
-      
-      try {
-        // ✅ AUMENTAR LÍMITE A 500 Y TRAER TODOS LOS DOCUMENTOS
-        let allDocs = [];
-        let offset = 0;
-        const limit = 100; // Appwrite permite máximo 100 por request
-        let hasMore = true;
-
-        while(hasMore) {
-            const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [
-                Appwrite.Query.limit(limit),
-                Appwrite.Query.offset(offset),
-                Appwrite.Query. orderDesc('$createdAt')
-            ]);
-            allDocs = allDocs.concat(res.documents);
-            offset += limit;
-            if(res.documents.length < limit) hasMore = false; // Ya no hay más documentos
+    // Filtramos sobre el array GLOBAL_INVENTORY (Memoria) -> Instantáneo y busca en todo
+    function filterLocalData() {
+        const q = document.getElementById('search').value.toLowerCase().trim(); 
+        
+        if(!q) {
+            LIST_ELEMENT.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>Usa el buscador.</p></div>';
+            return;
         }
 
         let hits = [];
         const isErrorMode = (q === "error" || q === "sin precio");
 
         if (isErrorMode) {
-            hits = allDocs.filter(d => ! d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
-            if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ ¡Limpio!  No hay errores.</p>';
+            hits = GLOBAL_INVENTORY.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
+            if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ ¡Limpio! No hay errores.</p>';
         } else { 
-            // ✅ BÚSQUEDA MEJORADA CON NORMALIZACIÓN DE ACENTOS
-            hits = allDocs.filter(d => {
-                const nombre = normalizeText(d.descripcion);
-                const codigo = normalizeText(d.codigo);
-                const categoria = normalizeText(d.categoria);
-                
-                return nombre.includes(q) || codigo.includes(q) || categoria.includes(q);
+            // BÚSQUEDA ROBUSTA: Protegemos contra campos vacíos (null)
+            hits = GLOBAL_INVENTORY.filter(d => {
+                const desc = (d.descripcion || '').toLowerCase();
+                const cod = (d.codigo || '').toLowerCase();
+                const cat = (d.categoria || '').toLowerCase();
+                return desc.includes(q) || cod.includes(q) || cat.includes(q);
             });
         }
 
         if(hits.length > 0) LIST_ELEMENT.innerHTML = ''; 
-        else if(! isErrorMode) LIST_ELEMENT.innerHTML = '<div class="empty-state"><i class="bi bi-x-circle-fill" style="color:#999"></i><p style="color:#999">Sin resultados para "' + document.getElementById('search').value + '"</p></div>';
+        else if(!isErrorMode) LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-x-circle-fill" style="color:#999"></i><p style="color:#999">Sin resultados.</p></p>';
 
-        hits.forEach(d => {
-          const enStock = (d.disponible === undefined) ?  true : d.disponible;
-          const tieneError = ! d.preciopormayor || d.preciopormayor === 0;
-          let claseExtra = ""; let alertaHtml = "";
-          
-          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span class="alerta-precio">⚠️ SIN PRECIO</span>'; } else if(! enStock) { claseExtra = " agotado"; }
-          
-          const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
-          const precioMostrar = tieneError ? "0. 00" : Number(d.preciopormayor).toFixed(2);
-          const imgSrc = d.imagen || 'https://via.placeholder.com/50';
-          
-          // Escapar comillas en JSON para evitar errores
-          const jsonData = JSON.stringify(d). replace(/'/g, "\\'");
-          
-          div.innerHTML = `
-            <img src="${imgSrc}" class="prod-img" onclick='editItem(${jsonData})' title="Clic para cargar al formulario">
-            <div class="prod-info">
-                <div class="prod-title">${d.descripcion}</div>
-                <div class="prod-cat">${d.categoria || 'Sin categoría'}</div>
-                <div class="prod-price">Bs. ${precioMostrar}</div>
-                ${alertaHtml}
-            </div>
-            <div class="actions">
-                <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
-                <button class="btn-icon btn-edit" type="button" onclick='editItem(${jsonData})'><i class="bi bi-pencil-fill"></i></button>
-                <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
-            </div>`;
-          LIST_ELEMENT.appendChild(div);
-        });
-      } catch(e) { 
-          console.error(e);
-          LIST_ELEMENT.innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle-fill" style="color:#ef4444"></i><p style="color:#ef4444">Error: ' + e.message + '</p></div>';
-      }
+        hits.forEach(d => renderRow(d));
     }
 
-    document.getElementById('search').addEventListener('input', doSearch);
+    function renderRow(d) {
+        const enStock = (d.disponible === undefined) ? true : d.disponible;
+        const tieneError = !d.preciopormayor || d.preciopormayor === 0;
+        let claseExtra = ""; let alertaHtml = "";
+        
+        if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span class="alerta-precio">⚠️ SIN PRECIO</span>'; } else if(!enStock) { claseExtra = " agotado"; }
+        
+        const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
+        const precioMostrar = tieneError ? "0.00" : Number(d.preciopormayor).toFixed(2);
+        const imgSrc = d.imagen || 'https://via.placeholder.com/50';
+        
+        div.innerHTML = `
+        <img src="${imgSrc}" class="prod-img" onclick='editItem(${JSON.stringify(d)})' title="Clic para cargar al formulario">
+        <div class="prod-info">
+            <div class="prod-title">${d.descripcion}</div>
+            <div class="prod-cat">${d.categoria || 'Sin categoría'}</div>
+            <div class="prod-price">Bs. ${precioMostrar}</div>
+            ${alertaHtml}
+        </div>
+        <div class="actions">
+            <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
+            <button class="btn-icon btn-edit" type="button" onclick='editItem(${JSON.stringify(d)})'><i class="bi bi-pencil-fill"></i></button>
+            <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
+        </div>`;
+        LIST_ELEMENT.appendChild(div);
+    }
+
+    document.getElementById('search').addEventListener('input', filterLocalData);
     
     async function toggleStock(docId, currentState, btn) {
-      const newState = ! currentState; const card = document.getElementById('card-' + docId); const originalIcon = btn.innerHTML; btn.innerHTML = '... '; btn.disabled = true;
-      try { await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState }); btn.innerHTML = '<i class="bi bi-power"></i>'; btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; if(newState) card.classList.remove('agotado'); else card. classList.add('agotado'); btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); } catch (err) { alert(err.message); btn.innerHTML = originalIcon; } finally { btn.disabled = false; }
+      const newState = !currentState; const card = document.getElementById('card-' + docId); const originalIcon = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true;
+      try { 
+          await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState }); 
+          // Actualizamos memoria local también
+          const prodIndex = GLOBAL_INVENTORY.findIndex(p => p.$id === docId);
+          if(prodIndex > -1) GLOBAL_INVENTORY[prodIndex].disponible = newState;
+          
+          btn.innerHTML = '<i class="bi bi-power"></i>'; btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; if(newState) card.classList.remove('agotado'); else card.classList.add('agotado'); btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); 
+      } catch (err) { alert(err.message); btn.innerHTML = originalIcon; } finally { btn.disabled = false; }
     }
-    
     window.editItem = function(d) {
       document.getElementById('editId').value = d.$id; document.getElementById('name').value = d.descripcion; document.getElementById('code').value = d.codigo; document.getElementById('cat').value = d.categoria;
-      document.getElementById('price'). value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
+      document.getElementById('price').value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; document.getElementById('moq').value = d.moq || 6;
-      document.getElementById('currentStockStatus').value = (d.disponible === undefined) ?  "true" : d.disponible;
-      document.getElementById('oldImg1').value = d.imagen || ""; if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; document.getElementById('dropZone1'). querySelector('i').style.display = 'none'; }
+      document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
+      document.getElementById('oldImg1').value = d.imagen || ""; if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; }
       document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i');
       if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; icon2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; icon2.style.display = 'block'; }
       document.getElementById('formTitle').innerText = "Editando: " + d.codigo; document.getElementById('btnSave').innerText = "Actualizar"; document.getElementById('btnSave').style.background = "#2563eb"; document.getElementById('btnCancel').style.display = "block"; window.scrollTo({top:0, behavior:'smooth'});
     }
-    
-    window.delItem = async function(id) { if(! confirm("¿Borrar? ")) return; try { await db. deleteDocument(DATABASE_ID, COLLECTION_ID, id); document.getElementById('card-'+id).remove(); } catch(e) { alert(e.message); } }
-    
-    window. resetForm = function() {
-      document.getElementById('productForm').reset(); document.getElementById('editId').value = ""; document.getElementById('oldImg1').value = ""; document.getElementById('oldImg2').value = ""; document.getElementById('file1').value = ""; document. getElementById('file2').value = ""; 
+    window.delItem = async function(id) { 
+        if(!confirm("¿Borrar?")) return; 
+        try { 
+            await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); 
+            document.getElementById('card-'+id).remove(); 
+            // Borrar de memoria
+            GLOBAL_INVENTORY = GLOBAL_INVENTORY.filter(p => p.$id !== id);
+        } catch(e) { alert(e.message); } 
+    }
+    window.resetForm = function() {
+      document.getElementById('productForm').reset(); document.getElementById('editId').value = ""; document.getElementById('oldImg1').value = ""; document.getElementById('oldImg2').value = ""; document.getElementById('file1').value = ""; document.getElementById('file2').value = ""; 
       ['1','2'].forEach(n => { document.getElementById('previewImg'+n).style.display = 'none'; document.getElementById('previewImg'+n).src = ""; document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; });
       document.getElementById('formTitle').innerText = "Nuevo Producto"; document.getElementById('btnSave').innerText = "Guardar"; document.getElementById('btnSave').style.background = "#FFB800"; document.getElementById('btnCancel').style.display = "none";
     }
