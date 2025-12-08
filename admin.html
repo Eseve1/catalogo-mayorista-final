@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - v4.0</title>
+  <title>Admin Panel - v4.5</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -18,12 +18,11 @@
     #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     #appContent { display: none; }
 
-    /* LAYOUT 2 COLUMNAS (50% / 50% PC) */
+    /* LAYOUT 2 COLUMNAS */
     .main-layout { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 1024px) { .main-layout { grid-template-columns: 1fr 1fr; align-items: start; } }
 
     .card-box { background: var(--card); padding: 25px; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: fit-content; }
-    
     h2 { margin-top: 0; text-align: center; font-size: 1.3rem; color: #111; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; }
 
     .form-group { margin-bottom: 15px; }
@@ -133,8 +132,10 @@
 
         <!-- DERECHA: INVENTARIO -->
         <div class="card-box">
-            <h2><span style="color:#16a34a; font-size:0.5em;">●</span> PANEL v4.0</h2>
-            <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:10px;">💡 Escribe <b>"error"</b> para filtrar sin precio.</p>
+            <h2>Inventario</h2>
+            <p style="text-align:center; font-size:0.8rem; color:#666; margin-bottom:10px;">
+                💡 Tips: Escribe <b>"error"</b> (sin precio) o <b>"agotado"</b> (desactivados).
+            </p>
             <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Descargando datos...</div>
             
             <div class="search-box">
@@ -160,7 +161,7 @@
 
   <script>
     const PASS = "eddy4242"; 
-    // TUS IDs VERIFICADOS
+    // TUS IDs
     const PROJECT_ID = "692ee6b70012153cd33c"; 
     const DATABASE_ID = "692ee774002e9a3c8601"; 
     const COLLECTION_ID = "catalogo"; 
@@ -182,12 +183,11 @@
     }
     setupDragDrop('dropZone1', 'file1', 1); setupDragDrop('dropZone2', 'file2', 2);
 
-    // --- CORRECCIÓN CLAVE: CARGAR AL ENTRAR ---
     function checkPass() { 
         if(document.getElementById('passInput').value === PASS) { 
             document.getElementById('loginScreen').style.display = 'none'; 
             document.getElementById('appContent').style.display = 'block'; 
-            loadAllProducts(); // <--- ESTO FALTABA
+            loadAllProducts(); 
         } else { 
             document.getElementById('loginError').style.display = 'block'; 
         } 
@@ -225,9 +225,13 @@
             msg.innerText = "✅ Actualizado";
             const idx = GLOBAL_INVENTORY.findIndex(p => p.$id === id);
             if(idx > -1) GLOBAL_INVENTORY[idx] = { ...GLOBAL_INVENTORY[idx], ...data };
+            
             const q = document.getElementById('search').value.toLowerCase().trim();
-            if(q === "error") { const card = document.getElementById('card-' + id); if(card) { card.style.opacity = "0"; setTimeout(() => card.remove(), 500); } } 
-            else if(q) { doSearch(); }
+            // Si es filtro especial, limpiar
+            if(q === "error" || q === "agotado") { 
+                const card = document.getElementById('card-' + id); 
+                if(card) { card.style.opacity = "0"; setTimeout(() => card.remove(), 500); } 
+            } else if(q) { doSearch(); }
         } 
         else { await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); msg.innerText = "✅ Guardado"; loadAllProducts(); }
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
@@ -238,9 +242,16 @@
     async function loadAllProducts() {
         const loader = document.getElementById('loading-bar');
         if(loader) loader.style.display = 'block';
+        GLOBAL_INVENTORY = [];
+        let offset = 0; const limit = 100;
         try {
-            const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(5000), Appwrite.Query.orderDesc('$createdAt')]);
-            GLOBAL_INVENTORY = res.documents;
+            while (true) {
+                const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Appwrite.Query.limit(limit), Appwrite.Query.offset(offset), Appwrite.Query.orderDesc('$createdAt')]);
+                GLOBAL_INVENTORY = [...GLOBAL_INVENTORY, ...res.documents];
+                if (res.documents.length < limit) break;
+                offset += limit;
+            }
+            console.log("Inventario TOTAL: " + GLOBAL_INVENTORY.length);
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
     }
@@ -251,10 +262,17 @@
       
       LIST_ELEMENT.innerHTML = ''; let hits = [];
       const isErrorMode = (q === "error" || q === "sin precio");
+      const isAgotadoMode = (q === "agotado" || q === "off"); // --- NUEVO MODO AGOTADO ---
+
       if (isErrorMode) {
           hits = GLOBAL_INVENTORY.filter(d => !d.preciopormayor || d.preciopormayor === 0 || isNaN(d.preciopormayor));
           if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ ¡Limpio! No hay errores.</p>';
+      } else if (isAgotadoMode) {
+          // --- FILTRO DE AGOTADOS ---
+          hits = GLOBAL_INVENTORY.filter(d => d.disponible === false);
+          if(hits.length === 0) LIST_ELEMENT.innerHTML = '<p style="text-align:center; color:#166534; grid-column:1/-1">✅ Todo está activo (Stock OK).</p>';
       } else { 
+          // BÚSQUEDA NORMAL
           hits = GLOBAL_INVENTORY.filter(d => {
               const desc = (d.descripcion || '').toLowerCase();
               const cod = (d.codigo || '').toLowerCase();
@@ -263,13 +281,16 @@
           });
       }
 
-      if(hits.length === 0 && !isErrorMode) { LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-x-circle-fill" style="color:#999"></i><p style="color:#999">Sin resultados.</p></p>'; return; }
+      if(hits.length === 0 && !isErrorMode && !isAgotadoMode) { LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-x-circle-fill" style="color:#999"></i><p style="color:#999">Sin resultados.</p></p>'; return; }
 
       hits.forEach(d => {
           const enStock = (d.disponible === undefined) ? true : d.disponible;
           const tieneError = !d.preciopormayor || d.preciopormayor === 0;
           let claseExtra = ""; let alertaHtml = "";
-          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span class="alerta-precio">⚠️ SIN PRECIO</span>'; } else if(!enStock) { claseExtra = " agotado"; }
+          
+          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span class="alerta-precio">⚠️ SIN PRECIO</span>'; } 
+          else if(!enStock) { claseExtra = " agotado"; alertaHtml = '<span class="alerta-precio" style="color:#666">⛔ AGOTADO</span>'; }
+          
           const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
           const precioMostrar = tieneError ? "0.00" : Number(d.preciopormayor).toFixed(2);
           const imgSrc = d.imagen || 'https://via.placeholder.com/50';
@@ -287,7 +308,18 @@
       try { 
           await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState }); 
           const p = GLOBAL_INVENTORY.find(x => x.$id === docId); if(p) p.disponible = newState;
-          btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; if(newState) card.classList.remove('agotado'); else card.classList.add('agotado'); btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); 
+          btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; 
+          
+          // Actualización visual inmediata
+          if(newState) { card.classList.remove('agotado'); if(card.querySelector('.alerta-precio')) card.querySelector('.alerta-precio').remove(); }
+          else { card.classList.add('agotado'); }
+          
+          btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); 
+          
+          // Si estamos filtrando "agotado", quitar de la vista al reactivar
+          const q = document.getElementById('search').value.toLowerCase().trim();
+          if(q === "agotado" && newState === true) { card.remove(); }
+          
       } catch (err) { alert(err.message); }
     }
     window.editItem = function(d) {
@@ -298,7 +330,7 @@
       document.getElementById('oldImg1').value = d.imagen || ""; if(d.imagen) { const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; const icon = document.getElementById('dropZone1').querySelector('i'); if(icon) icon.style.display = 'none'; }
       document.getElementById('oldImg2').value = d.imagen2 || ""; const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i');
       if(d.imagen2) { img2.src = d.imagen2; img2.style.display = 'block'; if(icon2) icon2.style.display = 'none'; } else { img2.style.display = 'none'; img2.src = ""; if(icon2) icon2.style.display = 'block'; }
-      const title = document.getElementById('formTitle'); if(title) title.innerHTML = "Editando... <span style='color:orange'>●</span>"; 
+      document.getElementById('formTitle').innerText = "Editando... <span style='color:orange'>●</span>"; 
       const btn = document.getElementById('btnSave'); if(btn) { btn.innerText = "Actualizar"; btn.style.background = "#2563eb"; }
       const cancel = document.getElementById('btnCancel'); if(cancel) cancel.style.display = "block";
     }
