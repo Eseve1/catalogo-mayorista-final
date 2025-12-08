@@ -13,21 +13,36 @@ html,body{margin:0;padding:0}
 body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
 /* --- HEADER ROJO --- */
-.header-oferta{ 
-    width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; 
-    box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; 
-}
-.header-track{ 
-    display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; 
-    padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; 
-}
+.header-oferta{ width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; }
+.header-track{ display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; }
 .header-item{ display:inline-flex; align-items:center; gap:8px; }
 .header-item i { color: var(--accent); font-size: 1.2rem; } 
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 /* LAYOUT */
 .main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom: 100px; }
-@media (max-width:992px){ .main{grid-template-columns:1fr; padding:15px; padding-bottom: 120px;} }
+
+/* ESTILOS MÓVIL (CORREGIDOS) */
+@media (max-width:992px){ 
+    .main{grid-template-columns:1fr; padding:15px; padding-bottom: 120px;} 
+    
+    /* Botón de Menú Móvil */
+    #menu-toggle-btn { 
+        display: flex; width: 100%; justify-content: space-between; align-items: center; 
+        background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid var(--card-border);
+        cursor: pointer; font-weight: 800; color: #333; font-size: 1rem;
+    }
+    
+    /* El sidebar se oculta por defecto en móvil */
+    .sidebar { display: none; }
+    /* Clase para mostrarlo */
+    .sidebar.open { display: flex; animation: slideDown 0.3s ease-out; }
+}
+@media (min-width:993px) { #menu-toggle-btn { display: none; } }
+
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
 
 /* SIDEBAR */
 .sidebar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:20px; position:sticky; top:80px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
@@ -50,7 +65,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .chip.active { background: #333; color: #fff; border-color: #333; }
 
 /* GRID PRODUCTOS */
-.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));}
+.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));}
 
 /* TARJETA DE PRODUCTO */
 .card{ 
@@ -61,6 +76,17 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 }
 .card:hover{transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.08);}
 
+/* ETIQUETA ROJA DE OFERTA (-35%) */
+.badge-offer {
+    position: absolute; top: 10px; left: 10px; z-index: 10;
+    background: #e63946; color: #fff;
+    padding: 3px 8px; border-radius: 4px;
+    font-weight: 800; font-size: 0.75rem; letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4);
+    animation: pulse-red 2s infinite;
+}
+@keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
 /* IMAGEN */
 .img-box { background:#fff; height:220px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
 .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
@@ -69,25 +95,10 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
 .prod-img:hover { transform: scale(1.05); }
 
-/* --- ETIQUETA ROJA ANIMADA (PULSE) --- */
-.badge-promo {
-    position: absolute; top: 12px; left: 12px; z-index: 10;
-    background: #e63946; /* Rojo bonito */
-    color: #fff;
-    padding: 5px 12px; 
-    border-radius: 50px; /* Redondeada */
-    font-weight: 800; font-size: 0.75rem; letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
-    animation: pulse-red 2s infinite; /* Animación suave */
-    display: flex; align-items: center; gap: 4px;
-}
-.badge-promo i { font-size: 0.9rem; }
-
-@keyframes pulse-red { 
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(230, 57, 70, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(230, 57, 70, 0); }
-}
+/* PUNTOS */
+.dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
+.dot { width: 6px; height: 6px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: 0.3s; }
+.dot.active { background-color: var(--brand-red); transform: scale(1.3); }
 
 /* INFORMACIÓN */
 .info{padding:15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
@@ -97,13 +108,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .prices-container { margin-bottom: 5px; }
 
 /* PRECIOS */
-.price-row.unit { color: #555; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #eee; flex-direction: column; align-items: flex-start; gap: 4px; }
-.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
-.price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
-
 .price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 6px; }
 .price-new { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
 .price-normal { color: #111; font-weight: 900; font-size: 1.2rem; }
+.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
+.price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
 
 /* Texto de "Pide tu Descuento" */
 .promo-text { 
@@ -112,13 +121,13 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     display: inline-block; margin-left: 5px;
 }
 
-/* TEXTO DE PIE (MOQ) */
-.card-footer-text {
-    font-size: 0.75rem; color: #555; font-weight: 600;
-    margin-top: 10px; padding-top: 8px; border-top: 1px dashed #eee;
+/* MOQ (Texto pequeño abajo) */
+.moq-row {
+    margin-top: 5px; font-size: 0.8rem; color: #555; font-weight: 600;
     display: flex; align-items: center; gap: 5px;
+    background: #f8f9fa; padding: 6px; border-radius: 6px;
 }
-.card-footer-text i { color: var(--accent); }
+.moq-row i { color: var(--brand-red); }
 
 /* --- ZONA FLOTANTE (Fixed Bottom) --- */
 .floating-actions {
@@ -134,7 +143,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     text-decoration: none; 
     box-shadow: 0 4px 15px rgba(211, 47, 47, 0.5);
     display: flex; align-items: center; gap: 8px;
-    animation: pulse-glow 1.5s infinite; /* Parpadeo Intenso */
+    animation: pulse-glow 1.5s infinite;
 }
 .btn-order i { font-size: 1.3rem; }
 
@@ -157,8 +166,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 }
 .btn-group i { font-size: 1.4rem; margin: 0; }
 .btn-group span { opacity: 0; max-width: 0; transition: all 0.3s; margin-left: 0; font-weight: 700; font-size: 0.9rem; }
-
-/* Efecto Hover: Se expande */
 .btn-group:hover { width: 180px; padding: 0 15px; justify-content: flex-start; }
 .btn-group:hover span { opacity: 1; max-width: 200px; margin-left: 10px; }
 
@@ -175,11 +182,8 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 #zoomImg { max-width: 90%; max-height: 90vh; border-radius: 8px; transform: scale(0.9); transition: transform 0.3s; }
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
-.dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
-.dot { width: 6px; height: 6px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: 0.3s; }
-.dot.active { background-color: var(--brand-red); transform: scale(1.3); }
 
-@media (max-width:992px){ .sidebar-wrapper{display:none;} #menu-toggle-btn{display:flex; margin-bottom:15px;} .sidebar{position:static; margin-bottom:0; display:none;} .sidebar.open{display:flex;} }
+@media (max-width:992px){ .sidebar-wrapper{display:block;} }
 </style>
 </head>
 <body>
@@ -197,7 +201,13 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div class="main">
     <div class="sidebar-wrapper">
-        <aside class="sidebar">
+        <!-- BOTÓN MENÚ MÓVIL (AQUÍ ESTÁ LA MAGIA) -->
+        <button id="menu-toggle-btn">
+            <span><i class="bi bi-list"></i> Categorías</span>
+            <i id="toggle-icon" class="bi bi-chevron-down"></i>
+        </button>
+
+        <aside class="sidebar" id="sidebar-menu">
             <h2><i class="bi bi-grid-fill" style="color:var(--brand-red)"></i> Categorías</h2>
             <div id="menu-cat"><div style="color:#adb5bd; font-size:0.9rem; text-align:center; padding:20px;">Cargando...</div></div>
         </aside>
@@ -212,14 +222,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     </section>
 </div>
 
-<!-- ZONA FLOTANTE (BOTONES GLOBALES - ORDEN CORREGIDO) -->
+<!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
-    <!-- Botón Pedido (Animado y ARRIBA) -->
     <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="btn-order">
         <i class="bi bi-whatsapp"></i> HACER PEDIDO
     </a>
-    
-    <!-- Botón Grupo (Contraído y ABAJO) -->
     <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
         <i class="bi bi-people-fill"></i> 
         <span>Grupo Mayorista</span>
@@ -229,7 +236,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 <footer class="main-footer">
     <div class="footer-col"><h4><i class="bi bi-building"></i> Importadora Ale</h4><p>Tu proveedor mayorista de confianza.</p><p>© 2025 Derechos Reservados.</p></div>
     <div class="footer-col"><h4><i class="bi bi-geo-alt-fill"></i> Sucursales</h4><p><b>1:</b> Aroma N.º 560 – Santa Cruz <a href="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9" class="map-link">Ver mapa</a></p><p><b>2:</b> Av. Cañoto esq. Tundí #924 <a href="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA" class="map-link">Ver mapa</a></p></div>
-    <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> 61333335</p></div>
+    <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/59161333335" target="_blank" class="text-green-600 font-semibold">61333335</a></p></div>
 </footer>
 
 <div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">&times;</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
@@ -246,6 +253,20 @@ const DESCUENTO_UNIDAD_PORCENTAJE = 35;
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
+
+// --- TOGGLE MENÚ MÓVIL (LA CORRECCIÓN) ---
+document.getElementById('menu-toggle-btn').addEventListener('click', () => {
+    const sidebar = document.getElementById('sidebar-menu');
+    const icon = document.getElementById('toggle-icon');
+    sidebar.classList.toggle('open');
+    if (sidebar.classList.contains('open')) {
+        icon.classList.remove('bi-chevron-down');
+        icon.classList.add('bi-chevron-up');
+    } else {
+        icon.classList.remove('bi-chevron-up');
+        icon.classList.add('bi-chevron-down');
+    }
+});
 
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
@@ -281,8 +302,8 @@ function renderProductos(lista){
     }
 
     if (mostrarDescuento) {
-        // CASO A: DESCUENTO APLICADO (Etiqueta Bonita Roja)
-        promoBadge = `<div class="badge-promo"><i class="bi bi-tag-fill"></i> -${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
+        // CASO A: DESCUENTO APLICADO
+        promoBadge = `<div class="badge-promo">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
         precioUnidadHtml = `
         <div class="price-row unit">
             <span class="price-label">OFERTA UNIDAD:</span>
@@ -329,10 +350,11 @@ function renderProductos(lista){
         
         <div class="prices-container">
             ${precioUnidadHtml}
-            <div class="card-footer-text">
+            <div class="moq-row">
                 <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6} Unidades por mayor
             </div>
         </div>
+        <!-- SIN BOTÓN AQUÍ (SCREENSHOT READY) -->
       </div>
     </div>`;
   }).join('');
