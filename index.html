@@ -29,10 +29,12 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom: 100px; }
 
 /* ESTILOS MÓVIL Y MENÚ */
+#menu-toggle-btn { display: none; } /* Oculto por defecto en PC */
+
 @media (max-width:992px){ 
     .main{grid-template-columns:1fr; padding:15px; padding-bottom: 120px;} 
     
-    /* Botón Menú Visible solo en móvil */
+    /* Botón Menú Visible SOLO en Móvil */
     #menu-toggle-btn { 
         display: flex; width: 100%; justify-content: space-between; align-items: center; 
         background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px;
@@ -45,7 +47,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     /* Clase para mostrarlo */
     .sidebar.open { display: flex; animation: slideDown 0.3s ease-out; }
 }
-@media (min-width:993px) { #menu-toggle-btn { display: none; } }
 
 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -211,8 +212,8 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <div class="main">
     <div class="sidebar-wrapper">
-        <!-- AQUÍ ESTÁ LA CORRECCIÓN: BOTÓN DE MENÚ AGREGADO -->
-        <button id="menu-toggle-btn" style="display:none;"> <!-- Se muestra con JS/CSS en móvil -->
+        <!-- BOTÓN MENÚ MÓVIL (CORREGIDO) -->
+        <button id="menu-toggle-btn">
             <span><i class="bi bi-list"></i> Categorías</span>
             <i id="toggle-icon" class="bi bi-chevron-down"></i>
         </button>
@@ -232,7 +233,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     </section>
 </div>
 
-<!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
+<!-- ZONA FLOTANTE -->
 <div class="floating-actions">
     <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="btn-order">
         <i class="bi bi-whatsapp"></i> HACER PEDIDO
@@ -257,14 +258,13 @@ const PROJECT_ID = '692ee6b70012153cd33c'; const DATABASE_ID = '692ee774002e9a3c
 const COMPANY_DATA = document.getElementById('company-data');
 const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
 
-// --- CONFIGURACIÓN DE DESCUENTO ---
 const DESCUENTO_UNIDAD_PORCENTAJE = 35; 
 
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
 
-// --- LÓGICA MENÚ MÓVIL ---
+// --- FUNCIONES INTERFAZ ---
 const menuBtn = document.getElementById('menu-toggle-btn');
 if(menuBtn) {
     menuBtn.addEventListener('click', () => {
@@ -278,9 +278,6 @@ if(menuBtn) {
         }
     });
 }
-// Asegurar que se muestre en móvil
-if(window.innerWidth <= 992 && menuBtn) menuBtn.style.display = 'flex';
-
 
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
@@ -294,7 +291,6 @@ function renderProductos(lista){
   grid.innerHTML = lista.map(p => {
     const tituloBonito = formatearTitulo(p.descripcion); const codigoBonito = formatearCodigo(p.codigo);
     
-    // Solo usamos pUnidad para mostrar (Mayorista oculto)
     let pMayor = parseFloat(p.preciopormayor); if(isNaN(pMayor)) pMayor = 0;
     let pUnidad = parseFloat(p.precioUnidad); if(isNaN(pUnidad)) pUnidad = 0;
     
@@ -302,22 +298,17 @@ function renderProductos(lista){
     let precioUnidadHtml = '';
     let pUnidadFinal = null;
 
-    // LÓGICA INTELIGENTE DE OFERTA
     let mostrarDescuento = false;
     
     if(pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
         pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
-        // SALVAVIDAS: Si el descuento baja el precio MÁS que el mayorista...
-        if (pUnidadFinal <= pMayor) {
-            mostrarDescuento = false; // PELIGRO: No aplicar descuento
-        } else {
-            mostrarDescuento = true; // SEGURO: Aplicar descuento
+        if (pUnidadFinal > pMayor) {
+            mostrarDescuento = true;
+            promoBadge = `<div class="badge-offer">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
         }
     }
 
     if (mostrarDescuento) {
-        // CASO A: DESCUENTO APLICADO (Etiqueta Bonita Roja)
-        promoBadge = `<div class="badge-offer">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
         precioUnidadHtml = `
         <div class="price-row unit">
             <span class="price-label">OFERTA UNIDAD:</span>
@@ -327,7 +318,6 @@ function renderProductos(lista){
             </div>
         </div>`;
     } else if (pUnidad > 0) {
-        // CASO B: SIN DESCUENTO
         precioUnidadHtml = `
         <div class="price-row unit">
             <span class="price-label-normal">PRECIO UNIDAD:</span>
@@ -351,11 +341,8 @@ function renderProductos(lista){
 
     return `
     <div class="card" id="${cardId}">
-      <div class="img-box">
-          ${promoBadge}
-          <div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>
-          ${dotHtml}
-      </div>
+      ${promoBadge}
+      <div class="img-box"><div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>${dotHtml}</div>
       <div class="info">
         <div>
             <h3 class="title">${tituloBonito}</h3>
@@ -368,7 +355,7 @@ function renderProductos(lista){
                 <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 6} Unidades por mayor
             </div>
         </div>
-        <!-- SIN BOTÓN (Diseño Limpio) -->
+        <!-- SIN BOTÓN -->
       </div>
     </div>`;
   }).join('');
@@ -403,6 +390,11 @@ window.filtrar = function(cat, btn){
   let filtrados = [];
   if(cat === 'Todo') { filtrados = todos; document.getElementById('sub-chips').classList.remove('visible'); } else { filtrados = todos.filter(p => formatearTexto(p.categoria) === cat); renderSubCategorias(filtrados); }
   renderProductos(filtrados);
+  if(window.innerWidth <= 992) {
+      document.getElementById('sidebar-menu').classList.remove('open');
+      document.getElementById('toggle-icon').classList.remove('bi-chevron-up');
+      document.getElementById('toggle-icon').classList.add('bi-chevron-down');
+  }
 }
 function renderSubCategorias(listaProductos){
     const container = document.getElementById('sub-chips');
