@@ -115,29 +115,29 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- 1. NOMBRE -->
+                <!-- 1. CÓDIGO Y CATEGORÍA (ARRIBA) -->
+                <div class="row">
+                    <div class="form-group"><label>Código</label><input type="text" id="code"></div>
+                    <div class="form-group">
+                        <label>Categoría (Seleccionar)</label>
+                        <!-- MENU DESPLEGABLE ESTRICTO -->
+                        <select id="cat" required>
+                            <option value="" disabled selected>Cargando...</option>
+                            <!-- Se llena con JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2. NOMBRE -->
                 <div class="form-group">
                     <label>Nombre del Producto</label>
                     <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
                 </div>
 
-                <!-- 2. TIPO DETECTADO (SUBCATEGORÍA) -->
+                <!-- 3. TIPO DETECTADO (SUBCATEGORÍA) -->
                 <div class="form-group">
                     <label style="color:#2563eb;">Tipo Detectado (Subcategoría)</label>
-                    <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="Escribe el nombre arriba...">
-                </div>
-
-                <!-- 3. CATEGORÍA Y CÓDIGO (AL LADO) -->
-                <div class="row">
-                    <div class="form-group">
-                        <label>Categoría (Lista Fija)</label>
-                        <!-- MENU DESPLEGABLE ESTRICTO -->
-                        <select id="cat" required>
-                            <option value="" disabled selected>Seleccionar...</option>
-                            <!-- Se llena con JS -->
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Código</label><input type="text" id="code"></div>
+                    <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="Se llena al escribir el nombre...">
                 </div>
 
                 <!-- 4. PRECIOS Y MOQ -->
@@ -216,47 +216,26 @@
     const LIST_ELEMENT = document.getElementById('list');
     
     let GLOBAL_INVENTORY = []; 
+    let CATEGORIES_SET = new Set();
     
-    // --- LISTA MAESTRA FIJA ---
-    const CATEGORIAS_MAESTRAS = [
-        "Belleza y salud",
-        "Herramientas",
-        "Hogar y cocina",
-        "Infantil",
-        "Moda y equipaje",
-        "Oficina y escolar",
-        "Tecnología"
-    ];
-
     // LOGIN
     function checkPass() { 
         if(document.getElementById('passInput').value === PASS) { 
             document.getElementById('loginScreen').style.display = 'none'; 
             document.getElementById('appContent').style.display = 'block'; 
-            initForm();
             loadAllProducts(); 
         } else { 
             document.getElementById('loginError').style.display = 'block'; 
         } 
     }
 
-    function initForm() {
-        const select = document.getElementById('cat');
-        // Llenar select con lista fija
-        CATEGORIAS_MAESTRAS.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat;
-            option.innerText = cat;
-            select.appendChild(opt);
-        });
-    }
-
-    // CARGAR PRODUCTOS (DESCARGA TODO PERO NO MUESTRA NADA AL INICIO)
+    // CARGAR PRODUCTOS Y GENERAR LISTA DE CATEGORÍAS
     async function loadAllProducts() {
         const loader = document.getElementById('loading-bar');
         if(loader) loader.style.display = 'block';
         
         GLOBAL_INVENTORY = [];
+        CATEGORIES_SET.clear();
         let offset = 0; const limit = 100;
         
         try {
@@ -270,8 +249,27 @@
                 if (res.documents.length < limit) break;
                 offset += limit;
             }
+            
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
-            doSearch(); // Ejecuta búsqueda inicial (que estará vacía)
+            
+            // 1. LLENAR SELECT DE CATEGORÍAS (CON LO QUE EXISTE EN LA BD)
+            const catSelect = document.getElementById('cat');
+            catSelect.innerHTML = '<option value="" disabled selected>Elige una...</option>';
+
+            GLOBAL_INVENTORY.forEach(p => {
+                if(p.categoria) CATEGORIES_SET.add(p.categoria.trim());
+            });
+            
+            Array.from(CATEGORIES_SET).sort().forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.innerText = cat;
+                catSelect.appendChild(opt);
+            });
+
+            // No mostramos lista inicial para mantener limpio
+            doSearch(); 
+
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
     }
@@ -283,26 +281,28 @@
             document.getElementById('tipoDetectado').value = "";
             return;
         }
+        
         let primera = nombre.trim().split(' ')[0];
         
-        // Capitalizar primera letra para que se vea bien
+        // Capitalizar primera letra para visualización
         if(primera.length > 2) {
-             primera = primera.charAt(0).toUpperCase() + primera.slice(1).toLowerCase();
-             document.getElementById('tipoDetectado').value = primera;
+             let primeraCapital = primera.charAt(0).toUpperCase() + primera.slice(1).toLowerCase();
+             document.getElementById('tipoDetectado').value = primeraCapital;
              
-             // 2. Auto-seleccionar Categoría
-             const catSelect = document.getElementById('cat');
-             // Solo si no se ha elegido una manualmente aún
-             if(catSelect.value === "") {
-                 const match = GLOBAL_INVENTORY.find(p => p.descripcion && p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
-                 if(match && match.categoria) {
-                     // Verificar si la categoría del match existe en nuestra lista maestra
-                     const existe = Array.from(catSelect.options).some(opt => opt.value === match.categoria);
-                     if(existe) {
-                         catSelect.value = match.categoria;
-                         catSelect.style.borderColor = "#2563eb"; // Feedback visual
-                         setTimeout(() => catSelect.style.borderColor = "#f0f0f0", 1000);
-                     }
+             // 2. Auto-seleccionar Categoría en el Select
+             // Buscamos en el historial un producto que empiece con ese tipo
+             const match = GLOBAL_INVENTORY.find(p => p.descripcion && p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
+             
+             if(match && match.categoria) {
+                 const catSelect = document.getElementById('cat');
+                 
+                 // Intentamos asignar el valor al select. Si existe en la lista, se seleccionará.
+                 catSelect.value = match.categoria;
+                 
+                 // Efecto visual si cambió
+                 if(catSelect.value === match.categoria) {
+                     catSelect.style.borderColor = "#2563eb"; // Feedback visual
+                     setTimeout(() => catSelect.style.borderColor = "#f0f0f0", 1000);
                  }
              }
         } else {
@@ -350,7 +350,7 @@
         const data = {
           descripcion: document.getElementById('name').value, 
           codigo: document.getElementById('code').value, 
-          categoria: document.getElementById('cat').value, 
+          categoria: document.getElementById('cat').value, // Valor del SELECT
           preciopormayor: Number(document.getElementById('price').value || 0), 
           precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value || 6), 
@@ -377,6 +377,14 @@
         
         // No refrescamos la lista automáticamente, a menos que el término de búsqueda coincida
         doSearch(); 
+        
+        // Si añadimos una categoría nueva (aunque con select estricto no se puede, pero por robustez)
+        if(data.categoria && !CATEGORIES_SET.has(data.categoria)) {
+            CATEGORIES_SET.add(data.categoria);
+            const opt = document.createElement('option'); opt.value = data.categoria;
+            opt.innerText = data.categoria;
+            document.getElementById('cat').appendChild(opt);
+        }
 
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
