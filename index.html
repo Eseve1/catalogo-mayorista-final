@@ -147,32 +147,46 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
 }
 
-/* 1. Botón COTIZAR AHORA (ROJO) */
+/* 1. Botón PRINCIPAL (WHATSAPP - Contacto Directo) */
 .btn-order {
-    background: #D32F2F; color: #fff; /* Rojo */
+    background: #25D366; /* Verde WhatsApp */
+    color: #fff; 
     padding: 10px 20px; border-radius: 50px; 
     font-weight: 800; font-size: 0.9rem; 
     text-decoration: none; 
-    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
     display: flex; align-items: center; gap: 8px;
     transition: 0.2s;
-    /* MANTIENE ANIMACIÓN DE PARPADEO */
-    animation: pulse-red 2s infinite; 
+    /* ANIMACIÓN DE PARPADEO APLICADA AQUÍ */
+    animation: pulse-green 2s infinite; 
 }
-.btn-order:hover { transform: scale(1.05); background: #b91c1c; animation: none; }
+.btn-order:hover { transform: scale(1.05); background: #1faa58; animation: none; }
 
-/* 2. Botón WHATSAPP (Green) */
+@keyframes pulse-green { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+
+
+/* 2. Botón GRUPO MAYORISTA (Rojo, Secundario - AJUSTADO) */
 .btn-group { 
-    background: #fff; color: #25D366; border: 2px solid #25D366;
+    background: #D32F2F; /* Rojo */
+    color: #fff; /* Texto blanco para mejor contraste */
+    border: 2px solid #D32F2F;
     height: 45px; width: 45px; border-radius: 50px; 
     display: flex; align-items: center; justify-content: center;
     text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: all 0.3s ease; overflow: hidden; white-space: nowrap;
 }
 .btn-group i { font-size: 1.4rem; margin: 0; }
-.btn-group span { opacity: 0; max-width: 0; transition: all 0.3s; margin-left: 10px; font-weight: 700; font-size: 0.9rem; }
-.btn-group:hover { width: 180px; padding: 0 15px; justify-content: flex-start; }
-.btn-group:hover span { opacity: 1; max-width: 200px; margin-left: 10px; }
+.btn-group span { 
+    opacity: 0; 
+    max-width: 0; 
+    transition: all 0.3s; 
+    margin-left: 10px; 
+    font-weight: 700; 
+    font-size: 0.95rem; /* Ligeramente más grande */
+    color: #fff; /* Asegurar color blanco al expandir */
+}
+.btn-group:hover { width: 220px; padding: 0 15px; justify-content: flex-start; background: #b91c1c; } /* Fondo más oscuro al hacer hover */
+.btn-group:hover span { opacity: 1; max-width: 220px; margin-left: 10px; }
 
 /* FOOTER */
 .main-footer { max-width:1400px; margin:0 auto; padding: 40px 25px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
@@ -230,12 +244,14 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
+    <!-- 1. BOTÓN PRINCIPAL: WHATSAPP (Contacto Directo) - Parpadea y va al chat personal -->
     <a href="https://wa.me/59161333335?text=Hola,%20quisiera%20cotizar%20precios%20de%20sus%20productos." target="_blank" class="btn-order">
-        <i class="bi bi-tags-fill"></i> COTIZAR AHORA
+        <i class="bi bi-whatsapp"></i> WHATSAPP
     </a>
-    <a href="https://wa.me/59161333335" target="_blank" class="btn-group">
-        <i class="bi bi-whatsapp"></i> 
-        <span>WHATSAPP</span>
+    <!-- 2. BOTÓN SECUNDARIO: GRUPO MAYORISTA (Se expande y va al grupo) -->
+    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
+        <i class="bi bi-people-fill"></i> 
+        <span>GRUPO MAYORISTA</span>
     </a>
 </div>
 
@@ -331,11 +347,16 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA EN LA TARJETA ---
-    // Muestra la condición de Venta Mayorista y la acción de COTIZAR
-    const cotizarSpan = `<span style="color:var(--brand-red); font-weight:900;">COTIZAR</span>`;
-    const mayoristaText = `Venta Mayorista (Min. ${minOrderQuantity} Unid.): ${cotizarSpan}`;
-    
+    // --- LÓGICA MAYORISTA EN LA TARJETA (PRECIO DESDE) ---
+    let mayoristaText;
+    if (pMayor > 0) {
+        // Muestra el precio por mayor como "Desde"
+        mayoristaText = `PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.): <span style="color:var(--brand-red); font-weight:900;">Desde Bs. ${pMayor.toFixed(2)}</span>`;
+    } else {
+        // Si no hay precio por mayor, pide cotizar
+        mayoristaText = `PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.): <span style="color:var(--brand-red); font-weight:900;">COTIZAR</span>`;
+    }
+
     const mayoristaHtml = `
     <div class="mayorista-cotizar">
         <i class="bi bi-box-seam-fill"></i> 
@@ -371,7 +392,7 @@ function renderProductos(lista){
         
         <div class="prices-container">
             ${precioUnidadHtml}
-            ${mayoristaHtml} <!-- AQUI SE INSERTA EL NUEVO BLOQUE CON COTIZACIÓN PURA -->
+            ${mayoristaHtml} <!-- AQUI SE INSERTA EL NUEVO BLOQUE DE VENTA POR MAYOR -->
         </div>
         <!-- SIN BOTÓN -->
       </div>
