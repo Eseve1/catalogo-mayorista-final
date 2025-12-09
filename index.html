@@ -317,19 +317,22 @@ const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
 // --- CONFIGURACIÓN DE DESCUENTO ---
 const DESCUENTO_UNIDAD_PORCENTAJE = 35; 
 
-// --- PRODUCTOS DE EJEMPLO (FALLBACK) ---
-const SAMPLE_PRODUCTS = [
-    { $id: 'p1', descripcion: 'Audífonos Inalámbricos Pro Max', categoria: 'Electrónica', codigo: 'AUD-001', precioUnidad: 180.00, preciopormayor: 120.00, moq: 15, disponible: true, imagen: 'https://placehold.co/400x400/FFB800/white?text=AUDIFONOS+PRO', imagen2: 'https://placehold.co/400x400/FFB800/white?text=IMAGEN+2' },
-    { $id: 'p2', descripcion: 'Reloj Inteligente Elite Sport', categoria: 'Tecnología', codigo: 'REL-005', precioUnidad: 350.00, preciopormayor: 200.00, moq: 10, disponible: true, imagen: 'https://placehold.co/400x400/CC0000/white?text=SMARTWATCH', imagen2: null },
-    { $id: 'p3', descripcion: 'Power Bank Ultra Rápida 20000mAh', categoria: 'Electrónica', codigo: 'PB-022', precioUnidad: 120.00, preciopormayor: 110.00, moq: 5, disponible: true, imagen: 'https://placehold.co/400x400/4CAF50/white?text=POWER+BANK', imagen2: null },
-    { $id: 'p4', descripcion: 'Kit de Luces LED Decorativas', categoria: 'Hogar', codigo: 'LUC-101', precioUnidad: 70.00, preciopormayor: 50.00, moq: 20, disponible: true, imagen: 'https://placehold.co/400x400/546E7A/white?text=LUCES+LED', imagen2: null }
-];
-// ----------------------------------------
-
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
 let subCatActual = ''; 
+
+// --- CATEGORÍAS MAESTRAS FIJAS (PARA QUE NO SE ROMPA EL MENÚ) ---
+const CATEGORIAS_MAESTRAS = [
+    "Todo",
+    "Belleza y salud",
+    "Herramientas",
+    "Hogar y cocina",
+    "Infantil",
+    "Moda y equipaje",
+    "Oficina y escolar",
+    "Tecnología"
+];
 
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
@@ -356,16 +359,11 @@ function renderProductos(lista){
     
     let promoBadge = '';
     let precioUnidadHtml = '';
-    let pUnidadFinal = null;
-
+    
     // --- LÓGICA DE PROTECCIÓN (CEREBRO) ---
     let mostrarDescuento = false;
-    
     if (pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
-        // Cálculo
-        pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
-        
-        // REGLA MAESTRA: Si el precio con descuento sigue siendo MAYOR al mayorista, APROBADO.
+        let pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
         if (pUnidadFinal > pMayor) {
             mostrarDescuento = true;
             promoBadge = `<div class="badge-offer">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
@@ -373,7 +371,7 @@ function renderProductos(lista){
     }
 
     if (mostrarDescuento) {
-        // CASO A: SI HAY MARGEN, MOSTRAMOS LA OFERTA
+        let pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
         precioUnidadHtml = `
         <div class="price-row unit">
             <span class="price-label">PRECIO POR UNIDAD (-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF):</span>
@@ -383,7 +381,6 @@ function renderProductos(lista){
             </div>
         </div>`;
     } else if (pUnidad > 0) {
-        // CASO B: NO HAY MARGEN, MOSTRAMOS PRECIO NORMAL + TEXTO GANCHO
         precioUnidadHtml = `
         <div class="price-row unit">
             <span class="price-label-normal">PRECIO POR UNIDAD:</span>
@@ -394,7 +391,7 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA EN LA TARJETA (FINAL: Tres líneas Separadas) ---
+    // --- LÓGICA MAYORISTA EN LA TARJETA (TRES LÍNEAS SEPARADAS) ---
     let mayoristaContentHtml;
     if (pMayor > 0) {
         // Formato final: PRECIO POR MAYOR (Min. 12 Unid.) | Bs. 50.00 | Cada Unidad
@@ -462,7 +459,7 @@ function renderProductos(lista){
   }).join('');
 }
 
-// --- FUNCIÓN INTELIGENTE DE AGRUPACIÓN (PRIMERA PALABRA Y SINGULARIZACIÓN) ---
+// --- FUNCIÓN DE AGRUPACIÓN (PRIMERA PALABRA Y SINGULARIZACIÓN) ---
 function obtenerPalabraClave(txt) {
     if (!txt) return '';
     let primera = txt.trim().split(' ')[0].toLowerCase();
@@ -489,7 +486,6 @@ function renderSubChips(listaFiltrada){
     let subCategoriasMap = {};
     
     listaFiltrada.forEach(p => {
-        // Obtenemos la palabra clave (Ej: "Gorra" desde "Gorras")
         let key = obtenerPalabraClave(p.descripcion);
         subCategoriasMap[key] = (subCategoriasMap[key] || 0) + 1;
     });
@@ -499,7 +495,6 @@ function renderSubChips(listaFiltrada){
         .sort((a, b) => a.localeCompare(b))
         .map(key => {
             const activeClass = subCatActual === key ? 'active' : '';
-            // El chip muestra el nombre limpio y singularizado (ej: "Gorra")
             return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${key}', this)">${key}</div>`;
         }).join('');
 
@@ -523,9 +518,14 @@ window.filtrarSubCategoria = function(keyNormalizada, chipElement){
 
     const listaCategoria = catActual === 'Todo' 
         ? todos 
-        : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
+        : todos.filter(p => {
+            // Filtro flexible: Si la categoría del producto contiene la seleccionada (o viceversa)
+            if (!p.categoria) return false;
+            const catProd = normalizarTexto(p.categoria);
+            const catFiltro = normalizarTexto(catActual);
+            return catProd.includes(catFiltro) || catFiltro.includes(catProd);
+        });
 
-    // Filtramos usando la misma lógica de "primera palabra singularizada"
     const listaFinal = subCatActual 
         ? listaCategoria.filter(p => obtenerPalabraClave(p.descripcion) === subCatActual) 
         : listaCategoria;
@@ -544,7 +544,6 @@ async function iniciar(){
   const db = new Databases(client);
   const grid = document.getElementById('productos');
   
-  // Mostrar estado de carga inicial
   grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#adb5bd; font-weight:600;">Cargando catálogo...</p></div>`;
 
   try {
@@ -553,22 +552,22 @@ async function iniciar(){
     if (res.documents && res.documents.length > 0) {
         todos = res.documents.filter(doc => doc.disponible !== false);
     } else {
-        todos = SAMPLE_PRODUCTS;
+        todos = []; // Ya no usamos los de ejemplo si la conexión es exitosa pero vacía
     }
     
     renderCategorias(); 
     renderProductos(todos); 
     
   } catch(e) { 
-    todos = SAMPLE_PRODUCTS;
+    // En caso de error crítico, no mostramos productos de ejemplo para no confundir.
+    todos = [];
     renderCategorias();
-    renderProductos(todos);
     
-    console.error("Error crítico de conexión a Appwrite. Usando productos de ejemplo:", e); 
+    console.error("Error crítico de conexión a Appwrite.", e); 
     const errorHtml = `
     <div style="grid-column:1/-1; text-align:center; padding:20px; border: 1px solid #d32f2f; background: #ffebee; border-radius: 8px; margin-bottom: 20px;">
-        <p style="color:#d32f2f; font-weight:700; margin: 0;">¡ERROR DE CONEXIÓN! NO se pudo cargar el catálogo de Appwrite.</p>
-        <p style="color:#666; font-size:0.9rem; margin: 5px 0 0;">(Mostrando productos de ejemplo. Revise el ID del proyecto y los permisos de lectura de la colección en Appwrite).</p>
+        <p style="color:#d32f2f; font-weight:700; margin: 0;">¡ERROR DE CONEXIÓN! No se pudo cargar el catálogo de Appwrite.</p>
+        <p style="color:#666; font-size:0.9rem; margin: 5px 0 0;">Verifique su conexión o la configuración.</p>
     </div>`;
     document.querySelector('section').insertAdjacentHTML('afterbegin', errorHtml);
   }
@@ -578,64 +577,65 @@ function renderCategorias(){
   const menu = document.getElementById('menu-cat');
   const mobileMenu = document.getElementById('mobile-cats');
   
-  let categoriasLimpias = todos.map(p => formatearTexto(p.categoria || 'Varios'));
-  let listadoCategorias = [...new Set(categoriasLimpias)]; listadoCategorias.sort();
-  const cats = ['Todo', ...listadoCategorias];
+  // USAMOS LA LISTA FIJA DE CATEGORÍAS MAESTRAS
+  const cats = CATEGORIAS_MAESTRAS;
   
-  // Render PC
   menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
   
-  // Render Mobile (Horizontal Scroll)
   mobileMenu.innerHTML = cats.map(c => `<div class="cat-chip ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</div>`).join('');
 }
 
 window.filtrar = function(cat, btn){
-  // Resetear la subcategoría
   subCatActual = ''; 
-  
-  // 1. Quitar la clase 'active' de TODOS los elementos de categoría
   document.querySelectorAll('.btn-cat, .cat-chip').forEach(b => b.classList.remove('active'));
-
-  // 2. Activar el elemento clickeado (PC/Móvil)
-  if (btn) {
-      btn.classList.add('active');
-  }
-
-  // 3. Sincronizar el elemento complementario (Asegura que el de PC y el de Móvil coincidan)
+  
+  if (btn) btn.classList.add('active');
   document.querySelectorAll('.btn-cat, .cat-chip').forEach(el => {
-      if (el !== btn && el.textContent.trim() === cat) { 
-          el.classList.add('active');
-      }
+      if (el !== btn && el.textContent.trim() === cat) el.classList.add('active');
   });
 
-  // 4. Filtrar la lista principal
   catActual = cat;
   document.getElementById('searchBox').value = '';
   
+  // Filtro más permisivo para atrapar variaciones en la BD (Moda vs Moda y equipaje)
   const listaFiltrada = cat === 'Todo' 
       ? todos 
-      : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(cat));
+      : todos.filter(p => {
+          if (!p.categoria) return false;
+          const catProd = normalizarTexto(p.categoria);
+          const catFiltro = normalizarTexto(cat);
+          // Si el producto dice "Moda" y el filtro es "Moda y equipaje", debería mostrarse (o viceversa)
+          return catProd.includes(catFiltro) || catFiltro.includes(catProd);
+      });
       
   renderProductos(listaFiltrada);
-  renderSubChips(listaFiltrada); // Mostrar chips de subcategoría
+  renderSubChips(listaFiltrada); 
 }
 
 document.getElementById('searchBox').addEventListener('keyup', (e) => {
     const query = normalizarTexto(e.target.value);
-    const listaAFiltrar = catActual === 'Todo' ? todos : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
     
-    if (query.length < 3) {
-        renderProductos(listaAFiltrar);
-        renderSubChips(listaAFiltrar);
+    // Si hay búsqueda, buscamos en TODO, ignorando categoría actual
+    if (query.length >= 3) {
+        const resultados = todos.filter(p => 
+            normalizarTexto(p.descripcion).includes(query) ||
+            normalizarTexto(p.codigo).includes(query)
+        );
+        renderProductos(resultados);
+        document.getElementById('sub-chips').classList.remove('visible'); 
         return;
     }
 
-    const resultados = listaAFiltrar.filter(p => 
-        normalizarTexto(p.descripcion).includes(query) ||
-        normalizarTexto(p.codigo).includes(query)
-    );
-    renderProductos(resultados);
-    document.getElementById('sub-chips').classList.remove('visible'); // Ocultar chips si hay búsqueda manual
+    // Si borra la búsqueda, volvemos a la categoría actual
+    const listaAFiltrar = catActual === 'Todo' ? todos : todos.filter(p => {
+         if (!p.categoria) return false;
+         const catProd = normalizarTexto(p.categoria);
+         const catFiltro = normalizarTexto(catActual);
+         return catProd.includes(catFiltro) || catFiltro.includes(catProd);
+    });
+    
+    renderProductos(listaAFiltrar);
+    renderSubChips(listaAFiltrar);
 });
 
 // INICIO: Llama a la función principal para cargar datos
