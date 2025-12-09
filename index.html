@@ -4,293 +4,201 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Catálogo Mayorista - Ale Importadora</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2? family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 <style>
-:root{ --bg:#f6f8fb; --text:#111; --accent:#FFB800; --brand-red:#CC0000; --card-border:#e5e5e5; }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
+: root{ --bg:#f6f8fb; --text:#111; --accent:#FFB800; --brand-red:#CC0000; --card-border:#e5e5e5; }
+*{box-sizing: border-box}
+html,body{margin:0;padding: 0}
+body{background: var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--text);}
 
 /* --- HEADER ROJO --- */
 .header-oferta{ 
     width:100%; background:var(--brand-red); color:#fff; border-bottom:3px solid #b71c1c; 
-    box-shadow:0 4px 10px rgba(0,0,0,.15); overflow:hidden; position:sticky; top:0; z-index:50; 
+    box-shadow:0 4px 10px rgba(0,0,0,. 15); overflow:hidden; position:sticky; top:0; z-index:50; 
 }
 .header-track{ 
     display:flex; gap:40px; white-space:nowrap; animation:marquee 20s linear infinite; 
     padding:12px 0; font-weight:800; font-size:1rem; letter-spacing:1px; text-transform:uppercase; 
 }
-.header-item{ display:inline-flex; align-items:center; gap:8px; }
-.header-item i { color: var(--accent); font-size: 1.2rem; } 
+. header-item{ display:inline-flex; align-items:center; gap:8px; }
+.header-item i { color:  var(--accent); font-size: 1.2rem; } 
 @keyframes marquee{ 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 /* LAYOUT */
-.main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom: 100px; }
+.main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom:  100px; }
 
 /* SIDEBAR (SOLO PC) */
 .sidebar{ 
     background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:20px; 
     position:sticky; top:80px; 
-    max-height: calc(100vh - 100px); 
-    display: flex; 
+    max-height:  calc(100vh - 100px); 
+    display:  flex; 
     flex-direction: column; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+    box-shadow:  0 4px 15px rgba(0,0,0,0.03); 
 }
-.sidebar h2{ margin:0 0 15px; font-size:1.1rem; font-weight:900; color: #333; display: flex; align-items: center; gap: 8px; }
-#menu-cat{ display:flex; flex-direction:column; gap:6px; overflow-y: auto; padding-bottom: 15px; }
-.btn-cat{ background:transparent; color:#555; border:1px solid transparent; font-weight:600; border-radius:8px; padding:10px 12px; cursor:pointer; font-size:0.9rem; text-align:left; transition:.2s; }
+.sidebar h2{ margin: 0 0 15px; font-size:1.1rem; font-weight:900; color:  #333; display:  flex; align-items: center; gap:  8px; }
+#menu-cat{ display:flex; flex-direction:column; gap:6px; overflow-y:  auto; padding-bottom:  15px; }
+.btn-cat{ background:transparent; color:#555; border:1px solid transparent; font-weight:600; border-radius:8px; padding: 10px 12px; cursor:pointer; font-size:0.9rem; text-align:left; transition:. 2s; }
 .btn-cat:hover{ background:#f1f3f5; color:#000; }
-.btn-cat.active{ background:var(--brand-red); color:#fff; font-weight: 700; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); }
+.btn-cat. active{ background: var(--brand-red); color:#fff; font-weight:  700; box-shadow:  0 4px 10px rgba(211, 47, 47, 0.3); }
 
-/* CHIPS DE SUBCATEGORÍA (RESTAURADO) */
-#sub-chips { display: flex; gap: 8px; flex-wrap: wrap; display: none; }
+/* CHIPS DE SUBCATEGORÍA */
+#sub-chips { display:  flex; gap: 8px; flex-wrap: wrap; display: none; }
 #sub-chips.visible { display: flex; }
-.chip { background: #fff; border: 1px solid #dee2e6; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
+. chip { background:  #fff; border: 1px solid #dee2e6; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
 .chip:hover { background: #eee; }
 .chip.active { background: #333; color: #fff; border-color: #333; }
 
-/* --- MENÚ MÓVIL HORIZONTAL (EL BUENO) --- */
+/* --- MENÚ MÓVIL HORIZONTAL --- */
 .mobile-cats { 
-    display: none; /* Oculto en PC */
+    display: none; 
     gap: 10px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px;
     scrollbar-width: none; 
 }
 .mobile-cats::-webkit-scrollbar { display: none; }
 
-.cat-chip {
+. cat-chip {
     background: #fff; border: 1px solid #ddd; padding: 10px 18px; 
     border-radius: 50px; font-weight: 700; color: #444; font-size: 0.85rem;
     white-space: nowrap; cursor: pointer; transition: 0.2s;
     box-shadow: 0 2px 5px rgba(0,0,0,0.03);
 }
-.cat-chip.active { background: var(--brand-red); color: #fff; border-color: var(--brand-red); box-shadow: 0 4px 10px rgba(204, 0, 0, 0.3); }
+.cat-chip. active { background: var(--brand-red); color: #fff; border-color: var(--brand-red); box-shadow: 0 4px 10px rgba(204, 0, 0, 0.3); }
 
 /* TOOLBAR */
 .toolbar-container { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
-.toolbar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:10px 15px; display:flex; align-items:center; gap:12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-#searchBox{ flex:1; border:none; outline:none; font-size:1rem; padding:5px; color: #333; }
+.toolbar{ background:#fff; border: 1px solid var(--card-border); border-radius:12px; padding:10px 15px; display:flex; align-items:center; gap:12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+#searchBox{ flex:1; border:none; outline:none; font-size:1rem; padding: 5px; color:  #333; }
 #searchBox:focus{ border-color:var(--accent); }
 
 /* GRID PRODUCTOS */
-.grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));}
+.grid{display:grid; gap:20px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));}
 
 /* TARJETA DE PRODUCTO */
 .card{ 
     background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; 
     position:relative; display:flex; flex-direction:column; 
-    padding-bottom: 15px; 
+    padding-bottom:  15px; 
+    transition:  transform 0.2s, box-shadow 0.2s;
 }
 .card:hover{transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.08);}
 
-/* ETIQUETA ROJA (-35% OFF) */
-.badge-offer {
+/* ETIQUETA DE DESCUENTO */
+.badge-descuento {
     position: absolute; top: 12px; left: 12px; z-index: 10;
-    background: #e63946; color: #fff;
-    padding: 4px 10px; border-radius: 50px;
+    background: #16a34a; color: #fff;
+    padding: 5px 12px; border-radius: 50px;
     font-weight: 800; font-size: 0.75rem; letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4);
-    animation: pulse-red 2s infinite;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.4);
+    animation: pulse-green 2s infinite;
 }
-@keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-@keyframes text-pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+@keyframes pulse-green { 
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); } 
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); } 
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } 
+}
 
 /* IMAGEN */
-.img-box { background:#fff; height:220px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
+.img-box { background:#fff; height:220px; position:  relative; overflow:  hidden; border-bottom: 1px solid #f0f0f0; }
 .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
 .img-slider::-webkit-scrollbar { display: none; }
 .slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 10px; }
-.prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
+.prod-img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; transition: transform 0.3s; }
 .prod-img:hover { transform: scale(1.05); }
 
 /* PUNTOS */
-.dot-container { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 15; }
+.dot-container { position: absolute; bottom: 10px; left: 50%; transform:  translateX(-50%); display: flex; gap: 6px; z-index: 15; }
 .dot { width: 6px; height: 6px; background-color: rgba(0, 0, 0, 0.2); border-radius: 50%; transition: 0.3s; }
 .dot.active { background-color: var(--brand-red); transform: scale(1.3); }
 
 /* INFORMACIÓN */
-.info{padding:15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
-.title{font-size:0.95rem; font-weight:800; margin:0 0 4px; line-height:1.3; color:#111;}
-.ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:10px; display: block;}
+.info{padding:15px; flex-grow:  1; display:  flex; flex-direction: column; justify-content: space-between;}
+.title{font-size:0.95rem; font-weight:800; margin: 0 0 4px; line-height:1.3; color:#111;}
+.ref{font-size:0.8rem; color:#888; font-weight:600; margin-bottom:10px; display:  block;}
 
-.prices-container { margin-bottom: 5px; }
+. prices-container { margin-bottom: 5px; }
 
-/* PRECIOS */
-.price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 6px; }
-.price-new { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
-.price-normal { color: #111; font-weight: 900; font-size: 1.2rem; }
-.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
-.price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
-
-/* Texto de "Pide tu Descuento" */
-.promo-text { 
-    font-size: 0.7rem; color: #16a34a; font-weight: 700; 
-    background: #dcfce7; padding: 2px 6px; border-radius: 4px;
-    display: inline-block; margin-left: 5px;
-    animation: text-pulse 2s infinite;
+/* SECCIÓN DE PRECIO POR UNIDAD */
+.price-section {
+    margin-bottom: 12px;
+    padding-bottom:  12px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-/* Nuevo Estilo para Cotización Mayorista */
-.mayorista-cotizar {
-    margin-top: 10px; 
-    font-size: 0.85rem; 
-    color: #444; 
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #e7f5ff; 
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px dashed #c0e0ff; 
-    /* Estilo para que el texto se apile verticalmente */
-    flex-direction: column; 
-    align-items: flex-start;
-}
-.mayorista-cotizar i { 
-    color: var(--brand-red); 
-    font-size: 1.1rem;
-    margin-right: 6px; 
-    margin-top: 2px;
-}
-.mayorista-label {
-    display: flex;
-    align-items: center;
-    font-size: 0.9rem; /* Un poco más grande para el texto principal */
-    font-weight: 800;
+.price-label { 
+    display: block; 
+    font-size:  0.7rem; 
+    font-weight: 700; 
+    color: #555; 
+    text-transform: uppercase; 
     margin-bottom: 4px;
 }
-.mayorista-price-row {
+
+.price-value { 
+    color: #111; 
+    font-weight: 900; 
+    font-size:  1.3rem; 
+    display: block;
     line-height: 1.2;
-    /* Estilo para que el precio y el texto "Cada Unidad" estén separados */
-    display: flex;
-    flex-direction: column; 
-    align-items: flex-start;
-    font-size: 0.9rem;
 }
-.mayorista-price-row span:last-child {
-    /* CORRECCIÓN: Eliminamos el margen negativo para evitar ruido visual */
-    margin-top: 0; 
-    padding-top: 2px; /* Añadir un pequeño padding para separarlo del precio */
-    font-size: 0.85rem; 
+
+/* Mensaje de descuento */
+.descuento-text { 
+    font-size:  0.75rem; 
+    color: #16a34a; 
     font-weight: 700; 
-    color: #444; 
+    background: #dcfce7; 
+    padding:  4px 8px; 
+    border-radius: 4px;
+    display: inline-block; 
+    margin-top: 6px;
+}
+
+/* SECCIÓN MAYORISTA (3 LÍNEAS LIMPIAS) */
+.mayorista-section {
+    background: #f8f9fa; 
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.mayorista-titulo {
+    font-size: 0.75rem;
+    font-weight:  700;
+    color: #555;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mayorista-titulo i {
+    color: var(--brand-red);
+    font-size: 0.9rem;
+}
+
+.mayorista-precio {
+    color: var(--brand-red);
+    font-weight: 900;
+    font-size: 1.2rem;
+    display: block;
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.mayorista-unidad {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #666;
+    display: block;
     line-height: 1.2;
 }
-
-/* --- MODAL DE SUCURSALES (MANTENIDO SOLO POR ESTILO, ELIMINADO EL HTML) --- */
-.modal-sucursales {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); z-index: 9999;
-    display: none; justify-content: center; align-items: center;
-}
-.modal-content {
-    background: #fff; padding: 30px; border-radius: 12px;
-    max-width: 500px; width: 90%; max-height: 90vh;
-    overflow-y: auto; position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    border-top: 5px solid var(--brand-red);
-}
-.modal-content h3 {
-    margin-top: 0;
-    font-size: 1.5rem;
-    color: #111;
-    border-bottom: 2px solid #ccc; 
-    padding-bottom: 5px;
-    margin-bottom: 20px;
-}
-.close-modal {
-    position: absolute; top: 15px; right: 15px;
-    font-size: 1.8rem; color: #555; cursor: pointer;
-    line-height: 1;
-}
-.sucursal-item {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px dotted #ccc;
-}
-.sucursal-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-.sucursal-item p {
-    margin: 4px 0;
-    font-size: 0.95rem;
-}
-.sucursal-item b {
-    font-weight: 900;
-    color: var(--brand-red); 
-}
-.sucursal-item i {
-    color: #333;
-    margin-right: 5px;
-}
-.btn-mapa {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--brand-red); 
-    color: white;
-    padding: 6px 12px; border-radius: 8px;
-    text-decoration: none; font-weight: 700;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    transition: background 0.2s;
-}
-.btn-mapa:hover {
-    background: #a50000;
-}
-
-
-/* --- ZONA FLOTANTE (Fixed Bottom) --- */
-.floating-actions {
-    position: fixed; bottom: 20px; right: 20px; z-index: 100;
-    display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
-}
-
-/* 1. Botón PRINCIPAL (WHATSAPP - Contacto Directo) */
-.btn-order {
-    background: #25D366; /* Verde WhatsApp */
-    color: #fff; 
-    padding: 10px 20px; border-radius: 50px; 
-    font-weight: 800; font-size: 0.9rem; 
-    text-decoration: none; 
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-    display: flex; align-items: center; gap: 8px;
-    transition: 0.2s;
-    /* ANIMACIÓN DE PARPADEO APLICADA AQUÍ */
-    animation: pulse-green 2s infinite; 
-}
-.btn-order:hover { transform: scale(1.05); background: #1faa58; animation: none; }
-
-/* Animación de pulso verde */
-@keyframes pulse-green { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
-
-
-/* 2. Botón GRUPO VIP (Rojo, Secundario - AJUSTADO) */
-.btn-group { 
-    background: #D32F2F; /* Rojo */
-    color: #fff; 
-    border: 2px solid #D32F2F;
-    height: 45px; width: 45px; border-radius: 50px; 
-    display: flex; align-items: center; justify-content: center;
-    text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease; overflow: hidden; white-space: nowrap;
-}
-.btn-group i { font-size: 1.4rem; margin: 0; }
-.btn-group span { 
-    opacity: 0; 
-    max-width: 0; 
-    transition: all 0.3s; 
-    margin-left: 10px; 
-    font-weight: 800; /* Más audaz */
-    font-size: 1rem; /* Más grande */
-    color: #fff; 
-}
-.btn-group:hover { width: 170px; padding: 0 15px; justify-content: flex-start; background: #b91c1c; } 
-.btn-group:hover span { opacity: 1; max-width: 200px; margin-left: 10px; }
 
 /* FOOTER */
-.main-footer { max-width:1400px; margin:0 auto; padding: 40px 25px; border-top: 1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
-.footer-col h4 { font-weight: 800; font-size: 1rem; color: #111; margin-bottom: 12px; }
+.main-footer { max-width: 1400px; margin:0 auto; padding:  40px 25px; border-top:  1px solid #e5e5e5; background-color: #ffffff; color: #555; font-size: 0.9rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
+.footer-col h4 { font-weight: 800; font-size: 1rem; color: #111; margin-bottom:  12px; }
 .footer-col p { margin-bottom: 8px; line-height: 1.5; color: #555; font-size: 0.9rem; }
 .map-link { color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
 
@@ -301,31 +209,89 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 #zoomModal.open #zoomImg { transform: scale(1); }
 .close-zoom { position: absolute; top: 20px; right: 20px; color: #fff; font-size: 2rem; cursor: pointer; }
 
-/* --- ADAPTACIÓN MÓVIL CORRECTA --- */
-@media (max-width:992px){ 
-    .main{ display:block; padding:15px; padding-bottom: 120px; }
-    .sidebar-wrapper { display: none; } /* OCULTAMOS SIDEBAR DE PC */
-    .mobile-cats { display: flex; } /* MOSTRAMOS MENU MOVIL */
+/* --- ZONA FLOTANTE --- */
+.floating-actions {
+    position: fixed; bottom: 20px; right:  20px; z-index: 100;
+    display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+}
+
+.btn-order {
+    background: #25D366; 
+    color: #fff; 
+    padding: 12px 24px; 
+    border-radius: 50px; 
+    font-weight: 800; 
+    font-size:  0.95rem; 
+    text-decoration: none; 
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    transition: 0.2s;
+    animation: pulse-whatsapp 2s infinite; 
+}
+.btn-order:hover { transform: scale(1.05); background: #1faa58; animation: none; }
+
+@keyframes pulse-whatsapp { 
+    0% { transform:  scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); } 
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } 
+}
+
+. btn-group { 
+    background: #D32F2F; 
+    color: #fff; 
+    border: 2px solid #D32F2F;
+    height: 50px; 
+    width: 50px; 
+    border-radius: 50px; 
+    display: flex; 
+    align-items: center; 
+    justify-content:  center;
+    text-decoration: none; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease; 
+    overflow: hidden; 
+    white-space: nowrap;
+}
+.btn-group i { font-size: 1.5rem; margin:  0; }
+.btn-group span { 
+    opacity: 0; 
+    max-width: 0; 
+    transition: all 0.3s; 
+    margin-left: 10px; 
+    font-weight: 800; 
+    font-size: 1rem; 
+    color: #fff; 
+}
+.btn-group:hover { width: 180px; padding: 0 18px; justify-content: flex-start; background: #b91c1c; } 
+.btn-group:hover span { opacity: 1; max-width: 200px; margin-left: 10px; }
+
+/* --- ADAPTACIÓN MÓVIL --- */
+@media (max-width: 992px){ 
+    .main{ display:block; padding:15px; padding-bottom:  120px; }
+    .sidebar-wrapper { display:  none; }
+    .mobile-cats { display: flex; }
 }
 </style>
 </head>
 <body>
 
-<div id="company-data" style="display:none;" 
-    data-horario="LUNES A DOMINGO: 9:00 - 19:30" 
+<div id="company-data" style="display: none;" 
+    data-horario="LUNES A DOMINGO:  9:00 - 19:30" 
     data-envios="ENVÍOS A TODO BOLIVIA" 
     data-whatsapp="59161333335"
-    data-sucursal1-dir="Aroma N.º 560 – Santa Cruz"
+    data-sucursal1-dir="Aroma N. º 560 – Santa Cruz"
     data-sucursal1-map="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9"
-    data-sucursal2-dir="Av. Cañoto esq. Tundí #924"
+    data-sucursal2-dir="Av. Cañoto esq.  Tundí #924"
     data-sucursal2-map="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA">
 </div>
 
 <div class="header-oferta">
   <div class="header-track">
     <div class="header-item"><i class="bi bi-fire"></i> LIQUIDACIÓN DE TEMPORADA</div>
-    <div class="header-item"><i class="bi bi-tags-fill"></i> HASTA 35% OFF EN UNIDAD</div>
-    <div class="header-item"><i class="bi bi-box-seam"></i> PRECIOS DE LOCURA</div>
+    <div class="header-item"><i class="bi bi-tags-fill"></i> DESCUENTOS EXCLUSIVOS</div>
+    <div class="header-item"><i class="bi bi-box-seam"></i> PRECIOS MAYORISTAS</div>
     <div class="header-item"><i class="bi bi-truck"></i> ENVÍOS A TODO EL PAÍS</div>
   </div>
 </div>
@@ -333,38 +299,30 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 <div class="main">
     <div class="sidebar-wrapper">
         <aside class="sidebar">
-            <h2><i class="bi bi-grid-fill" style="color:var(--brand-red)"></i> Categorías</h2>
-            <div id="menu-cat"><div style="color:#adb5bd; font-size:0.9rem; text-align:center; padding:20px;">Cargando...</div></div>
-            
-            <!-- TARJETA DE CONTACTO FIJA ELIMINADA -->
-            
+            <h2><i class="bi bi-grid-fill" style="color: var(--brand-red)"></i> Categorías</h2>
+            <div id="menu-cat"><div style="color:#adb5bd; font-size:0.9rem; text-align:center; padding:20px;">Cargando... </div></div>
         </aside>
     </div>
 
     <section>
-        
-        <!-- MENÚ MÓVIL (HORIZONTAL SCROLL) -->
         <div id="mobile-cats" class="mobile-cats"></div>
 
         <div class="toolbar-container">
-            <!-- Botón de Sucursales y Horario ELIMINADO -->
-            
-            <div class="toolbar"><i class="bi bi-search" style="font-size:1.2rem; color:#adb5bd"></i><input id="searchBox" placeholder="¿Qué estás buscando hoy?"></div>
+            <div class="toolbar">
+                <i class="bi bi-search" style="font-size:1.2rem; color:#adb5bd"></i>
+                <input id="searchBox" placeholder="¿Qué estás buscando hoy?">
+            </div>
             <div id="sub-chips"></div>
         </div>
+        
         <div id="productos" class="grid"></div>
     </section>
 </div>
 
-<!-- MODAL DE SUCURSALES ELIMINADO -->
-
-<!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
-    <!-- 1. BOTÓN PRINCIPAL: WHATSAPP (Contacto Directo) - Parpadea y va al chat personal, con ícono de fuego -->
-    <a href="https://wa.me/59161333335?text=Hola,%20quisiera%20cotizar%20precios%20de%20sus%20productos." target="_blank" class="btn-order">
-        <i class="bi bi-fire"></i> WHATSAPP
+    <a href="https://wa.me/59161333335? text=Hola,%20quisiera%20cotizar%20precios%20de%20sus%20productos." target="_blank" class="btn-order">
+        <i class="bi bi-whatsapp"></i> WHATSAPP
     </a>
-    <!-- 2. BOTÓN SECUNDARIO: GRUPO VIP (Se expande y va al grupo) -->
     <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
         <i class="bi bi-people-fill"></i> 
         <span>GRUPO VIP</span>
@@ -372,153 +330,172 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 </div>
 
 <footer class="main-footer">
-    <div class="footer-col"><h4><i class="bi bi-building"></i> Importadora Ale</h4><p>Tu proveedor mayorista de confianza.</p><p>© 2025 Derechos Reservados.</p></div>
-    <div class="footer-col"><h4><i class="bi bi-geo-alt-fill"></i> Sucursales</h4><p><b>1:</b> Aroma N.º 560 – Santa Cruz <a href="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9" class="map-link">Ver mapa</a></p><p><b>2:</b> Av. Cañoto esq. Tundí #924 <a href="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA" class="map-link">Ver mapa</a></p></div>
-    <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/59161333335" target="_blank" class="text-green-600 font-semibold">61333335</a></p></div>
+    <div class="footer-col">
+        <h4><i class="bi bi-building"></i> Importadora Ale</h4>
+        <p>Tu proveedor mayorista de confianza. </p>
+        <p>© 2025 Derechos Reservados. </p>
+    </div>
+    <div class="footer-col">
+        <h4><i class="bi bi-geo-alt-fill"></i> Sucursales</h4>
+        <p><b>1: </b> Aroma N.º 560 – Santa Cruz <a href="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9" class="map-link">Ver mapa</a></p>
+        <p><b>2:</b> Av. Cañoto esq. Tundí #924 <a href="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA" class="map-link">Ver mapa</a></p>
+    </div>
+    <div class="footer-col">
+        <h4><i class="bi bi-headset"></i> Ayuda</h4>
+        <p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p>
+        <p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p>
+        <p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/59161333335" target="_blank" style="color:#25D366; font-weight:700;">61333335</a></p>
+    </div>
 </footer>
 
-<div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">×</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
+<div id="zoomModal" onclick="closeZoom()">
+    <span class="close-zoom">×</span>
+    <img id="zoomImg" src="" onclick="event.stopPropagation()">
+</div>
 
 <script type="module">
 import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
+
 const PROJECT_ID = '692ee6b70012153cd33c'; 
 const DATABASE_ID = '692ee774002e9a3c8601'; 
 const COLLECTION_ID = 'catalogo';
 const COMPANY_DATA = document.getElementById('company-data');
 const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
 
-// --- CONFIGURACIÓN DE DESCUENTO ---
-const DESCUENTO_UNIDAD_PORCENTAJE = 35; 
-
-// --- PRODUCTOS DE EJEMPLO (FALLBACK) ---
 const SAMPLE_PRODUCTS = [
-    { $id: 'p1', descripcion: 'Audífonos Inalámbricos Pro Max', categoria: 'Electrónica', codigo: 'AUD-001', precioUnidad: 180.00, preciopormayor: 120.00, moq: 15, disponible: true, imagen: 'https://placehold.co/400x400/FFB800/white?text=AUDIFONOS+PRO', imagen2: 'https://placehold.co/400x400/FFB800/white?text=IMAGEN+2' },
-    { $id: 'p2', descripcion: 'Reloj Inteligente Elite Sport', categoria: 'Tecnología', codigo: 'REL-005', precioUnidad: 350.00, preciopormayor: 200.00, moq: 10, disponible: true, imagen: 'https://placehold.co/400x400/CC0000/white?text=SMARTWATCH', imagen2: null },
-    { $id: 'p3', descripcion: 'Power Bank Ultra Rápida 20000mAh', categoria: 'Electrónica', codigo: 'PB-022', precioUnidad: 120.00, preciopormayor: 110.00, moq: 5, disponible: true, imagen: 'https://placehold.co/400x400/4CAF50/white?text=POWER+BANK', imagen2: null },
-    { $id: 'p4', descripcion: 'Kit de Luces LED Decorativas', categoria: 'Hogar', codigo: 'LUC-101', precioUnidad: 70.00, preciopormayor: 50.00, moq: 20, disponible: true, imagen: 'https://placehold.co/400x400/546E7A/white?text=LUCES+LED', imagen2: null }
+    { $id: 'p1', descripcion: 'Audífonos Inalámbricos Pro Max', categoria: 'Tecnología', codigo: 'AUD-001', precioUnidad: 180. 00, preciopormayor: 120.00, moq: 12, disponible: true, imagen: 'https://placehold.co/400x400/FFB800/white? text=AUDIFONOS', imagen2: 'https://placehold.co/400x400/FFB800/white?text=IMAGEN+2' },
+    { $id: 'p2', descripcion: 'Reloj Inteligente Elite Sport', categoria: 'Tecnología', codigo: 'REL-005', precioUnidad: 350.00, preciopormayor: 200.00, moq: 10, disponible: true, imagen:  'https://placehold.co/400x400/CC0000/white?text=SMARTWATCH', imagen2: null },
+    { $id: 'p3', descripcion: 'Power Bank Ultra Rápida 20000mAh', categoria: 'Tecnología', codigo: 'PB-022', precioUnidad: 120.00, preciopormayor: 90.00, moq: 6, disponible: true, imagen:  'https://placehold.co/400x400/4CAF50/white?text=POWER+BANK', imagen2: null },
+    { $id: 'p4', descripcion: 'Kit de Luces LED Decorativas', categoria: 'Hogar y cocina', codigo: 'LUC-101', precioUnidad: 70.00, preciopormayor: 50.00, moq: 20, disponible: true, imagen:  'https://placehold.co/400x400/546E7A/white?text=LUCES+LED', imagen2: null }
 ];
-// ----------------------------------------
 
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
-let subCatActual = ''; // Variable para subcategoría activa
+let subCatActual = '';
 
-window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
-window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
-window.onSlideScroll = function(el) { const card=el.closest('.card'); const dots=card.querySelectorAll('.dot'); if(dots.length<2)return; const idx=Math.round(el.scrollLeft/el.offsetWidth); dots.forEach(d=>d.classList.remove('active')); if(dots[idx])dots[idx].classList.add('active'); }
+window.openZoom = function(imgSrc) { 
+    const m = document.getElementById('zoomModal'); 
+    const i = document.getElementById('zoomImg'); 
+    i.src = imgSrc; 
+    m.classList.add('open'); 
+    clearTimeout(zoomTimeout); 
+    zoomTimeout = setTimeout(() => { closeZoom() }, 4000); 
+}
+
+window.closeZoom = function() { 
+    document.getElementById('zoomModal').classList.remove('open'); 
+    clearTimeout(zoomTimeout); 
+}
+
+window.onSlideScroll = function(el) { 
+    const card = el.closest('.card'); 
+    const dots = card.querySelectorAll('. dot'); 
+    if(dots.length < 2) return; 
+    const idx = Math.round(el.scrollLeft / el.offsetWidth); 
+    dots.forEach(d => d.classList.remove('active')); 
+    if(dots[idx]) dots[idx].classList.add('active'); 
+}
+
 function injectCompanyData() { 
-    document.getElementById('footer-envios').textContent=COMPANY_DATA.dataset.envios; 
-    document.getElementById('footer-horario').textContent=COMPANY_DATA.dataset.horario; 
+    document.getElementById('footer-envios').textContent = COMPANY_DATA.dataset.envios; 
+    document.getElementById('footer-horario').textContent = COMPANY_DATA.dataset.horario; 
 }
 
 function renderProductos(lista){
   const grid = document.getElementById('productos');
-  if(lista.length === 0){ grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#888;">Sin productos en esta categoría o búsqueda.</div>`; return; }
   
-  grid.innerHTML = lista.map(p => {
+  if(lista.length === 0){ 
+      grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:50px; color:#888;">Sin productos en esta categoría o búsqueda.</div>`; 
+      return; 
+  }
+  
+  grid. innerHTML = lista.map(p => {
     const tituloBonito = formatearTitulo(p.descripcion); 
     const codigoBonito = formatearCodigo(p.codigo);
-    
-    // El MOQ por defecto es 12 si la base de datos no envía un valor.
     const minOrderQuantity = p.moq || 12; 
     
-    // Valores de la Base de Datos
-    let pMayor = parseFloat(p.preciopormayor); if(isNaN(pMayor)) pMayor = 0;
-    let pUnidad = parseFloat(p.precioUnidad); if(isNaN(pUnidad)) pUnidad = 0;
+    // Valores de BD
+    let pMayor = parseFloat(p.preciopormayor); 
+    if(isNaN(pMayor)) pMayor = 0;
     
-    let promoBadge = '';
+    let pUnidad = parseFloat(p.precioUnidad); 
+    if(isNaN(pUnidad)) pUnidad = 0;
+    
+    // --- LÓGICA LIMPIA (SIN DESCUENTO ARTIFICIAL) ---
+    let badgeHtml = '';
     let precioUnidadHtml = '';
-    let pUnidadFinal = null;
-
-    // --- LÓGICA DE PROTECCIÓN (CEREBRO) ---
-    let mostrarDescuento = false;
+    let mayoristaHtml = '';
     
-    if (pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
-        // Cálculo
-        pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
-        
-        // REGLA MAESTRA: Si el precio con descuento sigue siendo MAYOR al mayorista, APROBADO.
-        if (pUnidadFinal > pMayor) {
-            mostrarDescuento = true;
-            promoBadge = `<div class="badge-offer">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
-        }
+    // ✅ REGLA:  Mostrar badge SOLO si hay precio mayorista más bajo
+    const hayDescuento = (pMayor > 0 && pMayor < pUnidad);
+    
+    if (hayDescuento) {
+        badgeHtml = `<div class="badge-descuento">💰 DESCUENTO</div>`;
     }
-
-    if (mostrarDescuento) {
-        // CASO A: SI HAY MARGEN, MOSTRAMOS LA OFERTA
+    
+    // --- SECCIÓN PRECIO POR UNIDAD ---
+    if (pUnidad > 0) {
         precioUnidadHtml = `
-        <div class="price-row unit">
-            <span class="price-label">PRECIO POR UNIDAD (-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF):</span>
-            <div>
-                <span class="price-old">Bs. ${pUnidad.toFixed(2)}</span>
-                <span class="price-new">Bs. ${pUnidadFinal.toFixed(2)}</span>
-            </div>
-        </div>`;
-    } else if (pUnidad > 0) {
-        // CASO B: NO HAY MARGEN, MOSTRAMOS PRECIO NORMAL + TEXTO GANCHO
-        precioUnidadHtml = `
-        <div class="price-row unit">
-            <span class="price-label-normal">PRECIO POR UNIDAD:</span>
-            <div class="price-normal">Bs. ${pUnidad.toFixed(2)}</div>
-            <div class="promo-text">🔥 ¡Pide en caja tu descuento!</div>
+        <div class="price-section">
+            <span class="price-label">Precio por Unidad:</span>
+            <span class="price-value">Bs. ${pUnidad.toFixed(2)}</span>
+            ${hayDescuento ? '<span class="descuento-text">🔥 ¡Pide en caja tu descuento!</span>' : ''}
         </div>`;
     } else {
-        precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
+        precioUnidadHtml = `
+        <div class="price-section">
+            <span class="price-label">Precio: </span>
+            <span class="price-value" style="color:#888; font-size:1rem;">CONSULTAR</span>
+        </div>`;
     }
     
-    // --- LÓGICA MAYORISTA EN LA TARJETA (TRES LÍNEAS SEPARADAS) ---
-    let mayoristaContentHtml;
+    // --- SECCIÓN MAYORISTA (3 LÍNEAS LIMPIAS) ---
     if (pMayor > 0) {
-        // Formato final: PRECIO POR MAYOR (Min. 12 Unid.) | Bs. 50.00 | Cada Unidad
-        mayoristaContentHtml = `
-            <div class="mayorista-label">
-                <i class="bi bi-box-seam-fill"></i> PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.)
+        mayoristaHtml = `
+        <div class="mayorista-section">
+            <div class="mayorista-titulo">
+                <i class="bi bi-box-seam-fill"></i>
+                <span>Precio por Mayor (Mín. ${minOrderQuantity} Unid.)</span>
             </div>
-            <div class="mayorista-price-row" style="margin-bottom: 0;">
-                <span style="color:var(--brand-red); font-weight:900; font-size: 1.2rem; line-height: 1.2; display: block;">Bs. ${pMayor.toFixed(2)}</span>
-            </div>
-            <div class="mayorista-price-row" style="margin-top: -6px;">
-                <span style="font-size: 0.85rem; font-weight: 700; color: #444; line-height: 1.2; display: block;">Cada Unidad</span>
-            </div>
-        `;
+            <span class="mayorista-precio">Bs. ${pMayor.toFixed(2)}</span>
+            <span class="mayorista-unidad">Cada Unidad</span>
+        </div>`;
     } else {
-        // Si no hay precio por mayor, pide cotizar
-        mayoristaContentHtml = `
-            <div class="mayorista-label">
-                <i class="bi bi-box-seam-fill"></i> PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.)
+        mayoristaHtml = `
+        <div class="mayorista-section">
+            <div class="mayorista-titulo">
+                <i class="bi bi-box-seam-fill"></i>
+                <span>Precio por Mayor (Mín.  ${minOrderQuantity} Unid.)</span>
             </div>
-            <div class="mayorista-price-row">
-                <span style="color:var(--brand-red); font-weight:900; font-size: 1.1rem;">COTIZAR</span>
-            </div>
-        `;
+            <span class="mayorista-precio">COTIZAR</span>
+        </div>`;
     }
-
-    const mayoristaHtml = `
-    <div class="mayorista-cotizar">
-        ${mayoristaContentHtml}
-    </div>`;
-    // ------------------------------------------
-
-    const tieneFoto2 = p.imagen2 ? true : false;
-    const cardId = `card-${p.$id}`;
-    let dotHtml = ''; let imagesHtml = '';
-
-    const primaryImage = p.imagen || `https://placehold.co/400x400/6A1B9A/white?text=${tituloBonito.replace(/ /g, '+').substring(0, 15)}`;
-    const secondaryImage = p.imagen2 || `https://placehold.co/400x400/6A1B9A/white?text=IMAGEN+2+de+${tituloBonito.replace(/ /g, '+').substring(0, 15)}`;
-
-
+    
+    // --- IMÁGENES ---
+    const tieneFoto2 = p.imagen2 ?  true : false;
+    const primaryImage = p.imagen || `https://placehold.co/400x400/6A1B9A/white?text=${encodeURIComponent(tituloBonito. substring(0, 20))}`;
+    const secondaryImage = p.imagen2 || `https://placehold.co/400x400/6A1B9A/white?text=IMAGEN+2`;
+    
+    let imagesHtml = '';
+    let dotHtml = '';
+    
     if (tieneFoto2) {
-        imagesHtml = `<div class="slide"><img src="${primaryImage}" class="prod-img" onclick="openZoom('${primaryImage}')"></div><div class="slide"><img src="${secondaryImage}" class="prod-img" onclick="openZoom('${secondaryImage}')"></div>`;
+        imagesHtml = `
+            <div class="slide"><img src="${primaryImage}" class="prod-img" onclick="openZoom('${primaryImage}')"></div>
+            <div class="slide"><img src="${secondaryImage}" class="prod-img" onclick="openZoom('${secondaryImage}')"></div>`;
         dotHtml = `<div class="dot-container"><div class="dot active"></div><div class="dot"></div></div>`;
     } else {
         imagesHtml = `<div class="slide"><img src="${primaryImage}" class="prod-img" onclick="openZoom('${primaryImage}')"></div>`;
     }
-
+    
     return `
-    <div class="card" id="${cardId}">
-      ${promoBadge}
-      <div class="img-box"><div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>${dotHtml}</div>
+    <div class="card" id="card-${p.$id}">
+      ${badgeHtml}
+      <div class="img-box">
+          <div class="img-slider" onscroll="onSlideScroll(this)">${imagesHtml}</div>
+          ${dotHtml}
+      </div>
       <div class="info">
         <div>
             <h3 class="title">${tituloBonito}</h3>
@@ -527,9 +504,8 @@ function renderProductos(lista){
         
         <div class="prices-container">
             ${precioUnidadHtml}
-            ${mayoristaHtml} <!-- AQUI SE INSERTA EL NUEVO BLOQUE DE VENTA POR MAYOR -->
+            ${mayoristaHtml}
         </div>
-        <!-- SIN BOTÓN -->
       </div>
     </div>`;
   }).join('');
@@ -545,19 +521,16 @@ function renderSubChips(listaFiltrada){
         return;
     }
     
-    // 1. Agrupar por descripción (Subcategoría)
     let subCategoriasMap = {};
     listaFiltrada.forEach(p => {
         const key = formatearTexto(p.descripcion);
         subCategoriasMap[key] = (subCategoriasMap[key] || 0) + 1;
     });
 
-    // 2. Crear una lista ordenada de chips
     let chipsHtml = Object.keys(subCategoriasMap)
         .sort((a, b) => a.localeCompare(b))
         .map(subCat => {
             const activeClass = subCatActual === subCat ? 'active' : '';
-            // ELIMINADO EL CONTADOR DE PRODUCTOS (X) -> Ahora solo muestra el nombre
             return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${subCat}', this)">${subCat}</div>`;
         }).join('');
 
@@ -565,54 +538,68 @@ function renderSubChips(listaFiltrada){
         chipsContainer.innerHTML = chipsHtml;
         chipsContainer.classList.add('visible');
     } else {
-        chipsContainer.classList.remove('visible');
+        chipsContainer. classList.remove('visible');
         chipsContainer.innerHTML = '';
     }
 }
 
 window.filtrarSubCategoria = function(subCat, chipElement){
-    // Alternar entre activo y todos
     const nuevoSubCat = subCatActual === subCat ? '' : subCat;
     subCatActual = nuevoSubCat;
 
-    // Desactivar todos los chips y activar el actual
     document.querySelectorAll('#sub-chips .chip').forEach(c => c.classList.remove('active'));
     if (subCatActual) {
         chipElement.classList.add('active');
     }
 
-    // Filtrar la lista de productos por la categoría principal (que ya está en catActual)
     const listaCategoria = catActual === 'Todo' 
         ? todos 
-        : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
+        :  todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
 
-    // Aplicar filtro de subcategoría
     const listaFinal = subCatActual 
-        ? listaCategoria.filter(p => formatearTexto(p.descripcion) === subCatActual) 
+        ? listaCategoria. filter(p => formatearTexto(p.descripcion) === subCatActual) 
         : listaCategoria;
         
     renderProductos(listaFinal);
 }
 
-function formatearTexto(txt) { if(!txt) return ''; const lower = txt.toLowerCase().trim(); return lower.charAt(0).toUpperCase() + lower.slice(1); }
-function formatearTitulo(txt) { if(!txt) return 'Sin Nombre'; const lower = txt.toLowerCase().trim(); return lower.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' '); }
-function formatearCodigo(txt) { if(!txt) return ''; return txt.toUpperCase().trim(); }
-function normalizarTexto(txt) { return (txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+function formatearTexto(txt) { 
+    if(! txt) return ''; 
+    const lower = txt.toLowerCase().trim(); 
+    return lower. charAt(0).toUpperCase() + lower.slice(1); 
+}
+
+function formatearTitulo(txt) { 
+    if(!txt) return 'Sin Nombre'; 
+    const lower = txt.toLowerCase().trim(); 
+    return lower.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' '); 
+}
+
+function formatearCodigo(txt) { 
+    if(!txt) return ''; 
+    return txt.toUpperCase().trim(); 
+}
+
+function normalizarTexto(txt) { 
+    return (txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+}
 
 async function iniciar(){
   injectCompanyData();
-  const client = new Client().setEndpoint('https://fra.cloud.appwrite.io/v1').setProject(PROJECT_ID);
+  const client = new Client().setEndpoint('https://fra. cloud.appwrite.io/v1').setProject(PROJECT_ID);
   const db = new Databases(client);
   const grid = document.getElementById('productos');
   
-  // Mostrar estado de carga inicial
   grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#adb5bd; font-weight:600;">Cargando catálogo...</p></div>`;
 
   try {
-    const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(5000), Query.orderDesc('$createdAt')]);
+    const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [
+        Query.limit(5000), 
+        Query.orderDesc('$createdAt')
+    ]);
     
     if (res.documents && res.documents.length > 0) {
-        todos = res.documents.filter(doc => doc.disponible !== false);
+        todos = res.documents. filter(doc => doc. disponible !== false);
     } else {
         todos = SAMPLE_PRODUCTS;
     }
@@ -624,14 +611,7 @@ async function iniciar(){
     todos = SAMPLE_PRODUCTS;
     renderCategorias();
     renderProductos(todos);
-    
-    console.error("Error crítico de conexión a Appwrite. Usando productos de ejemplo:", e); 
-    const errorHtml = `
-    <div style="grid-column:1/-1; text-align:center; padding:20px; border: 1px solid #d32f2f; background: #ffebee; border-radius: 8px; margin-bottom: 20px;">
-        <p style="color:#d32f2f; font-weight:700; margin: 0;">¡ERROR DE CONEXIÓN! NO se pudo cargar el catálogo de Appwrite.</p>
-        <p style="color:#666; font-size:0.9rem; margin: 5px 0 0;">(Mostrando productos de ejemplo. Revise el ID del proyecto y los permisos de lectura de la colección en Appwrite).</p>
-    </div>`;
-    document.querySelector('section').insertAdjacentHTML('afterbegin', errorHtml);
+    console.error("Error de conexión:", e); 
   }
 }
 
@@ -640,53 +620,46 @@ function renderCategorias(){
   const mobileMenu = document.getElementById('mobile-cats');
   
   let categoriasLimpias = todos.map(p => formatearTexto(p.categoria || 'Varios'));
-  let listadoCategorias = [...new Set(categoriasLimpias)]; listadoCategorias.sort();
+  let listadoCategorias = [... new Set(categoriasLimpias)]; 
+  listadoCategorias.sort();
   const cats = ['Todo', ...listadoCategorias];
   
-  // Render PC
-  menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
-  
-  // Render Mobile (Horizontal Scroll)
+  menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'? 'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
   mobileMenu.innerHTML = cats.map(c => `<div class="cat-chip ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</div>`).join('');
 }
 
 window.filtrar = function(cat, btn){
-  // Resetear la subcategoría
   subCatActual = ''; 
   
-  // 1. Quitar la clase 'active' de TODOS los elementos de categoría
-  document.querySelectorAll('.btn-cat, .cat-chip').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('. btn-cat, .cat-chip').forEach(b => b.classList.remove('active'));
 
-  // 2. Activar el elemento clickeado (PC/Móvil)
   if (btn) {
       btn.classList.add('active');
   }
 
-  // 3. Sincronizar el elemento complementario (Asegura que el de PC y el de Móvil coincidan)
   document.querySelectorAll('.btn-cat, .cat-chip').forEach(el => {
       if (el !== btn && el.textContent.trim() === cat) { 
           el.classList.add('active');
       }
   });
 
-  // 4. Filtrar la lista principal
   catActual = cat;
   document.getElementById('searchBox').value = '';
   
   const listaFiltrada = cat === 'Todo' 
       ? todos 
-      : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(cat));
+      : todos. filter(p => normalizarTexto(p.categoria) === normalizarTexto(cat));
       
   renderProductos(listaFiltrada);
-  renderSubChips(listaFiltrada); // Mostrar chips de subcategoría
+  renderSubChips(listaFiltrada);
 }
 
 document.getElementById('searchBox').addEventListener('keyup', (e) => {
     const query = normalizarTexto(e.target.value);
-    const listaAFiltrar = catActual === 'Todo' ? todos : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
+    const listaAFiltrar = catActual === 'Todo' ?  todos : todos.filter(p => normalizarTexto(p. categoria) === normalizarTexto(catActual));
     
     if (query.length < 3) {
-        renderProductos(listaAFiltrada);
+        renderProductos(listaAFiltrar);
         renderSubChips(listaAFiltrar);
         return;
     }
@@ -695,11 +668,11 @@ document.getElementById('searchBox').addEventListener('keyup', (e) => {
         normalizarTexto(p.descripcion).includes(query) ||
         normalizarTexto(p.codigo).includes(query)
     );
+    
     renderProductos(resultados);
-    document.getElementById('sub-chips').classList.remove('visible'); // Ocultar chips si hay búsqueda manual
+    document.getElementById('sub-chips').classList.remove('visible');
 });
 
-// INICIO: Llama a la función principal para cargar datos
 iniciar();
 </script>
 </body>
