@@ -97,7 +97,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 /* IMAGEN */
 .img-box { background:#fff; height:220px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
-.img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scrollbar-width: none; }
+.img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scroll-scrollbar-width: none; }
 .img-slider::-webkit-scrollbar { display: none; }
 .slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 10px; }
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
@@ -317,12 +317,7 @@ const WHATSAPP_NUMBER = COMPANY_DATA.dataset.whatsapp;
 // --- CONFIGURACIÓN DE DESCUENTO ---
 const DESCUENTO_UNIDAD_PORCENTAJE = 35; 
 
-let todos = [];
-let catActual = 'Todo';
-let zoomTimeout; 
-let subCatActual = ''; 
-
-// --- CATEGORÍAS MAESTRAS FIJAS (PARA QUE NO SE ROMPA EL MENÚ) ---
+// --- CATEGORÍAS MAESTRAS FIJAS (ESTO BLINDA EL CATÁLOGO) ---
 const CATEGORIAS_MAESTRAS = [
     "Todo",
     "Belleza y salud",
@@ -333,6 +328,11 @@ const CATEGORIAS_MAESTRAS = [
     "Oficina y escolar",
     "Tecnología"
 ];
+
+let todos = [];
+let catActual = 'Todo';
+let zoomTimeout; 
+let subCatActual = ''; 
 
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
@@ -349,21 +349,19 @@ function renderProductos(lista){
   grid.innerHTML = lista.map(p => {
     const tituloBonito = formatearTitulo(p.descripcion); 
     const codigoBonito = formatearCodigo(p.codigo);
-    
-    // El MOQ por defecto es 12 si la base de datos no envía un valor.
     const minOrderQuantity = p.moq || 12; 
     
-    // Valores de la Base de Datos
     let pMayor = parseFloat(p.preciopormayor); if(isNaN(pMayor)) pMayor = 0;
     let pUnidad = parseFloat(p.precioUnidad); if(isNaN(pUnidad)) pUnidad = 0;
     
     let promoBadge = '';
     let precioUnidadHtml = '';
     
-    // --- LÓGICA DE PROTECCIÓN (CEREBRO) ---
+    // --- LÓGICA DE PRECIOS Y DESCUENTO ---
     let mostrarDescuento = false;
     if (pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
         let pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
+        // Regla: Descuento solo si NO baja del precio mayorista
         if (pUnidadFinal > pMayor) {
             mostrarDescuento = true;
             promoBadge = `<div class="badge-offer">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
@@ -391,10 +389,9 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA EN LA TARJETA (TRES LÍNEAS SEPARADAS) ---
+    // --- BLOQUE MAYORISTA EN 3 LÍNEAS ---
     let mayoristaContentHtml;
     if (pMayor > 0) {
-        // Formato final: PRECIO POR MAYOR (Min. 12 Unid.) | Bs. 50.00 | Cada Unidad
         mayoristaContentHtml = `
             <div class="mayorista-label">
                 <i class="bi bi-box-seam-fill"></i> PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.)
@@ -407,7 +404,6 @@ function renderProductos(lista){
             </div>
         `;
     } else {
-        // Si no hay precio por mayor, pide cotizar
         mayoristaContentHtml = `
             <div class="mayorista-label">
                 <i class="bi bi-box-seam-fill"></i> PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.)
@@ -422,15 +418,12 @@ function renderProductos(lista){
     <div class="mayorista-cotizar">
         ${mayoristaContentHtml}
     </div>`;
-    // ------------------------------------------
 
     const tieneFoto2 = p.imagen2 ? true : false;
     const cardId = `card-${p.$id}`;
     let dotHtml = ''; let imagesHtml = '';
-
-    const primaryImage = p.imagen || `https://placehold.co/400x400/6A1B9A/white?text=${tituloBonito.replace(/ /g, '+').substring(0, 15)}`;
-    const secondaryImage = p.imagen2 || `https://placehold.co/400x400/6A1B9A/white?text=IMAGEN+2+de+${tituloBonito.replace(/ /g, '+').substring(0, 15)}`;
-
+    const primaryImage = p.imagen || 'https://via.placeholder.com/300';
+    const secondaryImage = p.imagen2 || 'https://via.placeholder.com/300';
 
     if (tieneFoto2) {
         imagesHtml = `<div class="slide"><img src="${primaryImage}" class="prod-img" onclick="openZoom('${primaryImage}')"></div><div class="slide"><img src="${secondaryImage}" class="prod-img" onclick="openZoom('${secondaryImage}')"></div>`;
@@ -451,27 +444,28 @@ function renderProductos(lista){
         
         <div class="prices-container">
             ${precioUnidadHtml}
-            ${mayoristaHtml} <!-- AQUI SE INSERTA EL NUEVO BLOQUE DE VENTA POR MAYOR -->
+            ${mayoristaHtml}
         </div>
-        <!-- SIN BOTÓN -->
       </div>
     </div>`;
   }).join('');
 }
 
-// --- FUNCIÓN DE AGRUPACIÓN (PRIMERA PALABRA Y SINGULARIZACIÓN) ---
+// --- UTILS ---
 function obtenerPalabraClave(txt) {
     if (!txt) return '';
     let primera = txt.trim().split(' ')[0].toLowerCase();
-    
-    // Singularizar
     if (primera.endsWith('es')) primera = primera.slice(0, -2);
     else if (primera.endsWith('s')) primera = primera.slice(0, -1);
-    
-    // Capitalizar
     return primera.charAt(0).toUpperCase() + primera.slice(1);
 }
 
+function formatearTexto(txt) { if(!txt) return ''; const lower = txt.toLowerCase().trim(); return lower.charAt(0).toUpperCase() + lower.slice(1); }
+function formatearTitulo(txt) { if(!txt) return 'Sin Nombre'; const lower = txt.toLowerCase().trim(); return lower.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' '); }
+function formatearCodigo(txt) { if(!txt) return ''; return txt.toUpperCase().trim(); }
+function normalizarTexto(txt) { return (txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+
+// --- RENDERIZADO DE CHIPS ---
 function renderSubChips(listaFiltrada){
     const chipsContainer = document.getElementById('sub-chips');
     const busqueda = document.getElementById('searchBox').value.trim();
@@ -482,50 +476,44 @@ function renderSubChips(listaFiltrada){
         return;
     }
     
-    // 1. Agrupar INTELIGENTEMENTE por descripción (Subcategoría Singularizada)
     let subCategoriasMap = {};
-    
     listaFiltrada.forEach(p => {
         let key = obtenerPalabraClave(p.descripcion);
         subCategoriasMap[key] = (subCategoriasMap[key] || 0) + 1;
     });
 
-    // 2. Crear una lista ordenada de chips
-    let chipsHtml = Object.keys(subCategoriasMap)
-        .sort((a, b) => a.localeCompare(b))
-        .map(key => {
-            const activeClass = subCatActual === key ? 'active' : '';
-            return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${key}', this)">${key}</div>`;
-        }).join('');
+    let chipsHtml = Object.keys(subCategoriasMap).sort((a, b) => a.localeCompare(b)).map(key => {
+        const activeClass = subCatActual === key ? 'active' : '';
+        return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${key}', this)">${key}</div>`;
+    }).join('');
 
     if (chipsHtml) {
         chipsContainer.innerHTML = chipsHtml;
         chipsContainer.classList.add('visible');
     } else {
         chipsContainer.classList.remove('visible');
-        chipsContainer.innerHTML = '';
     }
 }
 
+// --- LÓGICA DE FILTRADO (BLINDADA CONTRA CATEGORÍAS ROTAS) ---
 window.filtrarSubCategoria = function(keyNormalizada, chipElement){
     const nuevoSubCat = subCatActual === keyNormalizada ? '' : keyNormalizada;
     subCatActual = nuevoSubCat;
 
     document.querySelectorAll('#sub-chips .chip').forEach(c => c.classList.remove('active'));
-    if (subCatActual) {
-        chipElement.classList.add('active');
-    }
+    if (subCatActual) chipElement.classList.add('active');
 
+    // 1. Filtrar por Categoría Principal (Flexible)
     const listaCategoria = catActual === 'Todo' 
         ? todos 
         : todos.filter(p => {
-            // Filtro flexible: Si la categoría del producto contiene la seleccionada (o viceversa)
             if (!p.categoria) return false;
-            const catProd = normalizarTexto(p.categoria);
-            const catFiltro = normalizarTexto(catActual);
-            return catProd.includes(catFiltro) || catFiltro.includes(catProd);
+            // Busca si "Moda" está dentro de "Moda y equipaje" o viceversa
+            return normalizarTexto(p.categoria).includes(normalizarTexto(catActual)) || 
+                   normalizarTexto(catActual).includes(normalizarTexto(p.categoria));
         });
 
+    // 2. Filtrar por Subcategoría (Primera palabra)
     const listaFinal = subCatActual 
         ? listaCategoria.filter(p => obtenerPalabraClave(p.descripcion) === subCatActual) 
         : listaCategoria;
@@ -533,10 +521,66 @@ window.filtrarSubCategoria = function(keyNormalizada, chipElement){
     renderProductos(listaFinal);
 }
 
-function formatearTexto(txt) { if(!txt) return ''; const lower = txt.toLowerCase().trim(); return lower.charAt(0).toUpperCase() + lower.slice(1); }
-function formatearTitulo(txt) { if(!txt) return 'Sin Nombre'; const lower = txt.toLowerCase().trim(); return lower.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' '); }
-function formatearCodigo(txt) { if(!txt) return ''; return txt.toUpperCase().trim(); }
-function normalizarTexto(txt) { return (txt || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+function renderCategorias(){
+    const menu = document.getElementById('menu-cat');
+    const mobileMenu = document.getElementById('mobile-cats');
+    
+    // USAMOS LA LISTA FIJA PARA EL MENÚ (ASÍ SE VE LIMPIO SIEMPRE)
+    const cats = CATEGORIAS_MAESTRAS;
+    
+    menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
+    mobileMenu.innerHTML = cats.map(c => `<div class="cat-chip ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</div>`).join('');
+}
+
+window.filtrar = function(cat, btn){
+  subCatActual = ''; 
+  document.querySelectorAll('.btn-cat, .cat-chip').forEach(b => b.classList.remove('active'));
+  
+  if (btn) btn.classList.add('active');
+  // Sincronizar (PC y Móvil)
+  document.querySelectorAll('.btn-cat, .cat-chip').forEach(el => {
+      if (el !== btn && el.textContent.trim() === cat) el.classList.add('active');
+  });
+
+  catActual = cat;
+  document.getElementById('searchBox').value = '';
+  
+  // FILTRO INTELIGENTE: Busca coincidencias parciales
+  const listaFiltrada = cat === 'Todo' 
+      ? todos 
+      : todos.filter(p => {
+          if (!p.categoria) return false;
+          return normalizarTexto(p.categoria).includes(normalizarTexto(cat)) || 
+                 normalizarTexto(cat).includes(normalizarTexto(p.categoria));
+      });
+      
+  renderProductos(listaFiltrada);
+  renderSubChips(listaFiltrada); 
+}
+
+document.getElementById('searchBox').addEventListener('keyup', (e) => {
+    const query = normalizarTexto(e.target.value);
+    
+    if (query.length >= 3) {
+        const resultados = todos.filter(p => 
+            normalizarTexto(p.descripcion).includes(query) ||
+            normalizarTexto(p.codigo).includes(query)
+        );
+        renderProductos(resultados);
+        document.getElementById('sub-chips').classList.remove('visible'); 
+        return;
+    }
+
+    // Volver a la vista de categoría actual
+    const listaAFiltrar = catActual === 'Todo' ? todos : todos.filter(p => {
+         if (!p.categoria) return false;
+         return normalizarTexto(p.categoria).includes(normalizarTexto(catActual)) || 
+                normalizarTexto(catActual).includes(normalizarTexto(p.categoria));
+    });
+    
+    renderProductos(listaAFiltrar);
+    renderSubChips(listaAFiltrar);
+});
 
 async function iniciar(){
   injectCompanyData();
@@ -550,95 +594,25 @@ async function iniciar(){
     const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(5000), Query.orderDesc('$createdAt')]);
     
     if (res.documents && res.documents.length > 0) {
+        // FILTRO: Solo disponibles
         todos = res.documents.filter(doc => doc.disponible !== false);
     } else {
-        todos = []; // Ya no usamos los de ejemplo si la conexión es exitosa pero vacía
+        // FALLBACK ELIMINADO para no confundir. Si no hay datos, muestra vacío.
+        todos = [];
     }
     
     renderCategorias(); 
     renderProductos(todos); 
     
   } catch(e) { 
-    // En caso de error crítico, no mostramos productos de ejemplo para no confundir.
     todos = [];
     renderCategorias();
-    
-    console.error("Error crítico de conexión a Appwrite.", e); 
-    const errorHtml = `
-    <div style="grid-column:1/-1; text-align:center; padding:20px; border: 1px solid #d32f2f; background: #ffebee; border-radius: 8px; margin-bottom: 20px;">
-        <p style="color:#d32f2f; font-weight:700; margin: 0;">¡ERROR DE CONEXIÓN! No se pudo cargar el catálogo de Appwrite.</p>
-        <p style="color:#666; font-size:0.9rem; margin: 5px 0 0;">Verifique su conexión o la configuración.</p>
-    </div>`;
-    document.querySelector('section').insertAdjacentHTML('afterbegin', errorHtml);
+    renderProductos(todos);
+    console.error(e); 
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#d32f2f;">Error de conexión.</div>`;
   }
 }
 
-function renderCategorias(){
-  const menu = document.getElementById('menu-cat');
-  const mobileMenu = document.getElementById('mobile-cats');
-  
-  // USAMOS LA LISTA FIJA DE CATEGORÍAS MAESTRAS
-  const cats = CATEGORIAS_MAESTRAS;
-  
-  menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
-  
-  mobileMenu.innerHTML = cats.map(c => `<div class="cat-chip ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</div>`).join('');
-}
-
-window.filtrar = function(cat, btn){
-  subCatActual = ''; 
-  document.querySelectorAll('.btn-cat, .cat-chip').forEach(b => b.classList.remove('active'));
-  
-  if (btn) btn.classList.add('active');
-  document.querySelectorAll('.btn-cat, .cat-chip').forEach(el => {
-      if (el !== btn && el.textContent.trim() === cat) el.classList.add('active');
-  });
-
-  catActual = cat;
-  document.getElementById('searchBox').value = '';
-  
-  // Filtro más permisivo para atrapar variaciones en la BD (Moda vs Moda y equipaje)
-  const listaFiltrada = cat === 'Todo' 
-      ? todos 
-      : todos.filter(p => {
-          if (!p.categoria) return false;
-          const catProd = normalizarTexto(p.categoria);
-          const catFiltro = normalizarTexto(cat);
-          // Si el producto dice "Moda" y el filtro es "Moda y equipaje", debería mostrarse (o viceversa)
-          return catProd.includes(catFiltro) || catFiltro.includes(catProd);
-      });
-      
-  renderProductos(listaFiltrada);
-  renderSubChips(listaFiltrada); 
-}
-
-document.getElementById('searchBox').addEventListener('keyup', (e) => {
-    const query = normalizarTexto(e.target.value);
-    
-    // Si hay búsqueda, buscamos en TODO, ignorando categoría actual
-    if (query.length >= 3) {
-        const resultados = todos.filter(p => 
-            normalizarTexto(p.descripcion).includes(query) ||
-            normalizarTexto(p.codigo).includes(query)
-        );
-        renderProductos(resultados);
-        document.getElementById('sub-chips').classList.remove('visible'); 
-        return;
-    }
-
-    // Si borra la búsqueda, volvemos a la categoría actual
-    const listaAFiltrar = catActual === 'Todo' ? todos : todos.filter(p => {
-         if (!p.categoria) return false;
-         const catProd = normalizarTexto(p.categoria);
-         const catFiltro = normalizarTexto(catActual);
-         return catProd.includes(catFiltro) || catFiltro.includes(catProd);
-    });
-    
-    renderProductos(listaAFiltrar);
-    renderSubChips(listaAFiltrar);
-});
-
-// INICIO: Llama a la función principal para cargar datos
 iniciar();
 </script>
 </body>
