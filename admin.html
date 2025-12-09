@@ -169,7 +169,7 @@
             
             <!-- BOTÓN DE LIMPIEZA MASIVA -->
             <button class="btn-fix" onclick="normalizarCategoriasMasivas()">
-                <i class="bi bi-stars"></i> Unificar Categorías (Plural/Minús)
+                <i class="bi bi-stars"></i> Unificar (Ej: Gorras -> Gorra)
             </button>
 
             <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Descargando datos...</div>
@@ -241,15 +241,14 @@
             
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
             
-            // LLENAR LISTA INTELIGENTE DE CATEGORÍAS (Usando singularización)
+            // LLENAR LISTA INTELIGENTE DE CATEGORÍAS (Usando normalización)
             const datalist = document.getElementById('categoryList');
             datalist.innerHTML = '';
             
             GLOBAL_INVENTORY.forEach(p => {
                 if(p.categoria) {
-                    // Normalizamos y singularizamos para la lista de sugerencias
+                    // Normalizar y Capitalizar para la lista
                     let catLimpia = normalizarTexto(p.categoria);
-                    // Capitalizar para mostrar bonito
                     catLimpia = catLimpia.charAt(0).toUpperCase() + catLimpia.slice(1);
                     CATEGORIES_SET.add(catLimpia);
                 }
@@ -267,22 +266,20 @@
         if(loader) loader.style.display = 'none';
     }
 
-    // --- UTILS: Normalización y Singularización INTELIGENTE ---
+    // --- UTILS: Normalización y Singularización AGRESIVA ---
     function normalizarTexto(txt) {
         if (!txt) return '';
-        let str = txt.trim().toLowerCase();
+        // 1. Tomar solo la PRIMERA palabra (Esto arregla "Reloj de varón" -> "reloj")
+        let primeraPalabra = txt.trim().split(' ')[0].toLowerCase();
         
-        // REGLAS DE SINGULARIZACIÓN (GORRAS -> GORRA)
-        if (str.endsWith('es')) {
-             // Relojes -> Reloj (Excepto palabras cortas como 'mes')
-             if(str.length > 3) return str.slice(0, -2);
-        } else if (str.endsWith('s')) {
-             // Gorras -> Gorra, Gafas -> Gafa (Aquí unificamos)
-             // Ojo: 'gafas' se usa en plural, pero si tienes 'gafa', las une.
-             // Si termina en 'as', 'os' es muy probable que sea plural.
-             if(str.length > 3) return str.slice(0, -1);
+        // 2. Singularizar
+        if (primeraPalabra.endsWith('es')) {
+             if(primeraPalabra.length > 3) primeraPalabra = primeraPalabra.slice(0, -2);
+        } else if (primeraPalabra.endsWith('s')) {
+             if(primeraPalabra.length > 3) primeraPalabra = primeraPalabra.slice(0, -1);
         }
-        return str;
+        
+        return primeraPalabra;
     }
     
     // Se ejecuta al salir del input para mostrar como quedará
@@ -290,28 +287,28 @@
         let val = input.value;
         if(val) {
             let norm = normalizarTexto(val);
+            // Capitalizar
             input.value = norm.charAt(0).toUpperCase() + norm.slice(1);
         }
     }
 
-    // --- FUNCIÓN DE LIMPIEZA MASIVA (AHORA SÍ UNIFICA PLURALES) ---
+    // --- FUNCIÓN DE LIMPIEZA MASIVA ---
     window.normalizarCategoriasMasivas = async function() {
-        if(!confirm("Esto unificará categorías (Ej: 'Gorras' -> 'Gorra', 'relojes' -> 'Reloj'). ¿Deseas proceder?")) return;
+        if(!confirm("Esto dejará SOLO la primera palabra en singular como categoría (Ej: 'Reloj de mujer' -> 'Reloj', 'Gorras' -> 'Gorra'). ¿Estás seguro?")) return;
 
         let count = 0;
         const btn = document.querySelector('.btn-fix');
         const originalText = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-arrow-repeat animate-spin"></i> Unificando...';
+        btn.innerHTML = '<i class="bi bi-arrow-repeat animate-spin"></i> Procesando...';
 
         try {
             for (const p of GLOBAL_INVENTORY) {
                 if (!p.categoria) continue;
 
                 let catOriginal = p.categoria.trim();
-                // 1. Normalizar a minúscula y singular
+                // Usamos la nueva lógica agresiva
                 let catNormalizada = normalizarTexto(catOriginal);
-                // 2. Capitalizar (Primera mayúscula)
                 let catFinal = catNormalizada.charAt(0).toUpperCase() + catNormalizada.slice(1);
 
                 if (catOriginal !== catFinal) {
@@ -320,8 +317,8 @@
                     count++;
                 }
             }
-            alert(`¡Éxito! Se unificaron ${count} productos. Ahora 'Gorras' y 'Gorra' son lo mismo.`);
-            loadAllProducts(); // Recargar para refrescar la lista
+            alert(`¡Listo! Se limpiaron ${count} productos. Ahora tu catálogo está estandarizado.`);
+            loadAllProducts(); // Recargar para refrescar la lista y el datalist
         } catch (error) {
             alert("Error durante la limpieza: " + error.message);
         } finally {
@@ -330,31 +327,29 @@
         }
     }
 
-    // --- FUNCIÓN DE INTELIGENCIA: DETECTAR CATEGORÍA (BUSCA POR PALABRAS) ---
+    // --- FUNCIÓN DE INTELIGENCIA: DETECTAR CATEGORÍA ---
     window.autoDetectarCategoria = function(nombre) {
         if(!nombre || nombre.length < 3) return;
         
         const catInput = document.getElementById('cat');
-        if(catInput.value.trim() !== "") return; // No sobreescribir si ya escribió algo
+        if(catInput.value.trim() !== "") return; 
 
         const palabras = nombre.toLowerCase().split(" ");
-        // Buscamos si alguna palabra clave del nombre (ej: "Reloj") ya existe en el inventario
-        
         let mejorMatch = null;
 
         for (let palabra of palabras) {
             if(palabra.length < 3) continue; 
             
-            // Busca un producto que contenga esta palabra en su descripción
+            // Busca coincidencia en inventario
             const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(palabra));
             if(match && match.categoria) {
                 mejorMatch = match.categoria;
-                break; // Encontramos una coincidencia, paramos
+                break; 
             }
         }
         
         if(mejorMatch) {
-            // Aplicar la misma normalización para sugerir la versión limpia
+            // Aplicar la misma normalización agresiva para sugerir
             let catLimpia = normalizarTexto(mejorMatch);
             catLimpia = catLimpia.charAt(0).toUpperCase() + catLimpia.slice(1);
             
@@ -406,9 +401,8 @@
         
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
         
-        // Normalizar categoría al guardar
+        // Normalizar categoría al guardar (Agresivo)
         let catRaw = document.getElementById('cat').value.trim();
-        // Usamos la misma lógica: singular + Capitalize
         let catNorm = normalizarTexto(catRaw);
         let catFinal = catNorm.charAt(0).toUpperCase() + catNorm.slice(1);
 
