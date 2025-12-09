@@ -115,9 +115,20 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- 1. CÓDIGO Y CATEGORÍA (ARRIBA) -->
+                <!-- 1. NOMBRE -->
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
+                </div>
+
+                <!-- 2. TIPO DETECTADO (SUBCATEGORÍA) -->
+                <div class="form-group">
+                    <label style="color:#2563eb;">Tipo Detectado (Subcategoría)</label>
+                    <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="Escribe el nombre arriba...">
+                </div>
+
+                <!-- 3. CATEGORÍA Y CÓDIGO (AL LADO) -->
                 <div class="row">
-                    <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría (Lista Fija)</label>
                         <!-- MENU DESPLEGABLE ESTRICTO -->
@@ -126,18 +137,7 @@
                             <!-- Se llena con JS -->
                         </select>
                     </div>
-                </div>
-
-                <!-- 2. NOMBRE -->
-                <div class="form-group">
-                    <label>Nombre del Producto</label>
-                    <input type="text" id="name" required placeholder="Ej: Reloj digital..." onkeyup="detectarInfo(this.value)">
-                </div>
-
-                <!-- 3. TIPO DETECTADO (SUBCATEGORÍA) -->
-                <div class="form-group">
-                    <label style="color:#2563eb;">Tipo Detectado (Subcategoría)</label>
-                    <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="Escribe el nombre arriba...">
+                    <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                 </div>
 
                 <!-- 4. PRECIOS Y MOQ -->
@@ -189,11 +189,13 @@
             <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando...</div>
             
             <div class="search-box">
-                <input type="text" id="search" placeholder="Buscar por nombre, código o categoría...">
+                <input type="text" id="search" placeholder="Buscar por código o nombre...">
                 <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
             </div>
             
-            <div id="list"></div>
+            <div id="list">
+                <!-- LISTA VACÍA POR DEFECTO -->
+            </div>
         </div>
 
     </div>
@@ -242,14 +244,14 @@
         const select = document.getElementById('cat');
         // Llenar select con lista fija
         CATEGORIAS_MAESTRAS.forEach(cat => {
-            const opt = document.createElement('option');
-            opt.value = cat;
-            opt.innerText = cat;
+            const option = document.createElement('option');
+            option.value = cat;
+            option.innerText = cat;
             select.appendChild(opt);
         });
     }
 
-    // CARGAR PRODUCTOS
+    // CARGAR PRODUCTOS (DESCARGA TODO PERO NO MUESTRA NADA AL INICIO)
     async function loadAllProducts() {
         const loader = document.getElementById('loading-bar');
         if(loader) loader.style.display = 'block';
@@ -269,13 +271,13 @@
                 offset += limit;
             }
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
-            doSearch(); 
+            doSearch(); // Ejecuta búsqueda inicial (que estará vacía)
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
     }
 
     // --- DETECCIÓN INTELIGENTE ---
-    window.detectarInfo = function(nombre) {
+    window.autoDetectarCategoria = function(nombre) {
         // 1. Extraer Tipo (Primera palabra)
         if(!nombre) {
             document.getElementById('tipoDetectado').value = "";
@@ -289,13 +291,12 @@
              document.getElementById('tipoDetectado').value = primera;
              
              // 2. Auto-seleccionar Categoría
-             // Solo si no se ha elegido una manualmente aún (para no molestar)
              const catSelect = document.getElementById('cat');
+             // Solo si no se ha elegido una manualmente aún
              if(catSelect.value === "") {
                  const match = GLOBAL_INVENTORY.find(p => p.descripcion && p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
                  if(match && match.categoria) {
                      // Verificar si la categoría del match existe en nuestra lista maestra
-                     // Para evitar seleccionar categorías antiguas o erróneas
                      const existe = Array.from(catSelect.options).some(opt => opt.value === match.categoria);
                      if(existe) {
                          catSelect.value = match.categoria;
@@ -373,19 +374,23 @@
         
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        doSearch(); // Refrescar lista
+        
+        // No refrescamos la lista automáticamente, a menos que el término de búsqueda coincida
+        doSearch(); 
 
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
 
-    // BUSCADOR (MUESTRA ULTIMOS 50 SI ESTA VACIO)
+    // BUSCADOR (MUESTRA VACÍO SI NO HAY BÚSQUEDA)
     window.doSearch = function() {
       const q = document.getElementById('search').value.toLowerCase().trim(); 
       LIST_ELEMENT.innerHTML = ''; 
       
       let hits = [];
       if (!q) {
-          hits = GLOBAL_INVENTORY.slice(0, 50);
+          // Mostrar vacío por defecto
+          LIST_ELEMENT.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>Usa el buscador para ver el inventario.</p></div>';
+          return;
       } else { 
           // BÚSQUEDA
           if (q === "error" || q === "sin precio") {
