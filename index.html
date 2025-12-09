@@ -169,7 +169,9 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     font-size: 0.9rem;
 }
 .mayorista-price-row span:last-child {
-    margin-top: -6px; /* Ajuste para acercar "Cada Unidad" al precio */
+    /* CORRECCIÓN: Eliminamos el margen negativo para evitar ruido visual */
+    margin-top: 0; 
+    padding-top: 2px; /* Añadir un pequeño padding para separarlo del precio */
     font-size: 0.85rem; 
     font-weight: 700; 
     color: #444; 
@@ -402,15 +404,12 @@ let catActual = 'Todo';
 let zoomTimeout; 
 let subCatActual = ''; // Variable para subcategoría activa
 
-// FUNCIONES DE SUCURSALES (ELIMINADAS)
-
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
 window.onSlideScroll = function(el) { const card=el.closest('.card'); const dots=card.querySelectorAll('.dot'); if(dots.length<2)return; const idx=Math.round(el.scrollLeft/el.offsetWidth); dots.forEach(d=>d.classList.remove('active')); if(dots[idx])dots[idx].classList.add('active'); }
 function injectCompanyData() { 
     document.getElementById('footer-envios').textContent=COMPANY_DATA.dataset.envios; 
     document.getElementById('footer-horario').textContent=COMPANY_DATA.dataset.horario; 
-    // Data attributes de sucursales eliminados del JS
 }
 
 function renderProductos(lista){
@@ -471,10 +470,7 @@ function renderProductos(lista){
     // --- LÓGICA MAYORISTA EN LA TARJETA (TRES LÍNEAS SEPARADAS) ---
     let mayoristaContentHtml;
     if (pMayor > 0) {
-        // Formato final deseado: 
-        // PRECIO POR MAYOR (Min. 12 Unid.)
-        // Bs. 50.00
-        // Cada Unidad
+        // Formato final: PRECIO POR MAYOR (Min. 12 Unid.) | Bs. 50.00 | Cada Unidad
         mayoristaContentHtml = `
             <div class="mayorista-label">
                 <i class="bi bi-box-seam-fill"></i> PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.)
@@ -560,9 +556,9 @@ function renderSubChips(listaFiltrada){
     let chipsHtml = Object.keys(subCategoriasMap)
         .sort((a, b) => a.localeCompare(b))
         .map(subCat => {
-            const count = subCategoriasMap[subCat];
             const activeClass = subCatActual === subCat ? 'active' : '';
-            return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${subCat}', this)">${subCat} (${count})</div>`;
+            // ELIMINADO EL CONTADOR DE PRODUCTOS (X) -> Ahora solo muestra el nombre
+            return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${subCat}', this)">${subCat}</div>`;
         }).join('');
 
     if (chipsHtml) {
@@ -690,7 +686,7 @@ document.getElementById('searchBox').addEventListener('keyup', (e) => {
     const listaAFiltrar = catActual === 'Todo' ? todos : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
     
     if (query.length < 3) {
-        renderProductos(listaAFiltrar);
+        renderProductos(listaAFiltrada);
         renderSubChips(listaAFiltrar);
         return;
     }
