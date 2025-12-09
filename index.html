@@ -71,7 +71,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .card{ 
     background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden; 
     position:relative; display:flex; flex-direction:column; 
-    transition:transform 0.2s, box-shadow 0.2s; 
     padding-bottom: 15px; 
 }
 .card:hover{transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.08);}
@@ -123,11 +122,11 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     animation: text-pulse 2s infinite;
 }
 
-/* Nuevo Estilo para Cotización Mayorista (Reemplaza a .moq-row) */
+/* Nuevo Estilo para Cotización Mayorista (REPARADO CONTRASTE) */
 .mayorista-cotizar {
     margin-top: 10px; /* Separación del precio unitario */
     font-size: 0.85rem;
-    color: #007bff; /* Color azul para destacar la acción */
+    color: #444; /* Dark gray para mejor legibilidad del texto base */
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -138,7 +137,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     border: 1px dashed #c0e0ff; /* Borde discontinuo para acción */
 }
 .mayorista-cotizar i { 
-    color: #007bff; 
+    color: var(--brand-red); /* Ícono en rojo para el tema */
     font-size: 1.1rem;
 }
 
@@ -331,14 +330,17 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA ACTUALIZADA ---
+    // --- LÓGICA MAYORISTA ACTUALIZADA (CONTRASTE MEJORADO) ---
     let mayoristaText = '';
+    // Usamos un span con la clase red-text para COTIZAR
+    const cotizarSpan = `<span style="color:var(--brand-red); font-weight:900;">COTIZAR</span>`;
+
     if (pMayor > 0) {
         // Muestra el precio mayorista de la BD como REFERENCIA
-        mayoristaText = `Precio Mayorista Ref. (Min. ${minOrderQuantity} Unid.): <span style="color:#111;">Bs. ${pMayor.toFixed(2)}</span> / **COTIZAR**`;
+        mayoristaText = `Precio Mayorista Ref. (Min. ${minOrderQuantity} Unid.): <span style="color:#111; font-weight:800;">Bs. ${pMayor.toFixed(2)}</span> / ${cotizarSpan}`;
     } else {
         // Si no hay precio mayorista definido, solo pide cotizar.
-        mayoristaText = `Precio Mayorista (Min. ${minOrderQuantity} Unid.): **COTIZAR**`;
+        mayoristaText = `Precio Mayorista (Min. ${minOrderQuantity} Unid.): ${cotizarSpan}`;
     }
     
     const mayoristaHtml = `
@@ -448,17 +450,17 @@ function renderCategorias(){
 }
 
 window.filtrar = function(cat, btn){
-  // 1. Quitar la clase 'active' de todos los botones y chips
+  // 1. Quitar la clase 'active' de TODOS los elementos de categoría
   document.querySelectorAll('.btn-cat, .cat-chip').forEach(b => b.classList.remove('active'));
 
-  // 2. Activar el elemento clickeado (si existe)
+  // 2. Activar el elemento clickeado (PC/Móvil)
   if (btn) {
       btn.classList.add('active');
   }
 
-  // 3. Sincronizar el elemento complementario (PC/Móvil)
+  // 3. Sincronizar el elemento complementario (Asegura que el de PC y el de Móvil coincidan)
   document.querySelectorAll('.btn-cat, .cat-chip').forEach(el => {
-      if (el !== btn && el.textContent.trim() === cat) {
+      if (el !== btn && el.textContent.trim() === cat) { 
           el.classList.add('active');
       }
   });
