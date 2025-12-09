@@ -321,7 +321,7 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA ACTUALIZADA (NUEVO) ---
+    // --- LÓGICA MAYORISTA ACTUALIZADA ---
     let mayoristaText = '';
     if (pMayor > 0) {
         // Muestra el precio mayorista de la BD como REFERENCIA, pero la acción sigue siendo COTIZAR.
@@ -380,7 +380,12 @@ async function iniciar(){
   const db = new Databases(client);
   const grid = document.getElementById('productos');
   try {
+    // Intenta cargar los datos
     const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(5000), Query.orderDesc('$createdAt')]);
     todos = res.documents.filter(doc => doc.disponible !== false);
-    renderCategorias(); renderProductos(todos);
-  } catch(e) { console.error(e); grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#666;">No se pudo cargar el 
+    renderCategorias(); 
+    // Muestra todos los productos al inicio
+    renderProductos(todos);
+  } catch(e) { 
+    console.error("Error al cargar el catálogo:", e); 
+    grid.inner
