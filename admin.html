@@ -34,19 +34,9 @@
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
-    /* BOTON DE REPARACIÓN (SOLO USAR UNA VEZ) */
-    .btn-repair { 
-        width: 100%; padding: 12px; 
-        background: #fee2e2; color: #b91c1c; 
-        border: 2px dashed #b91c1c; 
-        border-radius: 10px; font-weight: 700; 
-        margin-bottom: 20px; cursor: pointer; 
-        display: flex; align-items: center; justify-content: center; gap: 10px; 
-        transition: 0.2s; 
-    }
-    .btn-repair:hover { background: #b91c1c; color: white; }
-
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    
+    /* FOTOS GIGANTES */
     .photo-area { 
         border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 250px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; 
     }
@@ -112,7 +102,7 @@
                 
                 <div class="form-group">
                     <label>Nombre del Producto</label>
-                    <!-- INTELIGENCIA ORIGINAL: Solo copia, no modifica -->
+                    <!-- INTELIGENCIA ORIGINAL: Detecta primera palabra y busca categoría -->
                     <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
                 </div>
                 
@@ -120,7 +110,7 @@
                     <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría</label>
-                        <!-- LISTA DE CATEGORÍAS EXISTENTES -->
+                        <!-- LISTA DE CATEGORÍAS EXISTENTES (Sin filtros) -->
                         <input type="text" id="cat" list="categoryList" required placeholder="Elige o escribe nueva..." autocomplete="off">
                         <datalist id="categoryList"></datalist>
                     </div>
@@ -170,13 +160,7 @@
         <!-- LISTA DE INVENTARIO -->
         <div class="card-box">
             <h2>Inventario (<span id="totalDocs">0</span>)</h2>
-            
-            <!-- BOTÓN DE RESTAURACIÓN (USAR UNA VEZ) -->
-            <button class="btn-repair" onclick="restaurarNombresOriginales()">
-                <i class="bi bi-bandaid-fill"></i> 🚑 Restaurar Nombres Originales (Moda y equipaje, etc.)
-            </button>
-
-            <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando datos...</div>
+            <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando base de datos...</div>
             
             <div class="search-box">
                 <input type="text" id="search" placeholder="Buscar por nombre, código o categoría...">
@@ -186,7 +170,7 @@
             <div id="list">
                 <div class="empty-state">
                     <i class="bi bi-search"></i>
-                    <p>Cargando...</p>
+                    <p>Usa el buscador para ver el inventario.</p>
                 </div>
             </div>
         </div>
@@ -245,7 +229,7 @@
             
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
             
-            // LLENAR LISTA DE CATEGORÍAS TAL CUAL ESTÁN
+            // LLENAR LISTA DE CATEGORÍAS (SIN MODIFICAR NADA)
             const datalist = document.getElementById('categoryList');
             datalist.innerHTML = '';
             
@@ -262,13 +246,13 @@
                 datalist.appendChild(opt);
             });
             
-            doSearch(); 
+            // NO LLAMAMOS A doSearch() AQUI, DEJAMOS LA LISTA VACIA INICIALMENTE
 
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
     }
 
-    // --- FUNCIÓN DE INTELIGENCIA ORIGINAL ---
+    // --- INTELIGENCIA ORIGINAL (PRIMERA PALABRA) ---
     window.autoDetectarCategoria = function(nombre) {
         if(!nombre || nombre.length < 3) return;
         
@@ -281,7 +265,6 @@
         
         if(primeraPalabra.length < 3) return;
 
-        // Buscar coincidencia en productos existentes
         const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(primeraPalabra));
         
         if(match && match.categoria) {
@@ -294,56 +277,6 @@
                 catInput.style.borderColor = "#f0f0f0";
                 catInput.style.backgroundColor = "#fafafa";
             }, 1000);
-        }
-    }
-
-    // --- FUNCIÓN DE RESTAURACIÓN (USAR UNA VEZ PARA ARREGLAR LA BASE DE DATOS) ---
-    window.restaurarNombresOriginales = async function() {
-        if(!confirm("⚠️ Esto buscará las categorías cortadas (ej: 'Moda', 'Hogar') y las restaurará a sus nombres completos ('Moda y equipaje', 'Hogar y cocina'). ¿Ejecutar reparación?")) return;
-
-        const CORRECCIONES = {
-            "belleza": "Belleza y salud",
-            "herramienta": "Herramientas",
-            "herramientas": "Herramientas", // Asegurar plural
-            "hogar": "Hogar y cocina",
-            "moda": "Moda y equipaje",
-            "oficina": "Oficina y escolar",
-            "tecnologia": "Tecnología",
-            "tecnología": "Tecnología"
-        };
-
-        const btn = document.querySelector('.btn-repair');
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-hourglass-split animate-spin"></i> Reparando...';
-
-        let count = 0;
-
-        try {
-            for (const p of GLOBAL_INVENTORY) {
-                if (!p.categoria) continue;
-                
-                // Buscar si la categoría actual (en minúsculas) coincide con alguna clave rota
-                let catActualLower = p.categoria.toLowerCase().trim();
-                
-                if (CORRECCIONES[catActualLower]) {
-                    let catCorrecta = CORRECCIONES[catActualLower];
-                    
-                    // Solo actualizamos si es diferente (para no gastar recursos)
-                    if (p.categoria !== catCorrecta) {
-                        await db.updateDocument(DATABASE_ID, COLLECTION_ID, p.$id, { categoria: catCorrecta });
-                        p.categoria = catCorrecta; // Actualizar en memoria
-                        count++;
-                    }
-                }
-            }
-            alert(`✅ Reparación completada. Se corrigieron ${count} productos.`);
-            loadAllProducts();
-        } catch (error) {
-            alert("Error: " + error.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
         }
     }
 
@@ -372,7 +305,7 @@
         } return null;
     }
     
-    // GUARDAR PRODUCTO (TAL CUAL)
+    // GUARDAR PRODUCTO
     document.getElementById('productForm').addEventListener('submit', async (e) => {
       e.preventDefault(); const id = document.getElementById('editId').value; const btn = document.getElementById('btnSave'); const msg = document.getElementById('msg');
       btn.disabled = true; btn.innerText = "Guardando..."; msg.style.display = 'none';
@@ -411,7 +344,9 @@
         
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        doSearch();
+        // Solo refrescar búsqueda si hay algo escrito
+        const q = document.getElementById('search').value;
+        if(q) doSearch();
         
         if(data.categoria && !CATEGORIES_SET.has(data.categoria)) {
             CATEGORIES_SET.add(data.categoria);
@@ -422,14 +357,26 @@
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
 
-    // BUSCADOR
+    // BUSCADOR CORREGIDO: LIMPIA LA LISTA SI NO HAY BÚSQUEDA
     window.doSearch = function() {
       const q = document.getElementById('search').value.toLowerCase().trim(); 
       LIST_ELEMENT.innerHTML = ''; 
       
+      // SI NO HAY TEXTO, NO MOSTRAR NADA (LISTA LIMPIA)
+      if (!q) {
+          LIST_ELEMENT.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>Usa el buscador para ver el inventario.</p></div>';
+          return;
+      }
+      
       let hits = [];
-      if (!q) hits = GLOBAL_INVENTORY.slice(0, 50);
-      else { 
+      const isErrorMode = (q === "error" || q === "sin precio");
+      const isAgotadoMode = (q === "agotado" || q === "off"); 
+
+      if (isErrorMode) {
+          hits = GLOBAL_INVENTORY.filter(d => !d.preciopormayor || d.preciopormayor === 0);
+      } else if (isAgotadoMode) {
+          hits = GLOBAL_INVENTORY.filter(d => d.disponible === false);
+      } else { 
           hits = GLOBAL_INVENTORY.filter(d => {
               const desc = (d.descripcion || '').toLowerCase();
               const cod = (d.codigo || '').toLowerCase();
