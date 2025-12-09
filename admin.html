@@ -33,9 +33,10 @@
 
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
+    
     /* BOTON DE LIMPIEZA */
-    .btn-fix { width: 100%; padding: 10px; background: #e0e7ff; color: #4338ca; border: 1px dashed #4338ca; border-radius: 10px; font-weight: 600; margin-bottom: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-fix:hover { background: #4338ca; color: white; }
+    .btn-fix { width: 100%; padding: 12px; background: #eef2ff; color: #4f46e5; border: 1px dashed #4f46e5; border-radius: 10px; font-weight: 600; margin-bottom: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+    .btn-fix:hover { background: #4f46e5; color: white; }
 
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
     
@@ -128,7 +129,7 @@
                     <div class="form-group">
                         <label>Categoría</label>
                         <!-- LISTA INTELIGENTE DE CATEGORÍAS -->
-                        <input type="text" id="cat" list="categoryList" required placeholder="Selecciona o escribe...">
+                        <input type="text" id="cat" list="categoryList" required placeholder="Selecciona o escribe..." onchange="capitalizarInput(this)">
                         <datalist id="categoryList"></datalist>
                     </div>
                 </div>
@@ -168,7 +169,7 @@
             
             <!-- BOTÓN DE LIMPIEZA MASIVA -->
             <button class="btn-fix" onclick="normalizarCategoriasMasivas()">
-                <i class="bi bi-magic"></i> Unificar Categorías (Mayús/Minús)
+                <i class="bi bi-stars"></i> Limpiar y Unificar Categorías (Plurales/Mayús)
             </button>
 
             <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Descargando datos...</div>
@@ -240,17 +241,17 @@
             
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
             
-            // LLENAR LISTA INTELIGENTE DE CATEGORÍAS
+            // LLENAR LISTA INTELIGENTE DE CATEGORÍAS (Usando singularización)
             const datalist = document.getElementById('categoryList');
             datalist.innerHTML = '';
             
             GLOBAL_INVENTORY.forEach(p => {
-                // Para el autocompletado, usamos las versiones ya corregidas si las hubiera
                 if(p.categoria) {
-                    // Normalización visual para la lista
-                    let limpia = p.categoria.trim();
-                    limpia = limpia.charAt(0).toUpperCase() + limpia.slice(1).toLowerCase();
-                    CATEGORIES_SET.add(limpia);
+                    // Normalizamos y singularizamos para la lista de sugerencias
+                    let catLimpia = normalizarTexto(p.categoria);
+                    // Capitalizar para mostrar bonito
+                    catLimpia = catLimpia.charAt(0).toUpperCase() + catLimpia.slice(1);
+                    CATEGORIES_SET.add(catLimpia);
                 }
             });
             
@@ -266,32 +267,57 @@
         if(loader) loader.style.display = 'none';
     }
 
-    // --- FUNCIÓN DE LIMPIEZA MASIVA (MAGIA) ---
+    // --- UTILS: Normalización y Singularización ---
+    function normalizarTexto(txt) {
+        if (!txt) return '';
+        let str = txt.trim().toLowerCase();
+        // Singularizar básico: Si termina en 's', se la quitamos, excepto si es 'mes', 'gas', etc.
+        // Regla rápida para tu caso: Gorras -> Gorra
+        if (str.endsWith('es')) {
+             // Relojes -> Reloj
+             return str.slice(0, -2);
+        } else if (str.endsWith('s')) {
+             // Gorras -> Gorra
+             return str.slice(0, -1);
+        }
+        return str;
+    }
+    
+    window.capitalizarInput = function(input) {
+        let val = input.value;
+        if(val) {
+            input.value = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+        }
+    }
+
+    // --- FUNCIÓN DE LIMPIEZA MASIVA (AHORA SÍ UNIFICA PLURALES) ---
     window.normalizarCategoriasMasivas = async function() {
-        if(!confirm("Esto revisará TODOS tus productos y arreglará las categorías (Ej: 'hogar', 'HOGAR' -> 'Hogar'). ¿Continuar?")) return;
+        if(!confirm("Esto unificará categorías similares (Ej: 'Gorras' -> 'Gorra', 'relojes' -> 'Reloj'). ¿Deseas proceder?")) return;
 
         let count = 0;
         const btn = document.querySelector('.btn-fix');
         const originalText = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-arrow-repeat animate-spin"></i> Trabajando...';
+        btn.innerHTML = '<i class="bi bi-arrow-repeat animate-spin"></i> Unificando...';
 
         try {
             for (const p of GLOBAL_INVENTORY) {
                 if (!p.categoria) continue;
 
                 let catOriginal = p.categoria.trim();
-                // Regla: Primera mayúscula, resto minúscula
-                let catCorregida = catOriginal.charAt(0).toUpperCase() + catOriginal.slice(1).toLowerCase();
+                // 1. Normalizar a minúscula y singular
+                let catNormalizada = normalizarTexto(catOriginal);
+                // 2. Capitalizar (Primera mayúscula)
+                let catFinal = catNormalizada.charAt(0).toUpperCase() + catNormalizada.slice(1);
 
-                if (catOriginal !== catCorregida) {
-                    await db.updateDocument(DATABASE_ID, COLLECTION_ID, p.$id, { categoria: catCorregida });
-                    p.categoria = catCorregida; // Actualizar local
+                if (catOriginal !== catFinal) {
+                    await db.updateDocument(DATABASE_ID, COLLECTION_ID, p.$id, { categoria: catFinal });
+                    p.categoria = catFinal; // Actualizar local
                     count++;
                 }
             }
-            alert(`¡Listo! Se corrigieron las categorías de ${count} productos.`);
-            loadAllProducts(); // Recargar para refrescar todo
+            alert(`¡Éxito! Se unificaron ${count} productos. Ahora 'Gorras' y 'Gorra' son lo mismo.`);
+            loadAllProducts(); // Recargar para refrescar la lista
         } catch (error) {
             alert("Error durante la limpieza: " + error.message);
         } finally {
@@ -300,28 +326,44 @@
         }
     }
 
-    // --- FUNCIÓN DE INTELIGENCIA: DETECTAR CATEGORÍA ---
+    // --- FUNCIÓN DE INTELIGENCIA: DETECTAR CATEGORÍA (BUSCA POR PALABRAS) ---
     window.autoDetectarCategoria = function(nombre) {
         if(!nombre || nombre.length < 3) return;
         
-        // Si el campo categoría ya tiene algo, no lo tocamos
         const catInput = document.getElementById('cat');
-        if(catInput.value.trim() !== "") return;
+        if(catInput.value.trim() !== "") return; // No sobreescribir si ya escribió algo
 
-        const nombreLower = nombre.toLowerCase();
+        const palabras = nombre.toLowerCase().split(" ");
+        // Buscamos si alguna palabra clave del nombre (ej: "Reloj") ya existe en el inventario
+        // Ignoramos palabras cortas como "de", "la", "el"
         
-        // Busca en el inventario algún producto que contenga una palabra clave similar
-        const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(nombreLower));
-        
-        if(match && match.categoria) {
-            // Usamos la versión normalizada
-            let catSugest = match.categoria.trim();
-            catSugest = catSugest.charAt(0).toUpperCase() + catSugest.slice(1).toLowerCase();
+        let mejorMatch = null;
+
+        for (let palabra of palabras) {
+            if(palabra.length < 3) continue; 
             
-            catInput.value = catSugest;
-            // Efecto visual para mostrar que se autocompletó
+            // Busca un producto que contenga esta palabra en su descripción
+            const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(palabra));
+            if(match && match.categoria) {
+                mejorMatch = match.categoria;
+                break; // Encontramos una coincidencia, paramos
+            }
+        }
+        
+        if(mejorMatch) {
+            // Aplicar la misma normalización para sugerir la versión limpia
+            let catLimpia = normalizarTexto(mejorMatch);
+            catLimpia = catLimpia.charAt(0).toUpperCase() + catLimpia.slice(1);
+            
+            catInput.value = catLimpia;
+            
+            // Efecto visual
             catInput.style.borderColor = "#2563eb";
-            setTimeout(() => catInput.style.borderColor = "#f0f0f0", 1000);
+            catInput.style.backgroundColor = "#eff6ff";
+            setTimeout(() => {
+                catInput.style.borderColor = "#f0f0f0";
+                catInput.style.backgroundColor = "#fafafa";
+            }, 1000);
         }
     }
 
@@ -361,14 +403,16 @@
         
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
         
-        // Normalizar categoría (Capitalizar primera letra) SIEMPRE al guardar
+        // Normalizar categoría al guardar
         let catRaw = document.getElementById('cat').value.trim();
-        let catLimpia = catRaw.charAt(0).toUpperCase() + catRaw.slice(1).toLowerCase();
+        // Usamos la misma lógica: singular + Capitalize
+        let catNorm = normalizarTexto(catRaw);
+        let catFinal = catNorm.charAt(0).toUpperCase() + catNorm.slice(1);
 
         const data = {
           descripcion: document.getElementById('name').value, 
           codigo: document.getElementById('code').value, 
-          categoria: catLimpia,
+          categoria: catFinal,
           preciopormayor: Number(document.getElementById('price').value), 
           precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value || 6), 
@@ -380,26 +424,24 @@
         if(id) { 
             await db.updateDocument(DATABASE_ID, COLLECTION_ID, id, data); 
             msg.innerText = "✅ Actualizado";
-            // Actualizar localmente para no recargar todo
             const idx = GLOBAL_INVENTORY.findIndex(p => p.$id === id);
             if(idx > -1) GLOBAL_INVENTORY[idx] = { ...GLOBAL_INVENTORY[idx], ...data };
         } 
         else { 
             const newDoc = await db.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), data); 
             msg.innerText = "✅ Guardado"; 
-            GLOBAL_INVENTORY.unshift(newDoc); // Agregar al inicio
+            GLOBAL_INVENTORY.unshift(newDoc); 
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
         }
         
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        doSearch(); // Refrescar vista
+        doSearch(); 
         
-        // Actualizar lista de categorías si es nueva
-        if(!CATEGORIES_SET.has(catLimpia)) {
-            const opt = document.createElement('option'); opt.value = catLimpia;
+        if(!CATEGORIES_SET.has(catFinal)) {
+            const opt = document.createElement('option'); opt.value = catFinal;
             document.getElementById('categoryList').appendChild(opt);
-            CATEGORIES_SET.add(catLimpia);
+            CATEGORIES_SET.add(catFinal);
         }
 
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar"; }
@@ -419,7 +461,7 @@
       } else if (isAgotadoMode) {
           hits = GLOBAL_INVENTORY.filter(d => d.disponible === false);
       } else if (!q) {
-          hits = GLOBAL_INVENTORY.slice(0, 50); // Mostrar los últimos 50 por defecto
+          hits = GLOBAL_INVENTORY.slice(0, 50); 
       } else { 
           hits = GLOBAL_INVENTORY.filter(d => {
               const desc = (d.descripcion || '').toLowerCase();
@@ -502,7 +544,6 @@
       const btn = document.getElementById('btnSave'); if(btn) { btn.innerText = "Actualizar"; btn.style.background = "#2563eb"; }
       const cancel = document.getElementById('btnCancel'); if(cancel) cancel.style.display = "block";
       
-      // Scroll to top mobile
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
