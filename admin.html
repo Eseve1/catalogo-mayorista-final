@@ -42,7 +42,7 @@
         border-color: #c7d2fe;
         color: #3730a3;
         font-weight: 700;
-        cursor: default;
+        cursor: not-allowed; /* Indica que es automático */
     }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } 
@@ -115,32 +115,34 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- 1. CÓDIGO Y CATEGORÍA (ARRIBA) -->
+                <!-- FILA 1: NOMBRE Y TIPO (LADO A LADO O UNO ARRIBA OTRO ABAJO SEGÚN ESPACIO) -->
                 <div class="row">
-                    <div class="form-group"><label>Código</label><input type="text" id="code"></div>
+                    <div class="form-group" style="flex: 2;">
+                        <label>Nombre del Producto</label>
+                        <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label style="color:#2563eb;">Tipo (Auto)</label>
+                        <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="...">
+                    </div>
+                </div>
+
+                <!-- FILA 2: CÓDIGO Y CATEGORÍA -->
+                <div class="row">
                     <div class="form-group">
-                        <label>Categoría (Seleccionar)</label>
-                        <!-- MENU DESPLEGABLE ESTRICTO -->
+                        <label>Código</label>
+                        <input type="text" id="code">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <!-- SELECT: Solo permite elegir las opciones existentes en la BD -->
                         <select id="cat" required>
-                            <option value="" disabled selected>Cargando...</option>
-                            <!-- Se llena con JS -->
+                            <option value="" disabled selected>Cargando lista...</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- 2. NOMBRE -->
-                <div class="form-group">
-                    <label>Nombre del Producto</label>
-                    <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
-                </div>
-
-                <!-- 3. TIPO DETECTADO (SUBCATEGORÍA) -->
-                <div class="form-group">
-                    <label style="color:#2563eb;">Tipo Detectado (Subcategoría)</label>
-                    <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="Se llena al escribir el nombre...">
-                </div>
-
-                <!-- 4. PRECIOS Y MOQ -->
+                <!-- FILA 3: PRECIOS -->
                 <div class="row">
                     <div class="form-group">
                         <label>P. Unidad</label>
@@ -152,6 +154,7 @@
                     </div>
                 </div>
 
+                <!-- FILA 4: MOQ -->
                 <div class="form-group">
                     <label>MOQ (Mínimo Mayorista)</label>
                     <input type="number" id="moq" value="6">
@@ -290,13 +293,14 @@
              document.getElementById('tipoDetectado').value = primeraCapital;
              
              // 2. Auto-seleccionar Categoría en el Select
+             const catSelect = document.getElementById('cat');
+             
              // Buscamos en el historial un producto que empiece con ese tipo
              const match = GLOBAL_INVENTORY.find(p => p.descripcion && p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
              
              if(match && match.categoria) {
-                 const catSelect = document.getElementById('cat');
-                 
                  // Intentamos asignar el valor al select. Si existe en la lista, se seleccionará.
+                 // Como el select se llena desde la BD, debería existir si ya lo usaste.
                  catSelect.value = match.categoria;
                  
                  // Efecto visual si cambió
