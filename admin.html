@@ -115,26 +115,29 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- 1. CATEGORÍA (ARRIBA) -->
-                <div class="form-group">
-                    <label>Categoría (Seleccionar)</label>
-                    <!-- SELECT: Solo permite elegir las opciones definidas -->
-                    <select id="cat" required>
-                        <option value="" disabled selected>Elige una...</option>
-                        <!-- Se llena con JS -->
-                    </select>
-                </div>
-
-                <!-- 2. NOMBRE -->
+                <!-- 1. NOMBRE (PRIMERO para activar la detección) -->
                 <div class="form-group">
                     <label>Nombre del Producto</label>
                     <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
                 </div>
 
-                <!-- 3. TIPO DETECTADO (SUBCATEGORÍA) -->
+                <!-- 2. TIPO DETECTADO (Visual) -->
                 <div class="form-group">
                     <label style="color:#2563eb;">Tipo Detectado (Auto)</label>
                     <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="...">
+                </div>
+
+                <!-- 3. CÓDIGO Y CATEGORÍA (DESPUÉS) -->
+                <div class="row">
+                    <div class="form-group"><label>Código</label><input type="text" id="code"></div>
+                    <div class="form-group">
+                        <label>Categoría (Lista Fija)</label>
+                        <!-- SELECT: Se selecciona automáticamente si hay coincidencia -->
+                        <select id="cat" required>
+                            <option value="" disabled selected>Seleccionar...</option>
+                            <!-- Se llena con JS -->
+                        </select>
+                    </div>
                 </div>
 
                 <!-- 4. PRECIOS -->
@@ -149,16 +152,10 @@
                     </div>
                 </div>
 
-                <!-- 5. MOQ Y CÓDIGO (ABAJO) -->
-                <div class="row">
-                    <div class="form-group">
-                        <label>MOQ (Mínimo Mayorista)</label>
-                        <input type="number" id="moq" value="6">
-                    </div>
-                    <div class="form-group">
-                        <label>Código</label>
-                        <input type="text" id="code">
-                    </div>
+                <!-- 5. MOQ -->
+                <div class="form-group">
+                    <label>MOQ (Mínimo Mayorista)</label>
+                    <input type="number" id="moq" value="6">
                 </div>
 
                 <!-- FOTOS -->
@@ -220,7 +217,6 @@
     const LIST_ELEMENT = document.getElementById('list');
     
     let GLOBAL_INVENTORY = []; 
-    let CATEGORIES_SET = new Set();
     
     // --- LISTA MAESTRA FIJA ---
     const CATEGORIAS_MAESTRAS = [
@@ -256,7 +252,7 @@
         });
     }
 
-    // CARGAR PRODUCTOS
+    // CARGAR PRODUCTOS (DESCARGA TODO PERO NO MUESTRA NADA AL INICIO)
     async function loadAllProducts() {
         const loader = document.getElementById('loading-bar');
         if(loader) loader.style.display = 'block';
