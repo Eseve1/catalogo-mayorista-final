@@ -102,7 +102,7 @@
                 
                 <div class="form-group">
                     <label>Nombre del Producto</label>
-                    <!-- INTELIGENCIA ORIGINAL: Detecta primera palabra y busca categoría -->
+                    <!-- INTELIGENCIA: Detecta primera palabra y busca categoría SIN modificarla -->
                     <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
                 </div>
                 
@@ -110,7 +110,7 @@
                     <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría</label>
-                        <!-- LISTA DE CATEGORÍAS EXISTENTES (Sin filtros) -->
+                        <!-- LISTA DE CATEGORÍAS EXISTENTES (Solo las que ya existen, sin filtros) -->
                         <input type="text" id="cat" list="categoryList" required placeholder="Elige o escribe nueva..." autocomplete="off">
                         <datalist id="categoryList"></datalist>
                     </div>
@@ -229,13 +229,13 @@
             
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
             
-            // LLENAR LISTA DE CATEGORÍAS (SIN MODIFICAR NADA)
+            // LLENAR LISTA DE CATEGORÍAS (TAL CUAL VIENEN DE LA BD)
             const datalist = document.getElementById('categoryList');
             datalist.innerHTML = '';
             
             GLOBAL_INVENTORY.forEach(p => {
                 if(p.categoria) {
-                    CATEGORIES_SET.add(p.categoria.trim()); 
+                    CATEGORIES_SET.add(p.categoria); // Guardamos la categoría exacta
                 }
             });
             
@@ -246,31 +246,34 @@
                 datalist.appendChild(opt);
             });
             
-            // NO LLAMAMOS A doSearch() AQUI, DEJAMOS LA LISTA VACIA INICIALMENTE
+            // NO mostramos lista inicial para que empiece limpio
+            // doSearch(); 
 
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
     }
 
-    // --- INTELIGENCIA ORIGINAL (PRIMERA PALABRA) ---
+    // --- FUNCIÓN DE INTELIGENCIA: COPIAR CATEGORÍA EXISTENTE ---
     window.autoDetectarCategoria = function(nombre) {
         if(!nombre || nombre.length < 3) return;
         
         const catInput = document.getElementById('cat');
-        // Si ya hay algo, NO tocar
+        // Si el usuario ya puso algo, no molestamos
         if(catInput.value.trim() !== "") return; 
 
-        // Primera palabra
+        // Tomamos la primera palabra del nombre
         const primeraPalabra = nombre.trim().split(' ')[0].toLowerCase();
         
         if(primeraPalabra.length < 3) return;
 
+        // Buscamos si existe algún producto con esa palabra
         const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(primeraPalabra));
         
         if(match && match.categoria) {
-            // Copiar la categoría EXACTA, sin cambiar nada
+            // Copiar la categoría EXACTA del producto encontrado (Ej: "Moda y equipaje")
             catInput.value = match.categoria; 
             
+            // Pequeño flash azul para avisar que se autocompletó
             catInput.style.borderColor = "#2563eb";
             catInput.style.backgroundColor = "#fffbeb";
             setTimeout(() => {
@@ -316,11 +319,11 @@
         
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
 
-        // DATOS PUROS, SIN MODIFICACIONES
+        // GUARDADO DIRECTO: Lo que escribiste es lo que se guarda
         const data = {
           descripcion: document.getElementById('name').value, 
           codigo: document.getElementById('code').value, 
-          categoria: document.getElementById('cat').value.trim(), 
+          categoria: document.getElementById('cat').value, // SIN TRIM NI CAMBIOS
           preciopormayor: Number(document.getElementById('price').value || 0), 
           precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value || 6), 
@@ -344,10 +347,12 @@
         
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        // Solo refrescar búsqueda si hay algo escrito
+        
+        // Refrescar lista solo si hay búsqueda activa
         const q = document.getElementById('search').value;
         if(q) doSearch();
         
+        // Actualizar datalist si es categoría nueva
         if(data.categoria && !CATEGORIES_SET.has(data.categoria)) {
             CATEGORIES_SET.add(data.categoria);
             const opt = document.createElement('option'); opt.value = data.categoria;
@@ -357,12 +362,12 @@
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
 
-    // BUSCADOR CORREGIDO: LIMPIA LA LISTA SI NO HAY BÚSQUEDA
+    // BUSCADOR
     window.doSearch = function() {
       const q = document.getElementById('search').value.toLowerCase().trim(); 
       LIST_ELEMENT.innerHTML = ''; 
       
-      // SI NO HAY TEXTO, NO MOSTRAR NADA (LISTA LIMPIA)
+      // SI NO HAY TEXTO, LIMPIAR
       if (!q) {
           LIST_ELEMENT.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><p>Usa el buscador para ver el inventario.</p></div>';
           return;
