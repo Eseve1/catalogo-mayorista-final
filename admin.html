@@ -42,7 +42,7 @@
         border-color: #c7d2fe;
         color: #3730a3;
         font-weight: 700;
-        cursor: not-allowed; 
+        cursor: not-allowed; /* Indica que es automático */
     }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } 
@@ -115,25 +115,24 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- 1. NOMBRE Y TIPO (LADO A LADO) -->
-                <!-- El nombre es más grande (2fr) y el tipo más pequeño (1fr) -->
-                <div class="row" style="grid-template-columns: 2fr 1fr;">
-                    <div class="form-group">
+                <!-- 1. NOMBRE (PRIMERO para activar la detección) -->
+                <div class="row">
+                    <div class="form-group" style="flex: 2;">
                         <label>Nombre del Producto</label>
                         <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="flex: 1;">
                         <label style="color:#2563eb;">Tipo (Auto)</label>
                         <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="...">
                     </div>
                 </div>
 
-                <!-- 2. CÓDIGO Y CATEGORÍA -->
+                <!-- 2. CÓDIGO Y CATEGORÍA (DESPUÉS) -->
                 <div class="row">
                     <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría (Lista Fija)</label>
-                        <!-- SELECT: Solo permite elegir las opciones existentes en la BD -->
+                        <!-- SELECT: Se selecciona automáticamente si hay coincidencia -->
                         <select id="cat" required>
                             <option value="" disabled selected>Seleccionar...</option>
                             <!-- Se llena con JS -->
@@ -281,8 +280,12 @@
     // --- DETECCIÓN INTELIGENTE ---
     window.autoDetectarCategoria = function(nombre) {
         // 1. Extraer Tipo (Primera palabra)
+        const catInput = document.getElementById('cat');
+        const tipoInput = document.getElementById('tipoDetectado');
+
         if(!nombre) {
-            document.getElementById('tipoDetectado').value = "";
+            tipoInput.value = "";
+            catInput.value = ""; // LIMPIAMOS SI BORRAS EL NOMBRE
             return;
         }
         
@@ -291,29 +294,26 @@
         // Capitalizar primera letra para visualización
         if(primera.length > 2) {
              let primeraCapital = primera.charAt(0).toUpperCase() + primera.slice(1).toLowerCase();
-             document.getElementById('tipoDetectado').value = primeraCapital;
+             tipoInput.value = primeraCapital;
              
              // 2. Auto-seleccionar Categoría en el Select
-             const catSelect = document.getElementById('cat');
-             
              // Buscamos en el historial un producto que empiece con ese tipo
              const match = GLOBAL_INVENTORY.find(p => p.descripcion && p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
              
              if(match && match.categoria) {
                  // Verificamos si la categoría del match existe en nuestra lista maestra
-                 const existe = Array.from(catSelect.options).some(opt => opt.value === match.categoria);
+                 const existe = Array.from(catInput.options).some(opt => opt.value === match.categoria);
                  
-                 // IMPORTANTE: SIEMPRE seleccionamos la categoría si la encontramos,
-                 // incluso si ya había una seleccionada antes, para corregir sobre la marcha si cambias de idea.
                  if(existe) {
-                     catSelect.value = match.categoria;
+                     // Si existe, la seleccionamos
+                     catInput.value = match.categoria;
                      // Efecto visual
-                     catSelect.style.borderColor = "#2563eb"; 
-                     setTimeout(() => catSelect.style.borderColor = "#f0f0f0", 1000);
+                     catInput.style.borderColor = "#2563eb"; 
+                     setTimeout(() => catInput.style.borderColor = "#f0f0f0", 1000);
                  }
              }
         } else {
-             document.getElementById('tipoDetectado').value = "";
+             tipoInput.value = "";
         }
     }
 
