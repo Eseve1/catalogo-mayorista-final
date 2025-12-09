@@ -33,6 +33,9 @@
 
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
+    /* BOTON DE LIMPIEZA */
+    .btn-fix { width: 100%; padding: 10px; background: #e0e7ff; color: #4338ca; border: 1px dashed #4338ca; border-radius: 10px; font-weight: 600; margin-bottom: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-fix:hover { background: #4338ca; color: white; }
 
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
     
@@ -162,6 +165,12 @@
         <!-- DERECHA: INVENTARIO -->
         <div class="card-box">
             <h2>Inventario (<span id="totalDocs">0</span>)</h2>
+            
+            <!-- BOTÓN DE LIMPIEZA MASIVA -->
+            <button class="btn-fix" onclick="normalizarCategoriasMasivas()">
+                <i class="bi bi-magic"></i> Unificar Categorías (Mayús/Minús)
+            </button>
+
             <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Descargando datos...</div>
             
             <div class="search-box">
@@ -236,7 +245,13 @@
             datalist.innerHTML = '';
             
             GLOBAL_INVENTORY.forEach(p => {
-                if(p.categoria) CATEGORIES_SET.add(p.categoria.trim());
+                // Para el autocompletado, usamos las versiones ya corregidas si las hubiera
+                if(p.categoria) {
+                    // Normalización visual para la lista
+                    let limpia = p.categoria.trim();
+                    limpia = limpia.charAt(0).toUpperCase() + limpia.slice(1).toLowerCase();
+                    CATEGORIES_SET.add(limpia);
+                }
             });
             
             Array.from(CATEGORIES_SET).sort().forEach(cat => {
@@ -249,6 +264,40 @@
 
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
+    }
+
+    // --- FUNCIÓN DE LIMPIEZA MASIVA (MAGIA) ---
+    window.normalizarCategoriasMasivas = async function() {
+        if(!confirm("Esto revisará TODOS tus productos y arreglará las categorías (Ej: 'hogar', 'HOGAR' -> 'Hogar'). ¿Continuar?")) return;
+
+        let count = 0;
+        const btn = document.querySelector('.btn-fix');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-arrow-repeat animate-spin"></i> Trabajando...';
+
+        try {
+            for (const p of GLOBAL_INVENTORY) {
+                if (!p.categoria) continue;
+
+                let catOriginal = p.categoria.trim();
+                // Regla: Primera mayúscula, resto minúscula
+                let catCorregida = catOriginal.charAt(0).toUpperCase() + catOriginal.slice(1).toLowerCase();
+
+                if (catOriginal !== catCorregida) {
+                    await db.updateDocument(DATABASE_ID, COLLECTION_ID, p.$id, { categoria: catCorregida });
+                    p.categoria = catCorregida; // Actualizar local
+                    count++;
+                }
+            }
+            alert(`¡Listo! Se corrigieron las categorías de ${count} productos.`);
+            loadAllProducts(); // Recargar para refrescar todo
+        } catch (error) {
+            alert("Error durante la limpieza: " + error.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
     }
 
     // --- FUNCIÓN DE INTELIGENCIA: DETECTAR CATEGORÍA ---
@@ -265,7 +314,11 @@
         const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(nombreLower));
         
         if(match && match.categoria) {
-            catInput.value = match.categoria;
+            // Usamos la versión normalizada
+            let catSugest = match.categoria.trim();
+            catSugest = catSugest.charAt(0).toUpperCase() + catSugest.slice(1).toLowerCase();
+            
+            catInput.value = catSugest;
             // Efecto visual para mostrar que se autocompletó
             catInput.style.borderColor = "#2563eb";
             setTimeout(() => catInput.style.borderColor = "#f0f0f0", 1000);
@@ -308,7 +361,7 @@
         
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
         
-        // Normalizar categoría (Capitalizar primera letra)
+        // Normalizar categoría (Capitalizar primera letra) SIEMPRE al guardar
         let catRaw = document.getElementById('cat').value.trim();
         let catLimpia = catRaw.charAt(0).toUpperCase() + catRaw.slice(1).toLowerCase();
 
