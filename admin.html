@@ -36,15 +36,6 @@
     }
     input:focus, select:focus { outline: none; border-color: var(--primary); background: #fff; }
     
-    /* CAMPO DE LECTURA (TIPO DETECTADO) */
-    .readonly-input {
-        background-color: #eef2ff;
-        border-color: #c7d2fe;
-        color: #3730a3;
-        font-weight: 700;
-        cursor: not-allowed;
-    }
-
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } 
 
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
@@ -129,16 +120,10 @@
                     </div>
                 </div>
 
-                <!-- 2. NOMBRE Y TIPO DETECTADO -->
+                <!-- 2. NOMBRE -->
                 <div class="form-group">
                     <label>Nombre del Producto</label>
-                    <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="actualizarTipoVisual(this.value)">
-                </div>
-
-                <!-- CAMPO VISUAL DE TIPO (AUTO-RELLENADO) -->
-                <div class="form-group">
-                    <label style="color:#2563eb;">Tipo / Subcategoría Detectada (Auto)</label>
-                    <input type="text" id="tipoVisual" class="readonly-input" readonly placeholder="Se llenará al escribir nombre...">
+                    <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch...">
                 </div>
 
                 <!-- 3. PRECIOS Y MOQ -->
@@ -279,27 +264,6 @@
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
-    }
-
-    // --- VISUALIZADOR DE TIPO (PRIMERA PALABRA) ---
-    // Solo muestra visualmente qué palabra se usará como subcategoría
-    window.actualizarTipoVisual = function(nombre) {
-        const visualInput = document.getElementById('tipoVisual');
-        if(!nombre) {
-            visualInput.value = "";
-            return;
-        }
-        // Toma la primera palabra, la limpia y la pone con mayúscula inicial
-        let primera = nombre.trim().split(' ')[0].toLowerCase();
-        // Lógica simple de singularización visual (opcional, solo visual)
-        if (primera.endsWith('es')) primera = primera.slice(0, -2);
-        else if (primera.endsWith('s')) primera = primera.slice(0, -1);
-
-        if(primera.length > 2) {
-            visualInput.value = primera.charAt(0).toUpperCase() + primera.slice(1);
-        } else {
-            visualInput.value = "";
-        }
     }
 
     // MANEJO DE FOTOS
@@ -450,9 +414,6 @@
       document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
       
-      // Update visual type helper
-      actualizarTipoVisual(d.descripcion);
-
       document.getElementById('oldImg1').value = d.imagen || ""; 
       if(d.imagen) { document.getElementById('previewImg1').src = d.imagen; document.getElementById('previewImg1').style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; }
       
@@ -482,7 +443,6 @@
       document.getElementById('previewImg1').style.display = 'none'; document.getElementById('dropZone1').querySelector('i').style.display = 'block';
       document.getElementById('previewImg2').style.display = 'none'; document.getElementById('dropZone2').querySelector('i').style.display = 'block';
       document.getElementById('formTitle').innerHTML = "Nuevo Producto"; 
-      document.getElementById('tipoDetectado').value = "";
       const btn = document.getElementById('btnSave'); btn.innerText = "Guardar Producto"; btn.style.background = "#FFB800";
       document.getElementById('btnCancel').style.display = "none";
     }
