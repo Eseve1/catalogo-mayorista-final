@@ -43,7 +43,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .btn-cat:hover{ background:#f1f3f5; color:#000; }
 .btn-cat.active{ background:var(--brand-red); color:#fff; font-weight: 700; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); }
 
-/* CHIPS DE SUBCATEGORÍA (RESTAURADO) */
+/* CHIPS DE SUBCATEGORÍA */
 #sub-chips { display: flex; gap: 8px; flex-wrap: wrap; display: none; }
 #sub-chips.visible { display: flex; }
 .chip { background: #fff; border: 1px solid #dee2e6; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
@@ -169,76 +169,14 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     font-size: 0.9rem;
 }
 .mayorista-price-row span:last-child {
-    /* CORRECCIÓN: Eliminamos el margen negativo para evitar ruido visual */
+    /* CORRECCIÓN DE RUIDO VISUAL */
     margin-top: 0; 
-    padding-top: 2px; /* Añadir un pequeño padding para separarlo del precio */
+    padding-top: 2px; 
     font-size: 0.85rem; 
     font-weight: 700; 
     color: #444; 
     line-height: 1.2;
 }
-
-/* --- MODAL DE SUCURSALES (MANTENIDO SOLO POR ESTILO, ELIMINADO EL HTML) --- */
-.modal-sucursales {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); z-index: 9999;
-    display: none; justify-content: center; align-items: center;
-}
-.modal-content {
-    background: #fff; padding: 30px; border-radius: 12px;
-    max-width: 500px; width: 90%; max-height: 90vh;
-    overflow-y: auto; position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    border-top: 5px solid var(--brand-red);
-}
-.modal-content h3 {
-    margin-top: 0;
-    font-size: 1.5rem;
-    color: #111;
-    border-bottom: 2px solid #ccc; 
-    padding-bottom: 5px;
-    margin-bottom: 20px;
-}
-.close-modal {
-    position: absolute; top: 15px; right: 15px;
-    font-size: 1.8rem; color: #555; cursor: pointer;
-    line-height: 1;
-}
-.sucursal-item {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px dotted #ccc;
-}
-.sucursal-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-.sucursal-item p {
-    margin: 4px 0;
-    font-size: 0.95rem;
-}
-.sucursal-item b {
-    font-weight: 900;
-    color: var(--brand-red); 
-}
-.sucursal-item i {
-    color: #333;
-    margin-right: 5px;
-}
-.btn-mapa {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--brand-red); 
-    color: white;
-    padding: 6px 12px; border-radius: 8px;
-    text-decoration: none; font-weight: 700;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    transition: background 0.2s;
-}
-.btn-mapa:hover {
-    background: #a50000;
-}
-
 
 /* --- ZONA FLOTANTE (Fixed Bottom) --- */
 .floating-actions {
@@ -314,11 +252,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 <div id="company-data" style="display:none;" 
     data-horario="LUNES A DOMINGO: 9:00 - 19:30" 
     data-envios="ENVÍOS A TODO BOLIVIA" 
-    data-whatsapp="59161333335"
-    data-sucursal1-dir="Aroma N.º 560 – Santa Cruz"
-    data-sucursal1-map="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9"
-    data-sucursal2-dir="Av. Cañoto esq. Tundí #924"
-    data-sucursal2-map="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA">
+    data-whatsapp="59161333335">
 </div>
 
 <div class="header-oferta">
@@ -335,9 +269,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
         <aside class="sidebar">
             <h2><i class="bi bi-grid-fill" style="color:var(--brand-red)"></i> Categorías</h2>
             <div id="menu-cat"><div style="color:#adb5bd; font-size:0.9rem; text-align:center; padding:20px;">Cargando...</div></div>
-            
-            <!-- TARJETA DE CONTACTO FIJA ELIMINADA -->
-            
         </aside>
     </div>
 
@@ -347,16 +278,12 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
         <div id="mobile-cats" class="mobile-cats"></div>
 
         <div class="toolbar-container">
-            <!-- Botón de Sucursales y Horario ELIMINADO -->
-            
             <div class="toolbar"><i class="bi bi-search" style="font-size:1.2rem; color:#adb5bd"></i><input id="searchBox" placeholder="¿Qué estás buscando hoy?"></div>
             <div id="sub-chips"></div>
         </div>
         <div id="productos" class="grid"></div>
     </section>
 </div>
-
-<!-- MODAL DE SUCURSALES ELIMINADO -->
 
 <!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
@@ -373,7 +300,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <footer class="main-footer">
     <div class="footer-col"><h4><i class="bi bi-building"></i> Importadora Ale</h4><p>Tu proveedor mayorista de confianza.</p><p>© 2025 Derechos Reservados.</p></div>
-    <div class="footer-col"><h4><i class="bi bi-geo-alt-fill"></i> Sucursales</h4><p><b>1:</b> Aroma N.º 560 – Santa Cruz <a href="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9" class="map-link">Ver mapa</a></p><p><b>2:</b> Av. Cañoto esq. Tundí #924 <a href="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA" class="map-link">Ver mapa</a></p></div>
+    <div class="footer-col"><h4><i class="bi bi-geo-alt-fill"></i> Sucursales</h4><p><b>1:</b> Aroma N.º 560 – Santa Cruz</p><p><b>2:</b> Av. Cañoto esq. Tundí #924</p></div>
     <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/59161333335" target="_blank" class="text-green-600 font-semibold">61333335</a></p></div>
 </footer>
 
@@ -402,7 +329,7 @@ const SAMPLE_PRODUCTS = [
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
-let subCatActual = ''; // Variable para subcategoría activa
+let subCatActual = ''; 
 
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
@@ -467,7 +394,7 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA EN LA TARJETA (TRES LÍNEAS SEPARADAS) ---
+    // --- LÓGICA MAYORISTA EN LA TARJETA (FINAL: Tres líneas Separadas) ---
     let mayoristaContentHtml;
     if (pMayor > 0) {
         // Formato final: PRECIO POR MAYOR (Min. 12 Unid.) | Bs. 50.00 | Cada Unidad
@@ -535,6 +462,19 @@ function renderProductos(lista){
   }).join('');
 }
 
+// --- FUNCIÓN INTELIGENTE DE AGRUPACIÓN (PRIMERA PALABRA Y SINGULARIZACIÓN) ---
+function obtenerPalabraClave(txt) {
+    if (!txt) return '';
+    let primera = txt.trim().split(' ')[0].toLowerCase();
+    
+    // Singularizar
+    if (primera.endsWith('es')) primera = primera.slice(0, -2);
+    else if (primera.endsWith('s')) primera = primera.slice(0, -1);
+    
+    // Capitalizar
+    return primera.charAt(0).toUpperCase() + primera.slice(1);
+}
+
 function renderSubChips(listaFiltrada){
     const chipsContainer = document.getElementById('sub-chips');
     const busqueda = document.getElementById('searchBox').value.trim();
@@ -545,20 +485,22 @@ function renderSubChips(listaFiltrada){
         return;
     }
     
-    // 1. Agrupar por descripción (Subcategoría)
+    // 1. Agrupar INTELIGENTEMENTE por descripción (Subcategoría Singularizada)
     let subCategoriasMap = {};
+    
     listaFiltrada.forEach(p => {
-        const key = formatearTexto(p.descripcion);
+        // Obtenemos la palabra clave (Ej: "Gorra" desde "Gorras")
+        let key = obtenerPalabraClave(p.descripcion);
         subCategoriasMap[key] = (subCategoriasMap[key] || 0) + 1;
     });
 
     // 2. Crear una lista ordenada de chips
     let chipsHtml = Object.keys(subCategoriasMap)
         .sort((a, b) => a.localeCompare(b))
-        .map(subCat => {
-            const activeClass = subCatActual === subCat ? 'active' : '';
-            // ELIMINADO EL CONTADOR DE PRODUCTOS (X) -> Ahora solo muestra el nombre
-            return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${subCat}', this)">${subCat}</div>`;
+        .map(key => {
+            const activeClass = subCatActual === key ? 'active' : '';
+            // El chip muestra el nombre limpio y singularizado (ej: "Gorra")
+            return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${key}', this)">${key}</div>`;
         }).join('');
 
     if (chipsHtml) {
@@ -570,25 +512,22 @@ function renderSubChips(listaFiltrada){
     }
 }
 
-window.filtrarSubCategoria = function(subCat, chipElement){
-    // Alternar entre activo y todos
-    const nuevoSubCat = subCatActual === subCat ? '' : subCat;
+window.filtrarSubCategoria = function(keyNormalizada, chipElement){
+    const nuevoSubCat = subCatActual === keyNormalizada ? '' : keyNormalizada;
     subCatActual = nuevoSubCat;
 
-    // Desactivar todos los chips y activar el actual
     document.querySelectorAll('#sub-chips .chip').forEach(c => c.classList.remove('active'));
     if (subCatActual) {
         chipElement.classList.add('active');
     }
 
-    // Filtrar la lista de productos por la categoría principal (que ya está en catActual)
     const listaCategoria = catActual === 'Todo' 
         ? todos 
         : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
 
-    // Aplicar filtro de subcategoría
+    // Filtramos usando la misma lógica de "primera palabra singularizada"
     const listaFinal = subCatActual 
-        ? listaCategoria.filter(p => formatearTexto(p.descripcion) === subCatActual) 
+        ? listaCategoria.filter(p => obtenerPalabraClave(p.descripcion) === subCatActual) 
         : listaCategoria;
         
     renderProductos(listaFinal);
@@ -686,7 +625,7 @@ document.getElementById('searchBox').addEventListener('keyup', (e) => {
     const listaAFiltrar = catActual === 'Todo' ? todos : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
     
     if (query.length < 3) {
-        renderProductos(listaAFiltrada);
+        renderProductos(listaAFiltrar);
         renderSubChips(listaAFiltrar);
         return;
     }
