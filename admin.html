@@ -34,9 +34,19 @@
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
+    /* BOTON DE REPARACIÓN (SOLO USAR UNA VEZ) */
+    .btn-repair { 
+        width: 100%; padding: 12px; 
+        background: #fee2e2; color: #b91c1c; 
+        border: 2px dashed #b91c1c; 
+        border-radius: 10px; font-weight: 700; 
+        margin-bottom: 20px; cursor: pointer; 
+        display: flex; align-items: center; justify-content: center; gap: 10px; 
+        transition: 0.2s; 
+    }
+    .btn-repair:hover { background: #b91c1c; color: white; }
+
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    
-    /* FOTOS GIGANTES */
     .photo-area { 
         border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 250px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; 
     }
@@ -102,7 +112,7 @@
                 
                 <div class="form-group">
                     <label>Nombre del Producto</label>
-                    <!-- INTELIGENCIA ORIGINAL: Detecta primera palabra y busca categoría -->
+                    <!-- INTELIGENCIA ORIGINAL: Solo copia, no modifica -->
                     <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
                 </div>
                 
@@ -110,7 +120,7 @@
                     <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría</label>
-                        <!-- LISTA DE CATEGORÍAS EXISTENTES (Sin filtros raros) -->
+                        <!-- LISTA DE CATEGORÍAS EXISTENTES -->
                         <input type="text" id="cat" list="categoryList" required placeholder="Elige o escribe nueva..." autocomplete="off">
                         <datalist id="categoryList"></datalist>
                     </div>
@@ -160,6 +170,12 @@
         <!-- LISTA DE INVENTARIO -->
         <div class="card-box">
             <h2>Inventario (<span id="totalDocs">0</span>)</h2>
+            
+            <!-- BOTÓN DE RESTAURACIÓN (USAR UNA VEZ) -->
+            <button class="btn-repair" onclick="restaurarNombresOriginales()">
+                <i class="bi bi-bandaid-fill"></i> 🚑 Restaurar Nombres Originales (Moda y equipaje, etc.)
+            </button>
+
             <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando datos...</div>
             
             <div class="search-box">
@@ -229,17 +245,17 @@
             
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
             
-            // LLENAR LISTA DE CATEGORÍAS (SIN MODIFICAR NADA)
+            // LLENAR LISTA DE CATEGORÍAS TAL CUAL ESTÁN
             const datalist = document.getElementById('categoryList');
             datalist.innerHTML = '';
             
             GLOBAL_INVENTORY.forEach(p => {
                 if(p.categoria) {
-                    CATEGORIES_SET.add(p.categoria.trim()); // Se guarda tal cual
+                    CATEGORIES_SET.add(p.categoria.trim()); 
                 }
             });
             
-            // Ordenar alfabéticamente para facilitar la búsqueda visual
+            // Ordenar alfabéticamente
             Array.from(CATEGORIES_SET).sort().forEach(cat => {
                 const opt = document.createElement('option');
                 opt.value = cat;
@@ -253,34 +269,81 @@
     }
 
     // --- FUNCIÓN DE INTELIGENCIA ORIGINAL ---
-    // Detecta la primera palabra del nombre y busca si ya tienes algo con esa palabra.
     window.autoDetectarCategoria = function(nombre) {
         if(!nombre || nombre.length < 3) return;
         
-        // 1. Tomamos la PRIMERA palabra del nombre que estás escribiendo (Ej: "Reloj")
-        const primeraPalabra = nombre.trim().split(' ')[0].toLowerCase();
-        
-        // Si es muy corta (ej: "A"), no hacemos nada aún
-        if(primeraPalabra.length < 3) return;
-
         const catInput = document.getElementById('cat');
-        // Solo rellenamos si el campo categoría está vacío (para no borrar lo que tú escribas)
+        // Si ya hay algo, NO tocar
         if(catInput.value.trim() !== "") return; 
 
-        // 2. Buscamos en tu inventario algún producto cuya descripción contenga esa primera palabra
+        // Primera palabra
+        const primeraPalabra = nombre.trim().split(' ')[0].toLowerCase();
+        
+        if(primeraPalabra.length < 3) return;
+
+        // Buscar coincidencia en productos existentes
         const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(primeraPalabra));
         
         if(match && match.categoria) {
-            // 3. Si encontramos uno, copiamos su categoría EXACTA
+            // Copiar la categoría EXACTA, sin cambiar nada
             catInput.value = match.categoria; 
             
-            // Efecto visual para que sepas que se autocompletó
-            catInput.style.borderColor = "#FFB800";
+            catInput.style.borderColor = "#2563eb";
             catInput.style.backgroundColor = "#fffbeb";
             setTimeout(() => {
                 catInput.style.borderColor = "#f0f0f0";
                 catInput.style.backgroundColor = "#fafafa";
             }, 1000);
+        }
+    }
+
+    // --- FUNCIÓN DE RESTAURACIÓN (USAR UNA VEZ PARA ARREGLAR LA BASE DE DATOS) ---
+    window.restaurarNombresOriginales = async function() {
+        if(!confirm("⚠️ Esto buscará las categorías cortadas (ej: 'Moda', 'Hogar') y las restaurará a sus nombres completos ('Moda y equipaje', 'Hogar y cocina'). ¿Ejecutar reparación?")) return;
+
+        const CORRECCIONES = {
+            "belleza": "Belleza y salud",
+            "herramienta": "Herramientas",
+            "herramientas": "Herramientas", // Asegurar plural
+            "hogar": "Hogar y cocina",
+            "moda": "Moda y equipaje",
+            "oficina": "Oficina y escolar",
+            "tecnologia": "Tecnología",
+            "tecnología": "Tecnología"
+        };
+
+        const btn = document.querySelector('.btn-repair');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-hourglass-split animate-spin"></i> Reparando...';
+
+        let count = 0;
+
+        try {
+            for (const p of GLOBAL_INVENTORY) {
+                if (!p.categoria) continue;
+                
+                // Buscar si la categoría actual (en minúsculas) coincide con alguna clave rota
+                let catActualLower = p.categoria.toLowerCase().trim();
+                
+                if (CORRECCIONES[catActualLower]) {
+                    let catCorrecta = CORRECCIONES[catActualLower];
+                    
+                    // Solo actualizamos si es diferente (para no gastar recursos)
+                    if (p.categoria !== catCorrecta) {
+                        await db.updateDocument(DATABASE_ID, COLLECTION_ID, p.$id, { categoria: catCorrecta });
+                        p.categoria = catCorrecta; // Actualizar en memoria
+                        count++;
+                    }
+                }
+            }
+            alert(`✅ Reparación completada. Se corrigieron ${count} productos.`);
+            loadAllProducts();
+        } catch (error) {
+            alert("Error: " + error.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
         }
     }
 
@@ -309,7 +372,7 @@
         } return null;
     }
     
-    // GUARDAR PRODUCTO
+    // GUARDAR PRODUCTO (TAL CUAL)
     document.getElementById('productForm').addEventListener('submit', async (e) => {
       e.preventDefault(); const id = document.getElementById('editId').value; const btn = document.getElementById('btnSave'); const msg = document.getElementById('msg');
       btn.disabled = true; btn.innerText = "Guardando..."; msg.style.display = 'none';
@@ -319,12 +382,12 @@
         const newUrl2 = await uploadPhoto(document.getElementById('file2')); if(newUrl2) finalUrl2 = newUrl2;
         
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
-        
-        // GUARDAMOS EXACTAMENTE LO QUE ESCRIBES
+
+        // DATOS PUROS, SIN MODIFICACIONES
         const data = {
           descripcion: document.getElementById('name').value, 
           codigo: document.getElementById('code').value, 
-          categoria: document.getElementById('cat').value.trim(), // Solo quitamos espacios extra
+          categoria: document.getElementById('cat').value.trim(), 
           preciopormayor: Number(document.getElementById('price').value || 0), 
           precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value || 6), 
@@ -350,7 +413,6 @@
         resetForm(); 
         doSearch();
         
-        // Agregar la nueva categoría a la lista si no existía (para uso futuro)
         if(data.categoria && !CATEGORIES_SET.has(data.categoria)) {
             CATEGORIES_SET.add(data.categoria);
             const opt = document.createElement('option'); opt.value = data.categoria;
@@ -384,8 +446,10 @@
           const claseExtra = enStock ? "" : " agotado";
           
           const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
+          const imgSrc = d.imagen || 'https://via.placeholder.com/50';
+          
           div.innerHTML = `
-            <img src="${d.imagen || ''}" class="prod-img" onclick='editItem(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
+            <img src="${imgSrc}" class="prod-img" onclick='editItem(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
             <div class="prod-info">
                 <div class="prod-title">${d.descripcion}</div>
                 <div class="prod-cat">${d.categoria || '-'}</div>
