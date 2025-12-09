@@ -115,24 +115,25 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- 1. NOMBRE (PRIMERO para activar la detección) -->
-                <div class="form-group">
-                    <label>Nombre del Producto</label>
-                    <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
+                <!-- 1. NOMBRE Y TIPO (LADO A LADO) -->
+                <!-- El nombre es más grande (2fr) y el tipo más pequeño (1fr) -->
+                <div class="row" style="grid-template-columns: 2fr 1fr;">
+                    <div class="form-group">
+                        <label>Nombre del Producto</label>
+                        <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label style="color:#2563eb;">Tipo (Auto)</label>
+                        <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="...">
+                    </div>
                 </div>
 
-                <!-- 2. TIPO DETECTADO (Visual) -->
-                <div class="form-group">
-                    <label style="color:#2563eb;">Tipo Detectado (Auto)</label>
-                    <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="...">
-                </div>
-
-                <!-- 3. CÓDIGO Y CATEGORÍA (DESPUÉS) -->
+                <!-- 2. CÓDIGO Y CATEGORÍA -->
                 <div class="row">
                     <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría (Lista Fija)</label>
-                        <!-- SELECT: Se selecciona automáticamente si hay coincidencia -->
+                        <!-- SELECT: Solo permite elegir las opciones existentes en la BD -->
                         <select id="cat" required>
                             <option value="" disabled selected>Seleccionar...</option>
                             <!-- Se llena con JS -->
@@ -140,7 +141,7 @@
                     </div>
                 </div>
 
-                <!-- 4. PRECIOS -->
+                <!-- 3. PRECIOS -->
                 <div class="row">
                     <div class="form-group">
                         <label>P. Unidad</label>
@@ -152,7 +153,7 @@
                     </div>
                 </div>
 
-                <!-- 5. MOQ -->
+                <!-- 4. MOQ -->
                 <div class="form-group">
                     <label>MOQ (Mínimo Mayorista)</label>
                     <input type="number" id="moq" value="6">
@@ -190,7 +191,7 @@
             <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando...</div>
             
             <div class="search-box">
-                <input type="text" id="search" placeholder="Buscar por nombre, código o categoría...">
+                <input type="text" id="search" placeholder="Buscar por código o nombre...">
                 <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
             </div>
             
@@ -302,8 +303,9 @@
                  // Verificamos si la categoría del match existe en nuestra lista maestra
                  const existe = Array.from(catSelect.options).some(opt => opt.value === match.categoria);
                  
+                 // IMPORTANTE: SIEMPRE seleccionamos la categoría si la encontramos,
+                 // incluso si ya había una seleccionada antes, para corregir sobre la marcha si cambias de idea.
                  if(existe) {
-                     // Si existe, la seleccionamos
                      catSelect.value = match.categoria;
                      // Efecto visual
                      catSelect.style.borderColor = "#2563eb"; 
