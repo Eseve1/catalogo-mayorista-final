@@ -35,6 +35,8 @@
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
 
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    
+    /* FOTOS GIGANTES */
     .photo-area { 
         border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 250px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; 
     }
@@ -100,7 +102,7 @@
                 
                 <div class="form-group">
                     <label>Nombre del Producto</label>
-                    <!-- INTELIGENCIA: Detecta primera palabra y busca categoría -->
+                    <!-- INTELIGENCIA ORIGINAL: Detecta primera palabra y busca categoría -->
                     <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
                 </div>
                 
@@ -109,7 +111,7 @@
                     <div class="form-group">
                         <label>Categoría</label>
                         <!-- LISTA DE CATEGORÍAS EXISTENTES (Sin filtros raros) -->
-                        <input type="text" id="cat" list="categoryList" required placeholder="Selecciona o escribe..." autocomplete="off">
+                        <input type="text" id="cat" list="categoryList" required placeholder="Elige o escribe nueva..." autocomplete="off">
                         <datalist id="categoryList"></datalist>
                     </div>
                 </div>
@@ -250,10 +252,10 @@
         if(loader) loader.style.display = 'none';
     }
 
-    // --- FUNCIÓN INTELIGENTE: DETECTAR CATEGORÍA POR PRIMERA PALABRA ---
+    // --- FUNCIÓN DE INTELIGENCIA ORIGINAL ---
     // Detecta la primera palabra del nombre y busca si ya tienes algo con esa palabra.
     window.autoDetectarCategoria = function(nombre) {
-        if(!nombre) return;
+        if(!nombre || nombre.length < 3) return;
         
         // 1. Tomamos la PRIMERA palabra del nombre que estás escribiendo (Ej: "Reloj")
         const primeraPalabra = nombre.trim().split(' ')[0].toLowerCase();
