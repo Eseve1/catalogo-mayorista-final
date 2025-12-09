@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Fotos Gigantes</title>
+  <title>Admin - Ale Importadora</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -18,7 +18,7 @@
     #loginScreen button { margin-top: 15px; padding: 12px 30px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     #appContent { display: none; }
 
-    /* LAYOUT 2 COLUMNAS */
+    /* LAYOUT */
     .main-layout { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 1024px) { .main-layout { grid-template-columns: 1fr 1fr; align-items: start; } }
 
@@ -33,28 +33,10 @@
 
     .btn-main { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
     .btn-cancel { width: 100%; padding: 10px; background: #e4e4e7; border: none; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer; display: none; }
-    
-    /* BOTON DE LIMPIEZA */
-    .btn-fix { width: 100%; padding: 12px; background: #eef2ff; color: #4f46e5; border: 1px dashed #4f46e5; border-radius: 10px; font-weight: 600; margin-bottom: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
-    .btn-fix:hover { background: #4338ca; color: white; }
 
     .photos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    
-    /* --- FOTOS EN EL FORMULARIO (GIGANTES) --- */
     .photo-area { 
-        border: 2px dashed #ddd; 
-        border-radius: 12px; 
-        padding: 5px; 
-        text-align: center; 
-        position: relative; 
-        background: #fafafa; 
-        height: 250px; 
-        cursor: pointer; 
-        transition: all 0.2s; 
-        display: flex; 
-        flex-direction: column; 
-        justify-content: center; 
-        align-items: center; 
+        border: 2px dashed #ddd; border-radius: 12px; padding: 5px; text-align: center; position: relative; background: #fafafa; height: 250px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; 
     }
     .photo-area:hover { border-color: var(--primary); background: #fffbeb; }
     .photo-area img { max-width: 100%; max-height: 100%; border-radius: 8px; display: none; object-fit: contain; }
@@ -69,11 +51,7 @@
     .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     
-    /* IMAGEN DE LISTA */
-    .prod-img { 
-        width: 80px; height: 80px; 
-        border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; 
-    }
+    .prod-img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; }
     .prod-img:hover { border-color: var(--primary); transform: scale(1.05); }
 
     .prod-info { flex-grow: 1; overflow: hidden; }
@@ -111,7 +89,7 @@
   <div id="appContent">
     <div class="main-layout">
         
-        <!-- IZQUIERDA: FORMULARIO -->
+        <!-- FORMULARIO DE EDICIÓN -->
         <div class="card-box">
             <h2 id="formTitle">Nuevo Producto <span style="color:#2563eb; font-size:0.5em;">●</span></h2>
             <form id="productForm">
@@ -121,23 +99,36 @@
                 <input type="hidden" id="currentStockStatus" value="true">
                 
                 <div class="form-group">
-                    <label>Nombre (Detector Automático)</label>
+                    <label>Nombre del Producto</label>
+                    <!-- INTELIGENCIA: Detecta primera palabra y busca categoría -->
                     <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
                 </div>
+                
                 <div class="row">
                     <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría</label>
-                        <!-- LISTA INTELIGENTE DE CATEGORÍAS -->
-                        <input type="text" id="cat" list="categoryList" required placeholder="Selecciona o escribe..." onblur="capitalizarInput(this)">
+                        <!-- LISTA DE CATEGORÍAS EXISTENTES (Sin filtros raros) -->
+                        <input type="text" id="cat" list="categoryList" required placeholder="Selecciona o escribe..." autocomplete="off">
                         <datalist id="categoryList"></datalist>
                     </div>
                 </div>
+
                 <div class="row">
-                    <div class="form-group"><label>P. Unidad (Opcional)</label><input type="number" id="priceUnit" step="0.01"></div>
-                    <div class="form-group"><label>P. Mayor (Opcional)</label><input type="number" id="price" step="0.01"></div>
+                    <div class="form-group">
+                        <label>P. Unidad (Opcional)</label>
+                        <input type="number" id="priceUnit" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>P. Mayor (Opcional)</label>
+                        <input type="number" id="price" step="0.01">
+                    </div>
                 </div>
-                <div class="form-group"><label>MOQ (Mínimo Mayorista)</label><input type="number" id="moq" value="6"></div>
+
+                <div class="form-group">
+                    <label>MOQ (Mínimo Mayorista)</label>
+                    <input type="number" id="moq" value="6">
+                </div>
 
                 <div class="photos-grid">
                     <div>
@@ -157,32 +148,27 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn-main" id="btnSave">Guardar</button>
+                
+                <button type="submit" class="btn-main" id="btnSave">Guardar Producto</button>
                 <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Cancelar</button>
                 <div id="msg"></div>
             </form>
         </div>
 
-        <!-- DERECHA: INVENTARIO -->
+        <!-- LISTA DE INVENTARIO -->
         <div class="card-box">
             <h2>Inventario (<span id="totalDocs">0</span>)</h2>
-            
-            <!-- BOTÓN DE LIMPIEZA MASIVA (SEGURO) -->
-            <button class="btn-fix" onclick="normalizarCategoriasMasivas()">
-                <i class="bi bi-stars"></i> Corregir Mayúsculas/Minúsculas
-            </button>
-
-            <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Descargando datos...</div>
+            <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando datos...</div>
             
             <div class="search-box">
-                <input type="text" id="search" placeholder="Buscar producto...">
+                <input type="text" id="search" placeholder="Buscar por nombre, código o categoría...">
                 <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
             </div>
             
             <div id="list">
                 <div class="empty-state">
                     <i class="bi bi-search"></i>
-                    <p>Cargando productos...</p>
+                    <p>Cargando...</p>
                 </div>
             </div>
         </div>
@@ -207,7 +193,7 @@
     let GLOBAL_INVENTORY = []; 
     let CATEGORIES_SET = new Set();
 
-    // --- ARRANQUE Y LOGIN ---
+    // LOGIN
     function checkPass() { 
         if(document.getElementById('passInput').value === PASS) { 
             document.getElementById('loginScreen').style.display = 'none'; 
@@ -218,7 +204,7 @@
         } 
     }
 
-    // --- CARGA INTELIGENTE DE PRODUCTOS ---
+    // CARGAR PRODUCTOS
     async function loadAllProducts() {
         const loader = document.getElementById('loading-bar');
         if(loader) loader.style.display = 'block';
@@ -241,18 +227,17 @@
             
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
             
-            // LLENAR LISTA INTELIGENTE DE CATEGORÍAS (SIN CORTAR PALABRAS)
+            // LLENAR LISTA DE CATEGORÍAS (SIN MODIFICAR NADA)
             const datalist = document.getElementById('categoryList');
             datalist.innerHTML = '';
             
             GLOBAL_INVENTORY.forEach(p => {
                 if(p.categoria) {
-                    // Normalización segura: Solo Trim y Title Case completo
-                    let catLimpia = toTitleCase(p.categoria.trim());
-                    CATEGORIES_SET.add(catLimpia);
+                    CATEGORIES_SET.add(p.categoria.trim()); // Se guarda tal cual
                 }
             });
             
+            // Ordenar alfabéticamente para facilitar la búsqueda visual
             Array.from(CATEGORIES_SET).sort().forEach(cat => {
                 const opt = document.createElement('option');
                 opt.value = cat;
@@ -265,78 +250,29 @@
         if(loader) loader.style.display = 'none';
     }
 
-    // --- UTILS: Capitalizar (Title Case) ---
-    function toTitleCase(str) {
-        if(!str) return '';
-        // Convierte "hogar y cocina" en "Hogar Y Cocina" respetando espacios
-        return str.toLowerCase().split(' ').map(word => {
-            return word.charAt(0).toUpperCase() + word.slice(1);
-        }).join(' ');
-    }
-    
-    // Al salir del input, ponerlo bonito
-    window.capitalizarInput = function(input) {
-        input.value = toTitleCase(input.value);
-    }
-
-    // --- FUNCIÓN DE LIMPIEZA MASIVA (SOLO FORMATO) ---
-    window.normalizarCategoriasMasivas = async function() {
-        if(!confirm("Esto unificará el formato (Ej: 'hogar' -> 'Hogar', 'HOGAR' -> 'Hogar'). NO cambiará palabras. ¿Deseas proceder?")) return;
-
-        let count = 0;
-        const btn = document.querySelector('.btn-fix');
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-arrow-repeat animate-spin"></i> Unificando...';
-
-        try {
-            for (const p of GLOBAL_INVENTORY) {
-                if (!p.categoria) continue;
-
-                let catOriginal = p.categoria.trim();
-                let catFinal = toTitleCase(catOriginal);
-
-                if (catOriginal !== catFinal) {
-                    await db.updateDocument(DATABASE_ID, COLLECTION_ID, p.$id, { categoria: catFinal });
-                    p.categoria = catFinal; 
-                    count++;
-                }
-            }
-            alert(`¡Éxito! Se corrigió el formato de ${count} productos.`);
-            loadAllProducts(); 
-        } catch (error) {
-            alert("Error durante la limpieza: " + error.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }
-    }
-
-    // --- FUNCIÓN DE INTELIGENCIA: DETECTAR CATEGORÍA ---
+    // --- FUNCIÓN INTELIGENTE: DETECTAR CATEGORÍA POR PRIMERA PALABRA ---
+    // Detecta la primera palabra del nombre y busca si ya tienes algo con esa palabra.
     window.autoDetectarCategoria = function(nombre) {
-        if(!nombre || nombre.length < 3) return;
+        if(!nombre) return;
         
+        // 1. Tomamos la PRIMERA palabra del nombre que estás escribiendo (Ej: "Reloj")
+        const primeraPalabra = nombre.trim().split(' ')[0].toLowerCase();
+        
+        // Si es muy corta (ej: "A"), no hacemos nada aún
+        if(primeraPalabra.length < 3) return;
+
         const catInput = document.getElementById('cat');
+        // Solo rellenamos si el campo categoría está vacío (para no borrar lo que tú escribas)
         if(catInput.value.trim() !== "") return; 
 
-        const palabras = nombre.toLowerCase().split(" ");
-        let mejorMatch = null;
-
-        for (let palabra of palabras) {
-            if(palabra.length < 3) continue; 
-            
-            // Busca coincidencia en inventario
-            const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(palabra));
-            if(match && match.categoria) {
-                mejorMatch = match.categoria;
-                break; 
-            }
-        }
+        // 2. Buscamos en tu inventario algún producto cuya descripción contenga esa primera palabra
+        const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(primeraPalabra));
         
-        if(mejorMatch) {
-            catInput.value = mejorMatch; // Usar la categoría TAL CUAL se encontró
+        if(match && match.categoria) {
+            // 3. Si encontramos uno, copiamos su categoría EXACTA
+            catInput.value = match.categoria; 
             
-            // Efecto visual
+            // Efecto visual para que sepas que se autocompletó
             catInput.style.borderColor = "#FFB800";
             catInput.style.backgroundColor = "#fffbeb";
             setTimeout(() => {
@@ -346,7 +282,7 @@
         }
     }
 
-    // --- MANEJO DE IMÁGENES ---
+    // MANEJO DE FOTOS
     function setupDragDrop(zoneId, inputId, previewNum) {
         const zone = document.getElementById(zoneId); const input = document.getElementById(inputId);
         if(!zone || !input) return;
@@ -371,10 +307,10 @@
         } return null;
     }
     
-    // --- GUARDAR PRODUCTO ---
+    // GUARDAR PRODUCTO
     document.getElementById('productForm').addEventListener('submit', async (e) => {
       e.preventDefault(); const id = document.getElementById('editId').value; const btn = document.getElementById('btnSave'); const msg = document.getElementById('msg');
-      btn.disabled = true; btn.innerText = "Procesando..."; msg.style.display = 'none';
+      btn.disabled = true; btn.innerText = "Guardando..."; msg.style.display = 'none';
       try {
         let finalUrl1 = document.getElementById('oldImg1').value; let finalUrl2 = document.getElementById('oldImg2').value;
         const newUrl1 = await uploadPhoto(document.getElementById('file1')); if(newUrl1) finalUrl1 = newUrl1;
@@ -382,15 +318,12 @@
         
         if(!finalUrl1) throw new Error("La foto principal es obligatoria");
         
-        // Formato seguro al guardar
-        let catRaw = document.getElementById('cat').value.trim();
-        let catFinal = toTitleCase(catRaw);
-
+        // GUARDAMOS EXACTAMENTE LO QUE ESCRIBES
         const data = {
           descripcion: document.getElementById('name').value, 
           codigo: document.getElementById('code').value, 
-          categoria: catFinal,
-          preciopormayor: Number(document.getElementById('price').value), 
+          categoria: document.getElementById('cat').value.trim(), // Solo quitamos espacios extra
+          preciopormayor: Number(document.getElementById('price').value || 0), 
           precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value || 6), 
           imagen: finalUrl1, 
@@ -413,33 +346,26 @@
         
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        doSearch(); 
+        doSearch();
         
-        if(!CATEGORIES_SET.has(catFinal)) {
-            const opt = document.createElement('option'); opt.value = catFinal;
+        // Agregar la nueva categoría a la lista si no existía (para uso futuro)
+        if(data.categoria && !CATEGORIES_SET.has(data.categoria)) {
+            CATEGORIES_SET.add(data.categoria);
+            const opt = document.createElement('option'); opt.value = data.categoria;
             document.getElementById('categoryList').appendChild(opt);
-            CATEGORIES_SET.add(catFinal);
         }
 
-      } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar"; }
+      } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
 
-    // --- BÚSQUEDA Y RENDERIZADO ---
+    // BUSCADOR
     window.doSearch = function() {
       const q = document.getElementById('search').value.toLowerCase().trim(); 
       LIST_ELEMENT.innerHTML = ''; 
       
       let hits = [];
-      const isErrorMode = (q === "error" || q === "sin precio");
-      const isAgotadoMode = (q === "agotado" || q === "off"); 
-
-      if (isErrorMode) {
-          hits = GLOBAL_INVENTORY.filter(d => !d.preciopormayor || d.preciopormayor === 0);
-      } else if (isAgotadoMode) {
-          hits = GLOBAL_INVENTORY.filter(d => d.disponible === false);
-      } else if (!q) {
-          hits = GLOBAL_INVENTORY.slice(0, 50); 
-      } else { 
+      if (!q) hits = GLOBAL_INVENTORY.slice(0, 50);
+      else { 
           hits = GLOBAL_INVENTORY.filter(d => {
               const desc = (d.descripcion || '').toLowerCase();
               const cod = (d.codigo || '').toLowerCase();
@@ -448,30 +374,24 @@
           });
       }
 
-      if(hits.length === 0) { LIST_ELEMENT.innerHTML = '<p class="empty-state"><i class="bi bi-x-circle-fill" style="color:#999"></i><p style="color:#999">Sin resultados.</p></p>'; return; }
+      if(hits.length === 0) { LIST_ELEMENT.innerHTML = '<p class="empty-state">Sin resultados.</p>'; return; }
 
       hits.forEach(d => {
           const enStock = (d.disponible === undefined) ? true : d.disponible;
-          const tieneError = !d.preciopormayor || d.preciopormayor === 0;
-          let claseExtra = ""; let alertaHtml = "";
-          
-          if(tieneError) { claseExtra = " sin-precio"; alertaHtml = '<span class="alerta-precio">⚠️ SIN PRECIO</span>'; } 
-          else if(!enStock) { claseExtra = " agotado"; alertaHtml = '<span class="alerta-precio" style="color:#666">⛔ AGOTADO</span>'; }
+          const precioMostrar = d.preciopormayor ? Number(d.preciopormayor).toFixed(2) : "0.00";
+          const claseExtra = enStock ? "" : " agotado";
           
           const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
-          const precioMostrar = tieneError ? "0.00" : Number(d.preciopormayor).toFixed(2);
-          const imgSrc = d.imagen || 'https://via.placeholder.com/50';
-          
           div.innerHTML = `
-            <img src="${imgSrc}" class="prod-img" onclick='editItem(${JSON.stringify(d).replace(/'/g, "&#39;")})' title="Clic para editar">
+            <img src="${d.imagen || ''}" class="prod-img" onclick='editItem(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
             <div class="prod-info">
                 <div class="prod-title">${d.descripcion}</div>
-                <div class="prod-cat">${d.categoria || 'Sin categoría'}</div>
-                <div class="prod-price">Bs. ${precioMostrar}</div>${alertaHtml}
+                <div class="prod-cat">${d.categoria || '-'}</div>
+                <div class="prod-price">Bs. ${precioMostrar}</div>
             </div>
             <div class="actions">
-                <button class="btn-icon btn-power ${enStock ? '' : 'off'}" type="button" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
-                <button class="btn-icon btn-del" type="button" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
+                <button class="btn-icon btn-power ${enStock ? '' : 'off'}" onclick="toggleStock('${d.$id}', ${enStock}, this)"><i class="bi bi-power"></i></button>
+                <button class="btn-icon btn-del" onclick="delItem('${d.$id}')"><i class="bi bi-trash-fill"></i></button>
             </div>`;
           LIST_ELEMENT.appendChild(div);
       });
@@ -479,17 +399,14 @@
     
     document.getElementById('search').addEventListener('input', window.doSearch);
     
-    // --- ACCIONES ---
     window.toggleStock = async function(docId, currentState, btn) {
-      const newState = !currentState; const card = document.getElementById('card-' + docId); 
       try { 
+          const newState = !currentState;
           await db.updateDocument(DATABASE_ID, COLLECTION_ID, docId, { disponible: newState }); 
           const p = GLOBAL_INVENTORY.find(x => x.$id === docId); if(p) p.disponible = newState;
           btn.className = `btn-icon btn-power ${newState ? '' : 'off'}`; 
           btn.setAttribute('onclick', `toggleStock('${docId}', ${newState}, this)`); 
-          
-          if(newState) { card.classList.remove('agotado'); if(card.querySelector('.alerta-precio')) card.querySelector('.alerta-precio').remove(); }
-          else { card.classList.add('agotado'); }
+          document.getElementById('card-' + docId).classList.toggle('agotado', !newState);
       } catch (err) { alert(err.message); }
     }
 
@@ -498,34 +415,25 @@
       document.getElementById('name').value = d.descripcion; 
       document.getElementById('code').value = d.codigo || ''; 
       document.getElementById('cat').value = d.categoria;
-      document.getElementById('price').value = (d.preciopormayor && d.preciopormayor > 0) ? d.preciopormayor : ''; 
+      document.getElementById('price').value = d.preciopormayor || ''; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; 
       document.getElementById('moq').value = d.moq || 6;
       document.getElementById('currentStockStatus').value = (d.disponible === undefined) ? "true" : d.disponible;
       
       document.getElementById('oldImg1').value = d.imagen || ""; 
-      if(d.imagen) { 
-          const img1 = document.getElementById('previewImg1'); img1.src = d.imagen; img1.style.display = 'block'; 
-          document.getElementById('dropZone1').querySelector('i').style.display = 'none'; 
-      }
+      if(d.imagen) { document.getElementById('previewImg1').src = d.imagen; document.getElementById('previewImg1').style.display = 'block'; document.getElementById('dropZone1').querySelector('i').style.display = 'none'; }
       
       document.getElementById('oldImg2').value = d.imagen2 || ""; 
-      const img2 = document.getElementById('previewImg2'); const icon2 = document.getElementById('dropZone2').querySelector('i');
-      if(d.imagen2) { 
-          img2.src = d.imagen2; img2.style.display = 'block'; icon2.style.display = 'none'; 
-      } else { 
-          img2.style.display = 'none'; img2.src = ""; icon2.style.display = 'block'; 
-      }
+      if(d.imagen2) { document.getElementById('previewImg2').src = d.imagen2; document.getElementById('previewImg2').style.display = 'block'; document.getElementById('dropZone2').querySelector('i').style.display = 'none'; }
       
-      document.getElementById('formTitle').innerHTML = "Editando... <span style='color:orange'>●</span>"; 
-      const btn = document.getElementById('btnSave'); if(btn) { btn.innerText = "Actualizar"; btn.style.background = "#2563eb"; }
-      const cancel = document.getElementById('btnCancel'); if(cancel) cancel.style.display = "block";
-      
+      document.getElementById('formTitle').innerHTML = "Editando..."; 
+      const btn = document.getElementById('btnSave'); btn.innerText = "Actualizar"; btn.style.background = "#2563eb";
+      document.getElementById('btnCancel').style.display = "block";
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     window.delItem = async function(id) { 
-        if(!confirm("¿Borrar permanentemente?")) return; 
+        if(!confirm("¿Borrar?")) return; 
         try { 
             await db.deleteDocument(DATABASE_ID, COLLECTION_ID, id); 
             document.getElementById('card-'+id).remove(); 
@@ -535,17 +443,14 @@
     }
 
     window.resetForm = function() {
-      document.getElementById('productForm').reset(); document.getElementById('editId').value = ""; 
+      document.getElementById('productForm').reset(); 
+      document.getElementById('editId').value = ""; 
       document.getElementById('oldImg1').value = ""; document.getElementById('oldImg2').value = ""; 
-      document.getElementById('file1').value = ""; document.getElementById('file2').value = ""; 
-      ['1','2'].forEach(n => { 
-          document.getElementById('previewImg'+n).style.display = 'none'; 
-          document.getElementById('previewImg'+n).src = ""; 
-          document.getElementById('dropZone'+n).querySelector('i').style.display = 'block'; 
-      });
-      document.getElementById('formTitle').innerHTML = "Nuevo Producto <span style='color:green; font-size:0.5em;'>●</span>"; 
-      const btn = document.getElementById('btnSave'); if(btn) { btn.innerText = "Guardar"; btn.style.background = "#FFB800"; }
-      const cancel = document.getElementById('btnCancel'); if(cancel) cancel.style.display = "none";
+      document.getElementById('previewImg1').style.display = 'none'; document.getElementById('dropZone1').querySelector('i').style.display = 'block';
+      document.getElementById('previewImg2').style.display = 'none'; document.getElementById('dropZone2').querySelector('i').style.display = 'block';
+      document.getElementById('formTitle').innerHTML = "Nuevo Producto"; 
+      const btn = document.getElementById('btnSave'); btn.innerText = "Guardar Producto"; btn.style.background = "#FFB800";
+      document.getElementById('btnCancel').style.display = "none";
     }
   </script>
 </body>
