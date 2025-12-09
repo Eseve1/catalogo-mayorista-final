@@ -418,24 +418,29 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA EN LA TARJETA (DISPOSICIÓN FINAL EN DOS LÍNEAS) ---
+    // --- LÓGICA MAYORISTA EN LA TARJETA (FINAL: Tres líneas Separadas) ---
     let mayoristaContentHtml;
     if (pMayor > 0) {
-        // Formato final: POR MAYOR (Min. 12 Unid.) | Bs. 50.00 | Cada Unidad
+        // Formato final deseado: 
+        // PRECIO POR MAYOR (Min. 12 Unid.)
+        // Bs. 50.00
+        // Cada Unidad
         mayoristaContentHtml = `
             <div class="mayorista-label">
-                <i class="bi bi-box-seam-fill"></i> POR MAYOR (Min. ${minOrderQuantity} Unid.)
+                <i class="bi bi-box-seam-fill"></i> PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.)
             </div>
-            <div class="mayorista-price-row">
-                <span style="color:var(--brand-red); font-weight:900; font-size: 1.1rem;">Bs. ${pMayor.toFixed(2)}</span>
-                <span style="font-size: 0.9rem; font-weight: 700; color: #444; margin-top: 2px;">Cada Unidad</span>
+            <div class="mayorista-price-row" style="margin-bottom: 2px;">
+                <span style="color:var(--brand-red); font-weight:900; font-size: 1.2rem; line-height: 1.2;">Bs. ${pMayor.toFixed(2)}</span>
+            </div>
+            <div class="mayorista-price-row" style="margin-top: -6px;">
+                <span style="font-size: 0.85rem; font-weight: 700; color: #444;">Cada Unidad</span>
             </div>
         `;
     } else {
         // Si no hay precio por mayor, pide cotizar
         mayoristaContentHtml = `
             <div class="mayorista-label">
-                <i class="bi bi-box-seam-fill"></i> POR MAYOR (Min. ${minOrderQuantity} Unid.)
+                <i class="bi bi-box-seam-fill"></i> PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.)
             </div>
             <div class="mayorista-price-row">
                 <span style="color:var(--brand-red); font-weight:900; font-size: 1.1rem;">COTIZAR</span>
