@@ -122,22 +122,22 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     animation: text-pulse 2s infinite;
 }
 
-/* Nuevo Estilo para Cotización Mayorista (REPARADO CONTRASTE) */
+/* Nuevo Estilo para Cotización Mayorista */
 .mayorista-cotizar {
-    margin-top: 10px; /* Separación del precio unitario */
-    font-size: 0.85rem;
-    color: #444; /* Dark gray para mejor legibilidad del texto base */
+    margin-top: 10px; 
+    font-size: 0.85rem; 
+    color: #444; 
     font-weight: 700;
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #e7f5ff; /* Fondo muy claro para diferenciar */
+    background: #e7f5ff; 
     padding: 8px;
     border-radius: 6px;
-    border: 1px dashed #c0e0ff; /* Borde discontinuo para acción */
+    border: 1px dashed #c0e0ff; 
 }
 .mayorista-cotizar i { 
-    color: var(--brand-red); /* Ícono en rojo para el tema */
+    color: var(--brand-red); 
     font-size: 1.1rem;
 }
 
@@ -147,7 +147,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
 }
 
-/* 1. Botón HACER PEDIDO (ROJO) */
+/* 1. Botón COTIZAR AHORA (ROJO) */
 .btn-order {
     background: #D32F2F; color: #fff; /* Rojo */
     padding: 10px 20px; border-radius: 50px; 
@@ -156,10 +156,12 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4);
     display: flex; align-items: center; gap: 8px;
     transition: 0.2s;
+    /* MANTIENE ANIMACIÓN DE PARPADEO */
+    animation: pulse-red 2s infinite; 
 }
-.btn-order:hover { transform: scale(1.05); background: #b91c1c; }
+.btn-order:hover { transform: scale(1.05); background: #b91c1c; animation: none; }
 
-/* 2. Botón Grupo (CONTRAÍDO) */
+/* 2. Botón WHATSAPP (Green) */
 .btn-group { 
     background: #fff; color: #25D366; border: 2px solid #25D366;
     height: 45px; width: 45px; border-radius: 50px; 
@@ -228,12 +230,12 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 <!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
-    <a href="https://wa.me/59161333335?text=Hola,%20vi%20su%20cat%C3%A1logo%20web%20y%20quiero%20hacer%20un%20pedido%20de%20varios%20productos." target="_blank" class="btn-order">
-        <i class="bi bi-whatsapp"></i> HACER PEDIDO
+    <a href="https://wa.me/59161333335?text=Hola,%20quisiera%20cotizar%20precios%20de%20sus%20productos." target="_blank" class="btn-order">
+        <i class="bi bi-tags-fill"></i> COTIZAR AHORA
     </a>
-    <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
-        <i class="bi bi-people-fill"></i> 
-        <span>Grupo Mayorista</span>
+    <a href="https://wa.me/59161333335" target="_blank" class="btn-group">
+        <i class="bi bi-whatsapp"></i> 
+        <span>WHATSAPP</span>
     </a>
 </div>
 
@@ -296,12 +298,11 @@ function renderProductos(lista){
     // --- LÓGICA DE PROTECCIÓN (CEREBRO) ---
     let mostrarDescuento = false;
     
-    if(pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
+    if (pUnidad > 0 && DESCUENTO_UNIDAD_PORCENTAJE > 0) {
         // Cálculo
         pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
         
         // REGLA MAESTRA: Si el precio con descuento sigue siendo MAYOR al mayorista, APROBADO.
-        // Si baja más que el mayorista (pérdida), DENEGADO.
         if (pUnidadFinal > pMayor) {
             mostrarDescuento = true;
             promoBadge = `<div class="badge-offer">-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF</div>`;
@@ -330,22 +331,14 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA ACTUALIZADA (CONTRASTE MEJORADO) ---
-    let mayoristaText = '';
-    // Usamos un span con la clase red-text para COTIZAR
+    // --- LÓGICA MAYORISTA EN LA TARJETA ---
+    // Muestra la condición de Venta Mayorista y la acción de COTIZAR
     const cotizarSpan = `<span style="color:var(--brand-red); font-weight:900;">COTIZAR</span>`;
-
-    if (pMayor > 0) {
-        // Muestra el precio mayorista de la BD como REFERENCIA
-        mayoristaText = `Precio Mayorista Ref. (Min. ${minOrderQuantity} Unid.): <span style="color:#111; font-weight:800;">Bs. ${pMayor.toFixed(2)}</span> / ${cotizarSpan}`;
-    } else {
-        // Si no hay precio mayorista definido, solo pide cotizar.
-        mayoristaText = `Precio Mayorista (Min. ${minOrderQuantity} Unid.): ${cotizarSpan}`;
-    }
+    const mayoristaText = `Venta Mayorista (Min. ${minOrderQuantity} Unid.): ${cotizarSpan}`;
     
     const mayoristaHtml = `
     <div class="mayorista-cotizar">
-        <i class="bi bi-shop-window"></i> 
+        <i class="bi bi-box-seam-fill"></i> 
         ${mayoristaText}
     </div>`;
     // ------------------------------------------
@@ -378,7 +371,7 @@ function renderProductos(lista){
         
         <div class="prices-container">
             ${precioUnidadHtml}
-            ${mayoristaHtml} <!-- AQUI SE INSERTA EL NUEVO BLOQUE CON PRECIO REF. -->
+            ${mayoristaHtml} <!-- AQUI SE INSERTA EL NUEVO BLOQUE CON COTIZACIÓN PURA -->
         </div>
         <!-- SIN BOTÓN -->
       </div>
