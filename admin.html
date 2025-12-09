@@ -115,17 +115,14 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- 1. CÓDIGO Y CATEGORÍA (ARRIBA) -->
-                <div class="row">
-                    <div class="form-group"><label>Código</label><input type="text" id="code"></div>
-                    <div class="form-group">
-                        <label>Categoría</label>
-                        <!-- LISTA FIJA, NO DINÁMICA -->
-                        <select id="cat" required>
-                            <option value="" disabled selected>Seleccionar...</option>
-                            <!-- Se llena con JS -->
-                        </select>
-                    </div>
+                <!-- 1. CATEGORÍA (ARRIBA) -->
+                <div class="form-group">
+                    <label>Categoría (Seleccionar)</label>
+                    <!-- SELECT: Solo permite elegir las opciones definidas -->
+                    <select id="cat" required>
+                        <option value="" disabled selected>Elige una...</option>
+                        <!-- Se llena con JS -->
+                    </select>
                 </div>
 
                 <!-- 2. NOMBRE -->
@@ -140,7 +137,7 @@
                     <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="...">
                 </div>
 
-                <!-- 4. PRECIOS Y MOQ -->
+                <!-- 4. PRECIOS -->
                 <div class="row">
                     <div class="form-group">
                         <label>P. Unidad</label>
@@ -152,9 +149,16 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>MOQ (Mínimo Mayorista)</label>
-                    <input type="number" id="moq" value="6">
+                <!-- 5. MOQ Y CÓDIGO (ABAJO) -->
+                <div class="row">
+                    <div class="form-group">
+                        <label>MOQ (Mínimo Mayorista)</label>
+                        <input type="number" id="moq" value="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Código</label>
+                        <input type="text" id="code">
+                    </div>
                 </div>
 
                 <!-- FOTOS -->
@@ -186,7 +190,7 @@
         <!-- DERECHA: LISTA DE INVENTARIO -->
         <div class="card-box">
             <h2>Inventario (<span id="totalDocs">0</span>)</h2>
-            <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando base de datos...</div>
+            <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando...</div>
             
             <div class="search-box">
                 <input type="text" id="search" placeholder="Buscar por nombre, código o categoría...">
@@ -216,8 +220,9 @@
     const LIST_ELEMENT = document.getElementById('list');
     
     let GLOBAL_INVENTORY = []; 
+    let CATEGORIES_SET = new Set();
     
-    // --- ESTA ES LA LISTA MAESTRA. EL ADMIN NO USARÁ OTRA COSA ---
+    // --- LISTA MAESTRA FIJA ---
     const CATEGORIAS_MAESTRAS = [
         "Belleza y salud",
         "Herramientas",
@@ -242,8 +247,7 @@
 
     function initForm() {
         const select = document.getElementById('cat');
-        // Llenar select SOLO con las maestras. Adiós duplicados.
-        select.innerHTML = '<option value="" disabled selected>Seleccionar...</option>';
+        // Llenar select con lista fija
         CATEGORIAS_MAESTRAS.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat;
@@ -296,10 +300,10 @@
              const catSelect = document.getElementById('cat');
              
              // Buscamos en el historial un producto que empiece con ese tipo
-             const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
+             const match = GLOBAL_INVENTORY.find(p => p.descripcion && p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
              
              if(match && match.categoria) {
-                 // Verificamos si la categoría del match es válida en nuestra lista maestra
+                 // Verificamos si la categoría del match existe en nuestra lista maestra
                  const existe = Array.from(catSelect.options).some(opt => opt.value === match.categoria);
                  
                  if(existe) {
@@ -379,6 +383,8 @@
         
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
+        
+        // No refrescamos la lista automáticamente, a menos que el término de búsqueda coincida
         doSearch(); 
 
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
