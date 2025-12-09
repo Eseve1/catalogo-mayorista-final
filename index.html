@@ -29,12 +29,53 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .main{ max-width:1400px; margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:25px; padding:25px; padding-bottom: 100px; }
 
 /* SIDEBAR (SOLO PC) */
-.sidebar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:20px; position:sticky; top:80px; max-height: calc(100vh - 100px); display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+.sidebar{ 
+    background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:20px; 
+    position:sticky; top:80px; 
+    max-height: calc(100vh - 100px); 
+    display: flex; 
+    flex-direction: column; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+}
 .sidebar h2{ margin:0 0 15px; font-size:1.1rem; font-weight:900; color: #333; display: flex; align-items: center; gap: 8px; }
-#menu-cat{ display:flex; flex-direction:column; gap:6px; overflow-y: auto; }
+#menu-cat{ display:flex; flex-direction:column; gap:6px; overflow-y: auto; padding-bottom: 15px; }
 .btn-cat{ background:transparent; color:#555; border:1px solid transparent; font-weight:600; border-radius:8px; padding:10px 12px; cursor:pointer; font-size:0.9rem; text-align:left; transition:.2s; }
 .btn-cat:hover{ background:#f1f3f5; color:#000; }
 .btn-cat.active{ background:var(--brand-red); color:#fff; font-weight: 700; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); }
+
+/* --- NUEVA TARJETA DE CONTACTO EN SIDEBAR --- */
+.contact-card-sidebar {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+}
+.contact-card-sidebar h4 {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--brand-red);
+}
+.contact-card-sidebar p {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.contact-card-sidebar a {
+    display: inline-block;
+    background: #25D366;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-weight: 800;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
 
 /* --- MENÚ MÓVIL HORIZONTAL (EL BUENO) --- */
 .mobile-cats { 
@@ -135,10 +176,30 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     padding: 8px;
     border-radius: 6px;
     border: 1px dashed #c0e0ff; 
+    /* Estilo para que el texto se apile verticalmente */
+    flex-direction: column; 
+    align-items: flex-start;
 }
 .mayorista-cotizar i { 
     color: var(--brand-red); 
     font-size: 1.1rem;
+    margin-right: 6px; 
+    margin-top: 2px;
+}
+.mayorista-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem; /* Un poco más grande para el texto principal */
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+.mayorista-price-row {
+    line-height: 1.2;
+    /* Estilo para que el precio y el texto "Cada Unidad" estén separados */
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start;
+    font-size: 0.9rem;
 }
 
 /* --- ZONA FLOTANTE (Fixed Bottom) --- */
@@ -228,6 +289,15 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
         <aside class="sidebar">
             <h2><i class="bi bi-grid-fill" style="color:var(--brand-red)"></i> Categorías</h2>
             <div id="menu-cat"><div style="color:#adb5bd; font-size:0.9rem; text-align:center; padding:20px;">Cargando...</div></div>
+            
+            <!-- TARJETA DE CONTACTO FIJA (NUEVO) -->
+            <div class="contact-card-sidebar">
+                <h4><i class="bi bi-headset"></i> Cotiza por WhatsApp</h4>
+                <p>¿Tienes dudas o buscas precio especial por volumen?</p>
+                <a href="https://wa.me/59161333335?text=Hola,%20quisiera%20cotizar%20precios%20de%20sus%20productos." target="_blank">Escríbenos ahora</a>
+            </div>
+            <!-- FIN TARJETA DE CONTACTO FIJA -->
+            
         </aside>
     </div>
 
@@ -348,20 +418,34 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA EN LA TARJETA (PRECIO DESDE) ---
-    let mayoristaText;
+    // --- LÓGICA MAYORISTA EN LA TARJETA (DISPOSICIÓN FINAL EN DOS LÍNEAS) ---
+    let mayoristaContentHtml;
     if (pMayor > 0) {
-        // Muestra el precio por mayor como "Desde"
-        mayoristaText = `PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.): <span style="color:var(--brand-red); font-weight:900;">Desde Bs. ${pMayor.toFixed(2)}</span>`;
+        // Formato final: POR MAYOR (Min. 12 Unid.) | Bs. 50.00 | Cada Unidad
+        mayoristaContentHtml = `
+            <div class="mayorista-label">
+                <i class="bi bi-box-seam-fill"></i> POR MAYOR (Min. ${minOrderQuantity} Unid.)
+            </div>
+            <div class="mayorista-price-row">
+                <span style="color:var(--brand-red); font-weight:900; font-size: 1.1rem;">Bs. ${pMayor.toFixed(2)}</span>
+                <span style="font-size: 0.9rem; font-weight: 700; color: #444; margin-top: 2px;">Cada Unidad</span>
+            </div>
+        `;
     } else {
         // Si no hay precio por mayor, pide cotizar
-        mayoristaText = `PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.): <span style="color:var(--brand-red); font-weight:900;">COTIZAR</span>`;
+        mayoristaContentHtml = `
+            <div class="mayorista-label">
+                <i class="bi bi-box-seam-fill"></i> POR MAYOR (Min. ${minOrderQuantity} Unid.)
+            </div>
+            <div class="mayorista-price-row">
+                <span style="color:var(--brand-red); font-weight:900; font-size: 1.1rem;">COTIZAR</span>
+            </div>
+        `;
     }
 
     const mayoristaHtml = `
     <div class="mayorista-cotizar">
-        <i class="bi bi-box-seam-fill"></i> 
-        ${mayoristaText}
+        ${mayoristaContentHtml}
     </div>`;
     // ------------------------------------------
 
@@ -498,7 +582,7 @@ document.getElementById('searchBox').addEventListener('keyup', (e) => {
     
     if (query.length < 3) {
         // Si la consulta es muy corta, volvemos a mostrar la lista filtrada por categoría
-        renderProductos(listaAFiltrar);
+        renderProductos(listaAFiltrada);
         return;
     }
 
