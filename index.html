@@ -123,13 +123,24 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     animation: text-pulse 2s infinite;
 }
 
-/* MOQ (Texto pequeño abajo) */
-.moq-row {
-    margin-top: 5px; font-size: 0.8rem; color: #555; font-weight: 600;
-    display: flex; align-items: center; gap: 5px;
-    background: #f8f9fa; padding: 6px; border-radius: 6px;
+/* Nuevo Estilo para Cotización Mayorista (Reemplaza a .moq-row) */
+.mayorista-cotizar {
+    margin-top: 10px; /* Separación del precio unitario */
+    font-size: 0.85rem;
+    color: #007bff; /* Color azul para destacar la acción */
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #e7f5ff; /* Fondo muy claro para diferenciar */
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px dashed #c0e0ff; /* Borde discontinuo para acción */
 }
-.moq-row i { color: var(--brand-red); }
+.mayorista-cotizar i { 
+    color: #007bff; 
+    font-size: 1.1rem;
+}
 
 /* --- ZONA FLOTANTE (Fixed Bottom) --- */
 .floating-actions {
@@ -233,7 +244,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     <div class="footer-col"><h4><i class="bi bi-headset"></i> Ayuda</h4><p><i class="bi bi-clock"></i> <span id="footer-horario"></span></p><p><i class="bi bi-truck"></i> <span id="footer-envios"></span></p><p><i class="bi bi-whatsapp"></i> <a href="https://wa.me/59161333335" target="_blank" class="text-green-600 font-semibold">61333335</a></p></div>
 </footer>
 
-<div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">&times;</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
+<div id="zoomModal" onclick="closeZoom()"><span class="close-zoom">×</span><img id="zoomImg" src="" onclick="event.stopPropagation()"></div>
 
 <script type="module">
 import { Client, Databases, Query } from "https://cdn.jsdelivr.net/npm/appwrite@14.0.1/+esm";
@@ -258,9 +269,13 @@ function renderProductos(lista){
   if(lista.length === 0){ grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#888;">Sin productos.</div>`; return; }
   
   grid.innerHTML = lista.map(p => {
-    const tituloBonito = formatearTitulo(p.descripcion); const codigoBonito = formatearCodigo(p.codigo);
+    const tituloBonito = formatearTitulo(p.descripcion); 
+    const codigoBonito = formatearCodigo(p.codigo);
     
-    // Solo usamos pUnidad para mostrar (Mayorista oculto)
+    // El MOQ por defecto es 12 si la base de datos no envía un valor.
+    const minOrderQuantity = p.moq || 12; 
+    
+    // Valores de la Base de Datos
     let pMayor = parseFloat(p.preciopormayor); if(isNaN(pMayor)) pMayor = 0;
     let pUnidad = parseFloat(p.precioUnidad); if(isNaN(pUnidad)) pUnidad = 0;
     
@@ -287,7 +302,7 @@ function renderProductos(lista){
         // CASO A: SI HAY MARGEN, MOSTRAMOS LA OFERTA
         precioUnidadHtml = `
         <div class="price-row unit">
-            <span class="price-label">OFERTA UNIDAD:</span>
+            <span class="price-label">PRECIO POR UNIDAD (-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF):</span>
             <div>
                 <span class="price-old">Bs. ${pUnidad.toFixed(2)}</span>
                 <span class="price-new">Bs. ${pUnidadFinal.toFixed(2)}</span>
@@ -298,13 +313,30 @@ function renderProductos(lista){
         // (Aquí NO se muestra la etiqueta roja, se protege el margen)
         precioUnidadHtml = `
         <div class="price-row unit">
-            <span class="price-label-normal">PRECIO UNIDAD:</span>
+            <span class="price-label-normal">PRECIO POR UNIDAD:</span>
             <div class="price-normal">Bs. ${pUnidad.toFixed(2)}</div>
             <div class="promo-text">🔥 ¡Pide en caja tu descuento!</div>
         </div>`;
     } else {
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
+    
+    // --- LÓGICA MAYORISTA ACTUALIZADA (NUEVO) ---
+    let mayoristaText = '';
+    if (pMayor > 0) {
+        // Muestra el precio mayorista de la BD como REFERENCIA, pero la acción sigue siendo COTIZAR.
+        mayoristaText = `Precio Mayorista Ref. (Min. ${minOrderQuantity} Unid.): <span style="color:#111;">Bs. ${pMayor.toFixed(2)}</span> / **COTIZAR**`;
+    } else {
+        // Si no hay precio mayorista definido, solo pide cotizar.
+        mayoristaText = `Precio Mayorista (Min. ${minOrderQuantity} Unid.): **COTIZAR**`;
+    }
+    
+    const mayoristaHtml = `
+    <div class="mayorista-cotizar">
+        <i class="bi bi-shop-window"></i> 
+        ${mayoristaText}
+    </div>`;
+    // ------------------------------------------
 
     const tieneFoto2 = p.imagen2 ? true : false;
     const cardId = `card-${p.$id}`;
@@ -329,9 +361,7 @@ function renderProductos(lista){
         
         <div class="prices-container">
             ${precioUnidadHtml}
-            <div class="moq-row">
-                <i class="bi bi-box-seam-fill"></i> Venta Mínima: ${p.moq || 12} Unid. por mayor
-            </div>
+            ${mayoristaHtml} <!-- AQUI SE INSERTA EL NUEVO BLOQUE CON PRECIO REF. -->
         </div>
         <!-- SIN BOTÓN -->
       </div>
@@ -353,65 +383,4 @@ async function iniciar(){
     const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(5000), Query.orderDesc('$createdAt')]);
     todos = res.documents.filter(doc => doc.disponible !== false);
     renderCategorias(); renderProductos(todos);
-  } catch(e) { console.error(e); grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#666;">No se pudo cargar el catálogo.</p></div>`; }
-}
-function renderCategorias(){
-  const menu = document.getElementById('menu-cat');
-  const mobileMenu = document.getElementById('mobile-cats');
-  
-  let categoriasLimpias = todos.map(p => formatearTexto(p.categoria || 'Varios'));
-  let listadoCategorias = [...new Set(categoriasLimpias)]; listadoCategorias.sort();
-  const cats = ['Todo', ...listadoCategorias];
-  
-  // Render PC
-  menu.innerHTML = cats.map(c => `<button class="btn-cat ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this)">${c}</button>`).join('');
-  
-  // Render Mobile (Horizontal Scroll)
-  mobileMenu.innerHTML = cats.map(c => `<div class="cat-chip ${c==='Todo'?'active':''}" onclick="filtrar('${c}', this, true)">${c}</div>`).join('');
-}
-
-window.filtrar = function(cat, btn, isMobile = false){
-  // Activar en ambos menús
-  document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.cat-chip').forEach(b => b.classList.remove('active'));
-  
-  const pcBtns = document.querySelectorAll('.btn-cat');
-  const mobBtns = document.querySelectorAll('.cat-chip');
-  
-  for (let b of pcBtns) { if (b.textContent === cat) b.classList.add('active'); }
-  for (let b of mobBtns) { if (b.textContent === cat) b.classList.add('active'); }
-
-  catActual = cat;
-  let filtrados = [];
-  if(cat === 'Todo') { filtrados = todos; document.getElementById('sub-chips').classList.remove('visible'); } else { filtrados = todos.filter(p => formatearTexto(p.categoria) === cat); renderSubCategorias(filtrados); }
-  renderProductos(filtrados);
-}
-function renderSubCategorias(listaProductos){
-    const container = document.getElementById('sub-chips');
-    const tipos = listaProductos.map(p => p.tipo ? formatearTexto(p.tipo) : null).filter(t => t !== null);
-    const tiposUnicos = [...new Set(tipos)];
-    if(tiposUnicos.length > 0){
-        container.classList.add('visible');
-        let html = `<div class="chip active" onclick="filtrarSub('todos', this)">Ver todo</div>`;
-        html += tiposUnicos.map(t => `<div class="chip" onclick="filtrarSub('${t}', this)">${t}</div>`).join('');
-        container.innerHTML = html;
-    } else { container.classList.remove('visible'); container.innerHTML = ''; }
-}
-window.filtrarSub = function(tipo, btn){
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    const base = todos.filter(p => formatearTexto(p.categoria) === catActual);
-    if(tipo === 'todos'){ renderProductos(base); } else { renderProductos(base.filter(p => formatearTexto(p.tipo) === tipo)); }
-}
-document.getElementById('searchBox').addEventListener('input', (e)=>{
-  const q = normalizarTexto(e.target.value);
-  const resultados = todos.filter(p => {
-      return normalizarTexto(p.descripcion).includes(q) || normalizarTexto(p.codigo).includes(q) || normalizarTexto(p.categoria).includes(q) || normalizarTexto(p.tipo).includes(q);
-  });
-  renderProductos(resultados);
-});
-
-iniciar();
-</script>
-</body>
-</html>
+  } catch(e) { console.error(e); grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#666;">No se pudo cargar el 
