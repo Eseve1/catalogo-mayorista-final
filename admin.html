@@ -76,6 +76,9 @@
     #msg { display: none; padding: 12px; text-align: center; border-radius: 8px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2f2; color: #991b1b; }
+    
+    /* Etiqueta de tipo detectado */
+    #tipoDetectado { font-size: 0.8rem; color: #2563eb; font-weight: 600; margin-left: 5px; }
   </style>
 </head>
 <body>
@@ -100,20 +103,21 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <div class="form-group">
-                    <label>Nombre del Producto</label>
-                    <!-- INTELIGENCIA: Detecta primera palabra y busca categoría SIN modificarla -->
-                    <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
-                </div>
-                
+                <!-- NUEVO ORDEN: CÓDIGO Y CATEGORÍA PRIMERO -->
                 <div class="row">
                     <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría</label>
-                        <!-- LISTA DE CATEGORÍAS EXISTENTES (Solo las que ya existen, sin filtros) -->
-                        <input type="text" id="cat" list="categoryList" required placeholder="Elige o escribe nueva..." autocomplete="off">
+                        <!-- LISTA DE CATEGORÍAS EXISTENTES -->
+                        <input type="text" id="cat" list="categoryList" required placeholder="Elegir..." autocomplete="off">
                         <datalist id="categoryList"></datalist>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre del Producto <span id="tipoDetectado"></span></label>
+                    <!-- Aquí se escribe el nombre y se detecta la "subcategoría" (primera palabra) visualmente -->
+                    <input type="text" id="name" required placeholder="Ej: Bolson deportivo..." onkeyup="mostrarTipoDetectado(this.value)">
                 </div>
 
                 <div class="row">
@@ -229,13 +233,13 @@
             
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
             
-            // LLENAR LISTA DE CATEGORÍAS (TAL CUAL VIENEN DE LA BD)
+            // LLENAR LISTA DE CATEGORÍAS TAL CUAL ESTÁN
             const datalist = document.getElementById('categoryList');
             datalist.innerHTML = '';
             
             GLOBAL_INVENTORY.forEach(p => {
                 if(p.categoria) {
-                    CATEGORIES_SET.add(p.categoria); // Guardamos la categoría exacta
+                    CATEGORIES_SET.add(p.categoria.trim()); // Guardamos la categoría exacta
                 }
             });
             
@@ -246,40 +250,25 @@
                 datalist.appendChild(opt);
             });
             
-            // NO mostramos lista inicial para que empiece limpio
-            // doSearch(); 
+            // NO mostramos lista inicial (limpia)
 
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
     }
 
-    // --- FUNCIÓN DE INTELIGENCIA: COPIAR CATEGORÍA EXISTENTE ---
-    window.autoDetectarCategoria = function(nombre) {
-        if(!nombre || nombre.length < 3) return;
-        
-        const catInput = document.getElementById('cat');
-        // Si el usuario ya puso algo, no molestamos
-        if(catInput.value.trim() !== "") return; 
-
-        // Tomamos la primera palabra del nombre
-        const primeraPalabra = nombre.trim().split(' ')[0].toLowerCase();
-        
-        if(primeraPalabra.length < 3) return;
-
-        // Buscamos si existe algún producto con esa palabra
-        const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().includes(primeraPalabra));
-        
-        if(match && match.categoria) {
-            // Copiar la categoría EXACTA del producto encontrado (Ej: "Moda y equipaje")
-            catInput.value = match.categoria; 
-            
-            // Pequeño flash azul para avisar que se autocompletó
-            catInput.style.borderColor = "#2563eb";
-            catInput.style.backgroundColor = "#fffbeb";
-            setTimeout(() => {
-                catInput.style.borderColor = "#f0f0f0";
-                catInput.style.backgroundColor = "#fafafa";
-            }, 1000);
+    // --- VISUALIZAR TIPO DETECTADO (Subcategoría) ---
+    window.mostrarTipoDetectado = function(texto) {
+        const label = document.getElementById('tipoDetectado');
+        if (!texto) {
+            label.innerText = "";
+            return;
+        }
+        // Simplemente muestra la primera palabra para que sepas qué detectará el catálogo
+        let primeraPalabra = texto.trim().split(' ')[0];
+        if (primeraPalabra) {
+            label.innerText = `(Tipo detectado: ${primeraPalabra})`;
+        } else {
+            label.innerText = "";
         }
     }
 
@@ -323,7 +312,7 @@
         const data = {
           descripcion: document.getElementById('name').value, 
           codigo: document.getElementById('code').value, 
-          categoria: document.getElementById('cat').value, // SIN TRIM NI CAMBIOS
+          categoria: document.getElementById('cat').value.trim(), 
           preciopormayor: Number(document.getElementById('price').value || 0), 
           precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value || 6), 
@@ -469,6 +458,7 @@
       document.getElementById('formTitle').innerHTML = "Nuevo Producto"; 
       const btn = document.getElementById('btnSave'); btn.innerText = "Guardar Producto"; btn.style.background = "#FFB800";
       document.getElementById('btnCancel').style.display = "none";
+      document.getElementById('tipoDetectado').innerText = "";
     }
   </script>
 </body>
