@@ -43,39 +43,12 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .btn-cat:hover{ background:#f1f3f5; color:#000; }
 .btn-cat.active{ background:var(--brand-red); color:#fff; font-weight: 700; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); }
 
-/* --- NUEVA TARJETA DE CONTACTO EN SIDEBAR --- */
-.contact-card-sidebar {
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: 10px;
-    background: #f8fafc;
-    border: 1px solid #e0e0e0;
-    text-align: center;
-}
-.contact-card-sidebar h4 {
-    margin: 0 0 10px;
-    font-size: 1rem;
-    font-weight: 900;
-    color: var(--brand-red);
-}
-.contact-card-sidebar p {
-    font-size: 0.85rem;
-    color: #555;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-.contact-card-sidebar a {
-    display: inline-block;
-    background: #25D366;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 50px;
-    font-weight: 800;
-    text-decoration: none;
-    font-size: 0.9rem;
-    margin-top: 10px;
-}
-
+/* CHIPS DE SUBCATEGORÍA (RESTAURADO) */
+#sub-chips { display: flex; gap: 8px; flex-wrap: wrap; display: none; }
+#sub-chips.visible { display: flex; }
+.chip { background: #fff; border: 1px solid #dee2e6; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
+.chip:hover { background: #eee; }
+.chip.active { background: #333; color: #fff; border-color: #333; }
 
 /* --- MENÚ MÓVIL HORIZONTAL (EL BUENO) --- */
 .mobile-cats { 
@@ -98,12 +71,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .toolbar{ background:#fff; border:1px solid var(--card-border); border-radius:12px; padding:10px 15px; display:flex; align-items:center; gap:12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
 #searchBox{ flex:1; border:none; outline:none; font-size:1rem; padding:5px; color: #333; }
 #searchBox:focus{ border-color:var(--accent); }
-
-#sub-chips { display: flex; gap: 8px; flex-wrap: wrap; display: none; }
-#sub-chips.visible { display: flex; }
-.chip { background: #fff; border: 1px solid #dee2e6; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #666; cursor: pointer; transition: 0.2s; }
-.chip:hover { background: #eee; }
-.chip.active { background: #333; color: #fff; border-color: #333; }
 
 /* GRID PRODUCTOS */
 .grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));}
@@ -201,6 +168,75 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     align-items: flex-start;
     font-size: 0.9rem;
 }
+.mayorista-price-row span:last-child {
+    margin-top: -6px; /* Ajuste para acercar "Cada Unidad" al precio */
+    font-size: 0.85rem; 
+    font-weight: 700; 
+    color: #444; 
+    line-height: 1.2;
+}
+
+/* --- MODAL DE SUCURSALES (MANTENIDO SOLO POR ESTILO, ELIMINADO EL HTML) --- */
+.modal-sucursales {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 9999;
+    display: none; justify-content: center; align-items: center;
+}
+.modal-content {
+    background: #fff; padding: 30px; border-radius: 12px;
+    max-width: 500px; width: 90%; max-height: 90vh;
+    overflow-y: auto; position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-top: 5px solid var(--brand-red);
+}
+.modal-content h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #111;
+    border-bottom: 2px solid #ccc; 
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+.close-modal {
+    position: absolute; top: 15px; right: 15px;
+    font-size: 1.8rem; color: #555; cursor: pointer;
+    line-height: 1;
+}
+.sucursal-item {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dotted #ccc;
+}
+.sucursal-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.sucursal-item p {
+    margin: 4px 0;
+    font-size: 0.95rem;
+}
+.sucursal-item b {
+    font-weight: 900;
+    color: var(--brand-red); 
+}
+.sucursal-item i {
+    color: #333;
+    margin-right: 5px;
+}
+.btn-mapa {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--brand-red); 
+    color: white;
+    padding: 6px 12px; border-radius: 8px;
+    text-decoration: none; font-weight: 700;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+.btn-mapa:hover {
+    background: #a50000;
+}
+
 
 /* --- ZONA FLOTANTE (Fixed Bottom) --- */
 .floating-actions {
@@ -273,7 +309,15 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 </head>
 <body>
 
-<div id="company-data" style="display:none;" data-horario="LUNES A DOMINGO: 9:00 - 19:30" data-envios="ENVÍOS A TODO BOLIVIA" data-whatsapp="59161333335"></div>
+<div id="company-data" style="display:none;" 
+    data-horario="LUNES A DOMINGO: 9:00 - 19:30" 
+    data-envios="ENVÍOS A TODO BOLIVIA" 
+    data-whatsapp="59161333335"
+    data-sucursal1-dir="Aroma N.º 560 – Santa Cruz"
+    data-sucursal1-map="https://maps.app.goo.gl/4G7pM6zTSs6BcnZq9"
+    data-sucursal2-dir="Av. Cañoto esq. Tundí #924"
+    data-sucursal2-map="https://maps.app.goo.gl/u5pDAQqPJ1j1C72TA">
+</div>
 
 <div class="header-oferta">
   <div class="header-track">
@@ -290,28 +334,27 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
             <h2><i class="bi bi-grid-fill" style="color:var(--brand-red)"></i> Categorías</h2>
             <div id="menu-cat"><div style="color:#adb5bd; font-size:0.9rem; text-align:center; padding:20px;">Cargando...</div></div>
             
-            <!-- TARJETA DE CONTACTO FIJA (NUEVO) -->
-            <div class="contact-card-sidebar">
-                <h4><i class="bi bi-headset"></i> Cotiza por WhatsApp</h4>
-                <p>¿Tienes dudas o buscas precio especial por volumen?</p>
-                <a href="https://wa.me/59161333335?text=Hola,%20quisiera%20cotizar%20precios%20de%20sus%20productos." target="_blank">Escríbenos ahora</a>
-            </div>
-            <!-- FIN TARJETA DE CONTACTO FIJA -->
+            <!-- TARJETA DE CONTACTO FIJA ELIMINADA -->
             
         </aside>
     </div>
 
     <section>
+        
         <!-- MENÚ MÓVIL (HORIZONTAL SCROLL) -->
         <div id="mobile-cats" class="mobile-cats"></div>
 
         <div class="toolbar-container">
+            <!-- Botón de Sucursales y Horario ELIMINADO -->
+            
             <div class="toolbar"><i class="bi bi-search" style="font-size:1.2rem; color:#adb5bd"></i><input id="searchBox" placeholder="¿Qué estás buscando hoy?"></div>
             <div id="sub-chips"></div>
         </div>
         <div id="productos" class="grid"></div>
     </section>
 </div>
+
+<!-- MODAL DE SUCURSALES ELIMINADO -->
 
 <!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
@@ -357,11 +400,18 @@ const SAMPLE_PRODUCTS = [
 let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
+let subCatActual = ''; // Variable para subcategoría activa
+
+// FUNCIONES DE SUCURSALES (ELIMINADAS)
 
 window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
 window.onSlideScroll = function(el) { const card=el.closest('.card'); const dots=card.querySelectorAll('.dot'); if(dots.length<2)return; const idx=Math.round(el.scrollLeft/el.offsetWidth); dots.forEach(d=>d.classList.remove('active')); if(dots[idx])dots[idx].classList.add('active'); }
-function injectCompanyData() { document.getElementById('footer-envios').textContent=COMPANY_DATA.dataset.envios; document.getElementById('footer-horario').textContent=COMPANY_DATA.dataset.horario; }
+function injectCompanyData() { 
+    document.getElementById('footer-envios').textContent=COMPANY_DATA.dataset.envios; 
+    document.getElementById('footer-horario').textContent=COMPANY_DATA.dataset.horario; 
+    // Data attributes de sucursales eliminados del JS
+}
 
 function renderProductos(lista){
   const grid = document.getElementById('productos');
@@ -418,7 +468,7 @@ function renderProductos(lista){
         precioUnidadHtml = `<div class="price-box"><span class="price-val" style="color:#888; font-size:1rem;">PRECIO: CONSULTAR</span></div>`;
     }
     
-    // --- LÓGICA MAYORISTA EN LA TARJETA (FINAL: Tres líneas Separadas) ---
+    // --- LÓGICA MAYORISTA EN LA TARJETA (TRES LÍNEAS SEPARADAS) ---
     let mayoristaContentHtml;
     if (pMayor > 0) {
         // Formato final deseado: 
@@ -429,11 +479,11 @@ function renderProductos(lista){
             <div class="mayorista-label">
                 <i class="bi bi-box-seam-fill"></i> PRECIO POR MAYOR (Min. ${minOrderQuantity} Unid.)
             </div>
-            <div class="mayorista-price-row" style="margin-bottom: 2px;">
-                <span style="color:var(--brand-red); font-weight:900; font-size: 1.2rem; line-height: 1.2;">Bs. ${pMayor.toFixed(2)}</span>
+            <div class="mayorista-price-row" style="margin-bottom: 0;">
+                <span style="color:var(--brand-red); font-weight:900; font-size: 1.2rem; line-height: 1.2; display: block;">Bs. ${pMayor.toFixed(2)}</span>
             </div>
             <div class="mayorista-price-row" style="margin-top: -6px;">
-                <span style="font-size: 0.85rem; font-weight: 700; color: #444;">Cada Unidad</span>
+                <span style="font-size: 0.85rem; font-weight: 700; color: #444; line-height: 1.2; display: block;">Cada Unidad</span>
             </div>
         `;
     } else {
@@ -458,7 +508,6 @@ function renderProductos(lista){
     const cardId = `card-${p.$id}`;
     let dotHtml = ''; let imagesHtml = '';
 
-    // Usamos placeholder genéricos si la imagen es null (pasa con los SAMPLE_PRODUCTS)
     const primaryImage = p.imagen || `https://placehold.co/400x400/6A1B9A/white?text=${tituloBonito.replace(/ /g, '+').substring(0, 15)}`;
     const secondaryImage = p.imagen2 || `https://placehold.co/400x400/6A1B9A/white?text=IMAGEN+2+de+${tituloBonito.replace(/ /g, '+').substring(0, 15)}`;
 
@@ -490,6 +539,65 @@ function renderProductos(lista){
   }).join('');
 }
 
+function renderSubChips(listaFiltrada){
+    const chipsContainer = document.getElementById('sub-chips');
+    const busqueda = document.getElementById('searchBox').value.trim();
+    
+    if (catActual === 'Todo' || listaFiltrada.length === 0 || busqueda) {
+        chipsContainer.classList.remove('visible');
+        chipsContainer.innerHTML = '';
+        return;
+    }
+    
+    // 1. Agrupar por descripción (Subcategoría)
+    let subCategoriasMap = {};
+    listaFiltrada.forEach(p => {
+        const key = formatearTexto(p.descripcion);
+        subCategoriasMap[key] = (subCategoriasMap[key] || 0) + 1;
+    });
+
+    // 2. Crear una lista ordenada de chips
+    let chipsHtml = Object.keys(subCategoriasMap)
+        .sort((a, b) => a.localeCompare(b))
+        .map(subCat => {
+            const count = subCategoriasMap[subCat];
+            const activeClass = subCatActual === subCat ? 'active' : '';
+            return `<div class="chip ${activeClass}" onclick="filtrarSubCategoria('${subCat}', this)">${subCat} (${count})</div>`;
+        }).join('');
+
+    if (chipsHtml) {
+        chipsContainer.innerHTML = chipsHtml;
+        chipsContainer.classList.add('visible');
+    } else {
+        chipsContainer.classList.remove('visible');
+        chipsContainer.innerHTML = '';
+    }
+}
+
+window.filtrarSubCategoria = function(subCat, chipElement){
+    // Alternar entre activo y todos
+    const nuevoSubCat = subCatActual === subCat ? '' : subCat;
+    subCatActual = nuevoSubCat;
+
+    // Desactivar todos los chips y activar el actual
+    document.querySelectorAll('#sub-chips .chip').forEach(c => c.classList.remove('active'));
+    if (subCatActual) {
+        chipElement.classList.add('active');
+    }
+
+    // Filtrar la lista de productos por la categoría principal (que ya está en catActual)
+    const listaCategoria = catActual === 'Todo' 
+        ? todos 
+        : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
+
+    // Aplicar filtro de subcategoría
+    const listaFinal = subCatActual 
+        ? listaCategoria.filter(p => formatearTexto(p.descripcion) === subCatActual) 
+        : listaCategoria;
+        
+    renderProductos(listaFinal);
+}
+
 function formatearTexto(txt) { if(!txt) return ''; const lower = txt.toLowerCase().trim(); return lower.charAt(0).toUpperCase() + lower.slice(1); }
 function formatearTitulo(txt) { if(!txt) return 'Sin Nombre'; const lower = txt.toLowerCase().trim(); return lower.split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' '); }
 function formatearCodigo(txt) { if(!txt) return ''; return txt.toUpperCase().trim(); }
@@ -505,25 +613,18 @@ async function iniciar(){
   grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;"><p style="color:#adb5bd; font-weight:600;">Cargando catálogo...</p></div>`;
 
   try {
-    // 1. INTENTAR CARGAR DE APPWRITE
     const res = await db.listDocuments(DATABASE_ID, COLLECTION_ID, [Query.limit(5000), Query.orderDesc('$createdAt')]);
     
     if (res.documents && res.documents.length > 0) {
-        // ÉXITO: USAR DATOS REALES
         todos = res.documents.filter(doc => doc.disponible !== false);
-        console.log("Catálogo cargado correctamente desde Appwrite.");
-        
     } else {
-        // FALLBACK: USAR DATOS DE EJEMPLO SI APPWRITE NO DEVUELVE NADA
         todos = SAMPLE_PRODUCTS;
-        console.warn("Appwrite devolvió una lista vacía. Usando productos de ejemplo para mostrar el diseño.");
     }
     
     renderCategorias(); 
     renderProductos(todos); 
     
   } catch(e) { 
-    // FALLO DE CONEXIÓN: USAR DATOS DE EJEMPLO
     todos = SAMPLE_PRODUCTS;
     renderCategorias();
     renderProductos(todos);
@@ -554,6 +655,9 @@ function renderCategorias(){
 }
 
 window.filtrar = function(cat, btn){
+  // Resetear la subcategoría
+  subCatActual = ''; 
+  
   // 1. Quitar la clase 'active' de TODOS los elementos de categoría
   document.querySelectorAll('.btn-cat, .cat-chip').forEach(b => b.classList.remove('active'));
 
@@ -569,16 +673,16 @@ window.filtrar = function(cat, btn){
       }
   });
 
-  // 4. Filtrar y renderizar
+  // 4. Filtrar la lista principal
   catActual = cat;
   document.getElementById('searchBox').value = '';
-  document.getElementById('sub-chips').classList.remove('visible');
   
   const listaFiltrada = cat === 'Todo' 
       ? todos 
       : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(cat));
       
   renderProductos(listaFiltrada);
+  renderSubChips(listaFiltrada); // Mostrar chips de subcategoría
 }
 
 document.getElementById('searchBox').addEventListener('keyup', (e) => {
@@ -586,8 +690,8 @@ document.getElementById('searchBox').addEventListener('keyup', (e) => {
     const listaAFiltrar = catActual === 'Todo' ? todos : todos.filter(p => normalizarTexto(p.categoria) === normalizarTexto(catActual));
     
     if (query.length < 3) {
-        // Si la consulta es muy corta, volvemos a mostrar la lista filtrada por categoría
-        renderProductos(listaAFiltrada);
+        renderProductos(listaAFiltrar);
+        renderSubChips(listaAFiltrar);
         return;
     }
 
@@ -596,6 +700,7 @@ document.getElementById('searchBox').addEventListener('keyup', (e) => {
         normalizarTexto(p.codigo).includes(query)
     );
     renderProductos(resultados);
+    document.getElementById('sub-chips').classList.remove('visible'); // Ocultar chips si hay búsqueda manual
 });
 
 // INICIO: Llama a la función principal para cargar datos
@@ -603,4 +708,3 @@ iniciar();
 </script>
 </body>
 </html>
-
