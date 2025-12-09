@@ -42,7 +42,7 @@
         border-color: #c7d2fe;
         color: #3730a3;
         font-weight: 700;
-        cursor: not-allowed; /* Indica que es automático */
+        cursor: not-allowed; 
     }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } 
@@ -115,34 +115,32 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- FILA 1: NOMBRE Y TIPO (LADO A LADO O UNO ARRIBA OTRO ABAJO SEGÚN ESPACIO) -->
+                <!-- 1. CÓDIGO Y CATEGORÍA (ARRIBA) -->
                 <div class="row">
-                    <div class="form-group" style="flex: 2;">
-                        <label>Nombre del Producto</label>
-                        <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label style="color:#2563eb;">Tipo (Auto)</label>
-                        <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="...">
-                    </div>
-                </div>
-
-                <!-- FILA 2: CÓDIGO Y CATEGORÍA -->
-                <div class="row">
-                    <div class="form-group">
-                        <label>Código</label>
-                        <input type="text" id="code">
-                    </div>
+                    <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría</label>
-                        <!-- SELECT: Solo permite elegir las opciones existentes en la BD -->
+                        <!-- LISTA FIJA, NO DINÁMICA -->
                         <select id="cat" required>
-                            <option value="" disabled selected>Cargando lista...</option>
+                            <option value="" disabled selected>Seleccionar...</option>
+                            <!-- Se llena con JS -->
                         </select>
                     </div>
                 </div>
 
-                <!-- FILA 3: PRECIOS -->
+                <!-- 2. NOMBRE -->
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="name" required placeholder="Ej: Reloj Smartwatch..." onkeyup="autoDetectarCategoria(this.value)">
+                </div>
+
+                <!-- 3. TIPO DETECTADO (SUBCATEGORÍA) -->
+                <div class="form-group">
+                    <label style="color:#2563eb;">Tipo Detectado (Auto)</label>
+                    <input type="text" id="tipoDetectado" class="type-display" readonly placeholder="...">
+                </div>
+
+                <!-- 4. PRECIOS Y MOQ -->
                 <div class="row">
                     <div class="form-group">
                         <label>P. Unidad</label>
@@ -154,7 +152,6 @@
                     </div>
                 </div>
 
-                <!-- FILA 4: MOQ -->
                 <div class="form-group">
                     <label>MOQ (Mínimo Mayorista)</label>
                     <input type="number" id="moq" value="6">
@@ -189,10 +186,10 @@
         <!-- DERECHA: LISTA DE INVENTARIO -->
         <div class="card-box">
             <h2>Inventario (<span id="totalDocs">0</span>)</h2>
-            <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando...</div>
+            <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando base de datos...</div>
             
             <div class="search-box">
-                <input type="text" id="search" placeholder="Buscar por código o nombre...">
+                <input type="text" id="search" placeholder="Buscar por nombre, código o categoría...">
                 <button class="btn-search" onclick="doSearch()"><i class="bi bi-search"></i></button>
             </div>
             
@@ -219,26 +216,48 @@
     const LIST_ELEMENT = document.getElementById('list');
     
     let GLOBAL_INVENTORY = []; 
-    let CATEGORIES_SET = new Set();
     
+    // --- ESTA ES LA LISTA MAESTRA. EL ADMIN NO USARÁ OTRA COSA ---
+    const CATEGORIAS_MAESTRAS = [
+        "Belleza y salud",
+        "Herramientas",
+        "Hogar y cocina",
+        "Infantil",
+        "Moda y equipaje",
+        "Oficina y escolar",
+        "Tecnología"
+    ];
+
     // LOGIN
     function checkPass() { 
         if(document.getElementById('passInput').value === PASS) { 
             document.getElementById('loginScreen').style.display = 'none'; 
             document.getElementById('appContent').style.display = 'block'; 
+            initForm();
             loadAllProducts(); 
         } else { 
             document.getElementById('loginError').style.display = 'block'; 
         } 
     }
 
-    // CARGAR PRODUCTOS Y GENERAR LISTA DE CATEGORÍAS
+    function initForm() {
+        const select = document.getElementById('cat');
+        // Llenar select SOLO con las maestras. Adiós duplicados.
+        select.innerHTML = '<option value="" disabled selected>Seleccionar...</option>';
+        CATEGORIAS_MAESTRAS.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.innerText = cat;
+            select.appendChild(option);
+        });
+    }
+
+    // CARGAR PRODUCTOS
     async function loadAllProducts() {
         const loader = document.getElementById('loading-bar');
         if(loader) loader.style.display = 'block';
         
         GLOBAL_INVENTORY = [];
-        CATEGORIES_SET.clear();
         let offset = 0; const limit = 100;
         
         try {
@@ -252,27 +271,8 @@
                 if (res.documents.length < limit) break;
                 offset += limit;
             }
-            
             document.getElementById('totalDocs').innerText = GLOBAL_INVENTORY.length;
-            
-            // 1. LLENAR SELECT DE CATEGORÍAS (CON LO QUE EXISTE EN LA BD)
-            const catSelect = document.getElementById('cat');
-            catSelect.innerHTML = '<option value="" disabled selected>Elige una...</option>';
-
-            GLOBAL_INVENTORY.forEach(p => {
-                if(p.categoria) CATEGORIES_SET.add(p.categoria.trim());
-            });
-            
-            Array.from(CATEGORIES_SET).sort().forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat;
-                opt.innerText = cat;
-                catSelect.appendChild(opt);
-            });
-
-            // No mostramos lista inicial para mantener limpio
-            doSearch(); 
-
+            // No cargamos lista visual para mantener limpio
         } catch(e) { console.error(e); }
         if(loader) loader.style.display = 'none';
     }
@@ -296,16 +296,17 @@
              const catSelect = document.getElementById('cat');
              
              // Buscamos en el historial un producto que empiece con ese tipo
-             const match = GLOBAL_INVENTORY.find(p => p.descripcion && p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
+             const match = GLOBAL_INVENTORY.find(p => p.descripcion.toLowerCase().startsWith(primera.toLowerCase()));
              
              if(match && match.categoria) {
-                 // Intentamos asignar el valor al select. Si existe en la lista, se seleccionará.
-                 // Como el select se llena desde la BD, debería existir si ya lo usaste.
-                 catSelect.value = match.categoria;
+                 // Verificamos si la categoría del match es válida en nuestra lista maestra
+                 const existe = Array.from(catSelect.options).some(opt => opt.value === match.categoria);
                  
-                 // Efecto visual si cambió
-                 if(catSelect.value === match.categoria) {
-                     catSelect.style.borderColor = "#2563eb"; // Feedback visual
+                 if(existe) {
+                     // Si existe, la seleccionamos
+                     catSelect.value = match.categoria;
+                     // Efecto visual
+                     catSelect.style.borderColor = "#2563eb"; 
                      setTimeout(() => catSelect.style.borderColor = "#f0f0f0", 1000);
                  }
              }
@@ -354,7 +355,7 @@
         const data = {
           descripcion: document.getElementById('name').value, 
           codigo: document.getElementById('code').value, 
-          categoria: document.getElementById('cat').value, // Valor del SELECT
+          categoria: document.getElementById('cat').value, // Valor del SELECT LIMPIO
           preciopormayor: Number(document.getElementById('price').value || 0), 
           precioUnidad: Number(document.getElementById('priceUnit').value || 0), 
           moq: Number(document.getElementById('moq').value || 6), 
@@ -378,17 +379,7 @@
         
         msg.className = 'success'; msg.style.display = 'block'; setTimeout(() => { msg.style.display = 'none'; }, 2000); 
         resetForm(); 
-        
-        // No refrescamos la lista automáticamente, a menos que el término de búsqueda coincida
         doSearch(); 
-        
-        // Si añadimos una categoría nueva (aunque con select estricto no se puede, pero por robustez)
-        if(data.categoria && !CATEGORIES_SET.has(data.categoria)) {
-            CATEGORIES_SET.add(data.categoria);
-            const opt = document.createElement('option'); opt.value = data.categoria;
-            opt.innerText = data.categoria;
-            document.getElementById('cat').appendChild(opt);
-        }
 
       } catch(err) { console.error(err); msg.innerText = "Error: " + err.message; msg.className = 'error'; msg.style.display = 'block'; } finally { btn.disabled = false; if(!id) btn.innerText = "Guardar Producto"; }
     });
@@ -461,7 +452,10 @@
       document.getElementById('editId').value = d.$id; 
       document.getElementById('name').value = d.descripcion; 
       document.getElementById('code').value = d.codigo || ''; 
-      document.getElementById('cat').value = d.categoria;
+      
+      // Intentamos seleccionar la categoría. Si no existe en la lista maestra, no se selecciona.
+      document.getElementById('cat').value = d.categoria; 
+      
       document.getElementById('price').value = d.preciopormayor || ''; 
       document.getElementById('priceUnit').value = d.precioUnidad || ''; 
       document.getElementById('moq').value = d.moq || 6;
