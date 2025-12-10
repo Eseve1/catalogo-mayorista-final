@@ -127,7 +127,7 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .price-old { text-decoration: line-through; color: #999; font-size: 0.85rem; margin-right: 6px; }
 .price-new { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
 .price-normal { color: #111; font-weight: 900; font-size: 1.2rem; }
-.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; }
+.price-label { display: block; font-size: 0.7rem; font-weight: 700; color: #16a34a; margin-bottom: 0px; text-transform: uppercase; }
 .price-label-normal { font-size: 0.7rem; font-weight: 700; color: #555; text-transform: uppercase; }
 
 /* Texto de "Pide tu Descuento" */
@@ -386,9 +386,10 @@ function renderProductos(lista){
 
     if (mostrarDescuento) {
         let pUnidadFinal = pUnidad - (pUnidad * (DESCUENTO_UNIDAD_PORCENTAJE / 100));
+        // AQUI ESTA EL CAMBIO QUE PEDISTE: "PRECIO CON DESCUENTO"
         precioUnidadHtml = `
         <div class="price-row unit">
-            <span class="price-label">PRECIO POR UNIDAD (-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF):</span>
+            <span class="price-label">PRECIO CON DESCUENTO (-${DESCUENTO_UNIDAD_PORCENTAJE}% OFF):</span>
             <div>
                 <span class="price-old">Bs. ${pUnidad.toFixed(2)}</span>
                 <span class="price-new">Bs. ${pUnidadFinal.toFixed(2)}</span>
