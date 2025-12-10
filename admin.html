@@ -42,7 +42,7 @@
         border-color: #c7d2fe;
         color: #3730a3;
         font-weight: 700;
-        cursor: not-allowed; /* Indica que es automático */
+        cursor: not-allowed; 
     }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } 
@@ -68,8 +68,41 @@
     .product-item.sin-precio { border: 2px solid #ef4444; background: #fef2f2; }
     .product-item.agotado { background: #f3f4f6; border-color: #d1d5db; }
     
-    .prod-img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; background: #eee; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; }
-    .prod-img:hover { border-color: var(--primary); transform: scale(1.05); }
+    /* --- NUEVO ESTILO PARA FOTO CON CÓDIGO (SOLICITADO) --- */
+    .img-wrapper {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .img-wrapper:hover { transform: scale(1.05); }
+
+    .img-wrapper img {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 2px solid #eee; /* Borde sutil */
+    }
+    .img-wrapper:hover img { border-color: var(--primary); }
+
+    .code-badge {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        background: #ffffff;
+        color: #000;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 2px 6px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        z-index: 2;
+        border: 1px solid #ddd;
+    }
+    /* ----------------------------------------------------- */
 
     .prod-info { flex-grow: 1; overflow: hidden; }
     .prod-title { font-weight: 700; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
@@ -106,7 +139,6 @@
   <div id="appContent">
     <div class="main-layout">
         
-        <!-- IZQUIERDA: FORMULARIO -->
         <div class="card-box">
             <h2 id="formTitle">Nuevo Producto <span style="color:#2563eb; font-size:0.5em;">●</span></h2>
             <form id="productForm">
@@ -115,7 +147,6 @@
                 <input type="hidden" id="oldImg2">
                 <input type="hidden" id="currentStockStatus" value="true">
                 
-                <!-- 1. NOMBRE (PRIMERO para activar la detección) -->
                 <div class="row">
                     <div class="form-group" style="flex: 2;">
                         <label>Nombre del Producto</label>
@@ -127,20 +158,16 @@
                     </div>
                 </div>
 
-                <!-- 2. CÓDIGO Y CATEGORÍA (DESPUÉS) -->
                 <div class="row">
                     <div class="form-group"><label>Código</label><input type="text" id="code"></div>
                     <div class="form-group">
                         <label>Categoría (Lista Fija)</label>
-                        <!-- SELECT: Se selecciona automáticamente si hay coincidencia -->
                         <select id="cat" required>
                             <option value="" disabled selected>Seleccionar...</option>
-                            <!-- Se llena con JS -->
-                        </select>
+                            </select>
                     </div>
                 </div>
 
-                <!-- 3. PRECIOS -->
                 <div class="row">
                     <div class="form-group">
                         <label>P. Unidad</label>
@@ -152,13 +179,11 @@
                     </div>
                 </div>
 
-                <!-- 4. MOQ -->
                 <div class="form-group">
                     <label>MOQ (Mínimo Mayorista)</label>
                     <input type="number" id="moq" value="6">
                 </div>
 
-                <!-- FOTOS -->
                 <div class="photos-grid">
                     <div>
                         <div class="photo-label">Foto 1</div>
@@ -184,7 +209,6 @@
             </form>
         </div>
 
-        <!-- DERECHA: LISTA DE INVENTARIO -->
         <div class="card-box">
             <h2>Inventario (<span id="totalDocs">0</span>)</h2>
             <div id="loading-bar"><i class="bi bi-arrow-clockwise animate-spin"></i> Cargando...</div>
@@ -195,8 +219,7 @@
             </div>
             
             <div id="list">
-                <!-- LISTA VACÍA POR DEFECTO -->
-            </div>
+                </div>
         </div>
 
     </div>
@@ -421,11 +444,18 @@
           const precioMostrar = d.preciopormayor ? Number(d.preciopormayor).toFixed(2) : "0.00";
           const claseExtra = enStock ? "" : " agotado";
           
+          // --- LOGICA MODIFICADA PARA CÓDIGO SOBRE FOTO ---
+          const codigoHtml = d.codigo ? `<span class="code-badge">${d.codigo}</span>` : '';
+
           const div = document.createElement('div'); div.className = 'product-item' + claseExtra; div.id = 'card-' + d.$id;
           const imgSrc = d.imagen || 'https://via.placeholder.com/50';
           
+          // ESTRUCTURA CON WRAPPER DE IMAGEN
           div.innerHTML = `
-            <img src="${imgSrc}" class="prod-img" onclick='editItem(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
+            <div class="img-wrapper" onclick='editItem(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
+                ${codigoHtml}
+                <img src="${imgSrc}">
+            </div>
             <div class="prod-info">
                 <div class="prod-title">${d.descripcion}</div>
                 <div class="prod-cat">${d.categoria || '-'}</div>
