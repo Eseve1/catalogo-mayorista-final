@@ -97,7 +97,10 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
 /* IMAGEN */
 .img-box { background:#fff; height:220px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
-.img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scroll-scrollbar-width: none; }
+/* MODIFICADO: Agregado cursor: grab para indicar arrastre en PC */
+.img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scroll-scrollbar-width: none; cursor: grab; }
+.img-slider:active { cursor: grabbing; } /* Cursor agarrando */
+
 .img-slider::-webkit-scrollbar { display: none; }
 .slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 10px; }
 .prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
@@ -274,7 +277,6 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 
     <section>
         
-        <!-- MENÚ MÓVIL (HORIZONTAL SCROLL) -->
         <div id="mobile-cats" class="mobile-cats"></div>
 
         <div class="toolbar-container">
@@ -285,13 +287,10 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
     </section>
 </div>
 
-<!-- ZONA FLOTANTE (BOTONES GLOBALES) -->
 <div class="floating-actions">
-    <!-- 1. BOTÓN PRINCIPAL: WHATSAPP (Contacto Directo) - Parpadea y va al chat personal, con ícono de fuego -->
     <a href="https://wa.me/59161333335?text=Hola,%20quisiera%20cotizar%20precios%20de%20sus%20productos." target="_blank" class="btn-order">
         <i class="bi bi-fire"></i> WHATSAPP
     </a>
-    <!-- 2. BOTÓN SECUNDARIO: GRUPO VIP (Se expande y va al grupo) -->
     <a href="https://chat.whatsapp.com/FHPAXOAn2yz4pgaq9t3gZb" target="_blank" class="btn-group">
         <i class="bi bi-people-fill"></i> 
         <span>GRUPO VIP</span>
@@ -449,6 +448,36 @@ function renderProductos(lista){
       </div>
     </div>`;
   }).join('');
+
+  // --- ACTIVAR ARRASTRE (DRAG) PARA PC ---
+  // Esto permite hacer clic y arrastrar las fotos como en el celular
+  document.querySelectorAll('.img-slider').forEach(slider => {
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+
+      slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.style.cursor = 'grabbing';
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      });
+      slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+      });
+      slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+      });
+      slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; // Velocidad del scroll
+        slider.scrollLeft = scrollLeft - walk;
+      });
+  });
 }
 
 // --- UTILS ---
