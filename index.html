@@ -99,11 +99,16 @@ body{background:var(--bg);font-family:Inter,system-ui,sans-serif; color:var(--te
 .img-box { background:#fff; height:220px; position: relative; overflow: hidden; border-bottom: 1px solid #f0f0f0; }
 /* MODIFICADO: Agregado cursor: grab para indicar arrastre en PC */
 .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; width: 100%; scroll-scrollbar-width: none; cursor: grab; }
-.img-slider:active { cursor: grabbing; } /* Cursor agarrando */
+.img-slider:active { cursor: grabbing; } 
 
 .img-slider::-webkit-scrollbar { display: none; }
 .slide { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; padding: 10px; }
-.prod-img { max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; }
+.prod-img { 
+    max-width: 100%; max-height:100%; object-fit:contain; cursor: zoom-in; transition: transform 0.3s; 
+    /* CRÍTICO: Evita que el navegador intente "arrastrar" la imagen al escritorio en PC */
+    -webkit-user-drag: none; 
+    user-select: none;
+}
 .prod-img:hover { transform: scale(1.05); }
 
 /* PUNTOS */
@@ -332,8 +337,20 @@ let todos = [];
 let catActual = 'Todo';
 let zoomTimeout; 
 let subCatActual = ''; 
+// FLAG GLOBAL PARA SABER SI ESTAMOS ARRASTRANDO O HACIENDO CLIC
+let wasDragging = false;
 
-window.openZoom = function(imgSrc) { const m=document.getElementById('zoomModal'); const i=document.getElementById('zoomImg'); i.src=imgSrc; m.classList.add('open'); clearTimeout(zoomTimeout); zoomTimeout=setTimeout(()=>{closeZoom()},4000); }
+window.openZoom = function(imgSrc) { 
+    // SI ESTABA ARRASTRANDO, NO ABRO EL ZOOM
+    if (wasDragging) return;
+
+    const m=document.getElementById('zoomModal'); 
+    const i=document.getElementById('zoomImg'); 
+    i.src=imgSrc; 
+    m.classList.add('open'); 
+    clearTimeout(zoomTimeout); 
+    zoomTimeout=setTimeout(()=>{closeZoom()},4000); 
+}
 window.closeZoom = function() { document.getElementById('zoomModal').classList.remove('open'); clearTimeout(zoomTimeout); }
 window.onSlideScroll = function(el) { const card=el.closest('.card'); const dots=card.querySelectorAll('.dot'); if(dots.length<2)return; const idx=Math.round(el.scrollLeft/el.offsetWidth); dots.forEach(d=>d.classList.remove('active')); if(dots[idx])dots[idx].classList.add('active'); }
 function injectCompanyData() { 
@@ -424,11 +441,12 @@ function renderProductos(lista){
     const primaryImage = p.imagen || 'https://via.placeholder.com/300';
     const secondaryImage = p.imagen2 || 'https://via.placeholder.com/300';
 
+    // NOTA: Agregamos draggable="false" a las imágenes para que no rompan el scroll en PC
     if (tieneFoto2) {
-        imagesHtml = `<div class="slide"><img src="${primaryImage}" class="prod-img" onclick="openZoom('${primaryImage}')"></div><div class="slide"><img src="${secondaryImage}" class="prod-img" onclick="openZoom('${secondaryImage}')"></div>`;
+        imagesHtml = `<div class="slide"><img src="${primaryImage}" class="prod-img" draggable="false" onclick="openZoom('${primaryImage}')"></div><div class="slide"><img src="${secondaryImage}" class="prod-img" draggable="false" onclick="openZoom('${secondaryImage}')"></div>`;
         dotHtml = `<div class="dot-container"><div class="dot active"></div><div class="dot"></div></div>`;
     } else {
-        imagesHtml = `<div class="slide"><img src="${primaryImage}" class="prod-img" onclick="openZoom('${primaryImage}')"></div>`;
+        imagesHtml = `<div class="slide"><img src="${primaryImage}" class="prod-img" draggable="false" onclick="openZoom('${primaryImage}')"></div>`;
     }
 
     return `
@@ -450,7 +468,6 @@ function renderProductos(lista){
   }).join('');
 
   // --- ACTIVAR ARRASTRE (DRAG) PARA PC ---
-  // Esto permite hacer clic y arrastrar las fotos como en el celular
   document.querySelectorAll('.img-slider').forEach(slider => {
       let isDown = false;
       let startX;
@@ -458,9 +475,12 @@ function renderProductos(lista){
 
       slider.addEventListener('mousedown', (e) => {
         isDown = true;
+        wasDragging = false; // Reiniciamos el estado
         slider.style.cursor = 'grabbing';
         startX = e.pageX - slider.offsetLeft;
         scrollLeft = slider.scrollLeft;
+        // Prevenir selección de texto
+        e.preventDefault(); 
       });
       slider.addEventListener('mouseleave', () => {
         isDown = false;
@@ -469,12 +489,20 @@ function renderProductos(lista){
       slider.addEventListener('mouseup', () => {
         isDown = false;
         slider.style.cursor = 'grab';
+        // Hack para evitar que el navegador piense que seguimos arrastrando
+        setTimeout(() => { wasDragging = false; }, 100);
       });
       slider.addEventListener('mousemove', (e) => {
         if (!isDown) return;
         e.preventDefault();
         const x = e.pageX - slider.offsetLeft;
         const walk = (x - startX) * 2; // Velocidad del scroll
+        
+        // Si nos movemos más de 5px, consideramos que es un arrastre, no un clic
+        if (Math.abs(walk) > 5) {
+            wasDragging = true;
+        }
+        
         slider.scrollLeft = scrollLeft - walk;
       });
   });
